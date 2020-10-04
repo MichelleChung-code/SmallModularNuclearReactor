@@ -1,4 +1,5 @@
 clear, close all
+clc
 beta = 0.67;
 beta1 = 0.0256;
 beta2 = 0.14;
