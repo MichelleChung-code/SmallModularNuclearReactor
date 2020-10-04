@@ -43,18 +43,28 @@ disp('Starting to run simplified reactor core')
 sim(sim_path);
 disp('Model has run')
 
-% figure(1), plot(tout, T_outlet), grid on
-% title('Toutlet')
-% xlabel('time(s)'), ylabel('Temperature (F)')
-% 
-% figure(2), plot(tout, Pth), grid on
-% title('Fractional Reactor Power (Pth)')
-% xlabel('time(s)'), ylabel('Pth')
-% 
-% figure(3), plot(tout, Tf), grid on
-% title('Fuel Temperature (Tf)')
-% xlabel('time(s)'), ylabel('Temperature (F)')
-% 
-% figure(4), plot(tout, rho), grid on
-% title('Reactivity (rho)')
-% xlabel('time(s)'), ylabel('rho')
+% Some Plotting
+figure(1), subplot(3,3,1)
+plot(ans.tout, ans.T_outlet), grid on
+title('Toutlet')
+xlabel('time(s)'), ylabel('Temperature (F)')
+
+subplot(3,3,2), plot(ans.tout, ans.Pth), grid on
+title('Fractional Reactor Power (Pth)')
+xlabel('time(s)'), ylabel('Pth')
+
+subplot(3,3,3), plot(ans.tout, ans.Tf), grid on
+title('Fuel Temperature (Tf)')
+xlabel('time(s)'), ylabel('Temperature (F)')
+
+subplot(3,3,4), plot(ans.tout, ans.rho), grid on
+title('Reactivity (rho)')
+xlabel('time(s)'), ylabel('rho')
+
+subplot(3,3,5), plot(ans.tout, ans.theta_1), grid on
+title('Theta 1')
+xlabel('time(s)'), ylabel('Temperature (F)')
+
+subplot(3,3,6), plot(ans.tout, ans.theta_2), grid on
+title('Theta 2')
+xlabel('time(s)'), ylabel('Temperature (F)')
