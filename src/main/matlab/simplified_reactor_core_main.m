@@ -1,20 +1,20 @@
 clear, close all
 clc
-beta = 0.67;
-beta1 = 0.0256;
-beta2 = 0.14;
-beta3 = 0.13;
-beta4 = 0.27;
-beta5 = 0.086;
-beta6 = 0.017;
+beta = 0.0067;
+beta1 = 0.000256;
+beta2 = 0.0014;
+beta3 = 0.0013;
+beta4 = 0.0027;
+beta5 = 0.00086;
+beta6 = 0.00017;
 
-mean_prompt_neutron_gen_t = 7.66e-4;
-lambda1 = 0.0256;
-lambda2 = 0.14;
-lambda3 = 0.13;
-lambda4 = 0.27;
-lambda5 = 0.086;
-lambda6 = 0.017;
+mean_prompt_neutron_gen_t = 7.66e-4; %calculate (1/beta sum(betai/lambdai))^-1
+lambda1 = 0.0124;
+lambda2 = 0.0305;
+lambda3 = 0.111;
+lambda4 = 0.301;
+lambda5 = 1.14;
+lambda6 = 3.01;
 
 alpha_c = -5.22e-6; 
 alpha_f = -2.42e-5; 
@@ -31,7 +31,7 @@ f = 0.97; % need to find
 mc = 6898.3; % need to find 
 mc1 = 3449.1; % need to find 
 mc2 = 3449.1; % need to find 
-mf = 53850.5; % need to find 
+mf = 198116.207; % in lbm
 Po = 434100241.3585974;
 Ufc = 0.0909; % need to find
 Wc = 388.014;
@@ -39,6 +39,7 @@ T_inlet = 1000.4;
 
 base_path = fileparts(pwd);
 sim_path = strcat(base_path, '\simulink\SMR_simplified_core.slx');
+disp(sim_path)
 disp('Starting to run simplified reactor core')
 sim(sim_path);
 disp('Model has run')

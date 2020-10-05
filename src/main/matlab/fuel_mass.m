@@ -47,6 +47,7 @@ mass_all_coated_particles = mass_coated_particle * N_coated_particles_graphite_m
 vol_graphite_in_matrix = vol_graphite_matrix - vol_all_coated_particles;
 mass_graphite = (vol_graphite_in_matrix + vol_graphite_layer) * graphite_rho;
 
+disp(vol_graphite_in_matrix*12000)
 outputArg1 = N_fuel_elements*(mass_graphite + mass_all_coated_particles)/1000;
 
 % currently returns 8.9864e+04
