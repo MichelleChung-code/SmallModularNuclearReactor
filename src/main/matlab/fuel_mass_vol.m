@@ -1,4 +1,4 @@
-function [outputArg1] = fuel_mass()
+function [outputArg1, outputArg2] = fuel_mass_vol()
 % Calculate the fuel mass
 
 % CONSTANTS
@@ -6,7 +6,7 @@ d_fuel_kernel = 2*0.25e-3; % in m
 ls_coating_layer_t = [0, 0.09e-3, 0.04e-3, 0.035e-3, 0.04e-3]; % in m
 ls_coating_layer_rho = [10.4, 1.1, 1.9, 3.18, 1.9];
 ls_coating_layer_rho = ls_coating_layer_rho*100^3; % in g/(m^3)
-N_fuel_elements = 479358; %number of fuel elements in reactor core @ equilibrium state
+N_fuel_elements = 420000; %number of fuel elements in reactor core @ equilibrium state
 N_coated_particles_graphite_matrix = 12000; % number of coated paricles in graphite matrix
 graphite_layer_t = 5e-3; % m
 graphite_matrix_d = 5e-2;  %m
@@ -51,6 +51,10 @@ mass_all_coated_particles = mass_coated_particle * N_coated_particles_graphite_m
 vol_graphite_in_matrix = vol_graphite_matrix - vol_all_coated_particles;
 mass_graphite = (vol_graphite_in_matrix + vol_graphite_layer) * graphite_rho;
 
-outputArg1 = N_fuel_elements*(mass_graphite + mass_all_coated_particles)/1000;
+total_fuel_mass = N_fuel_elements*(mass_graphite + mass_all_coated_particles)/1000;
+total_fuel_volume = N_fuel_elements*(1/6) * pi * (graphite_matrix_d+ 2*graphite_layer_t)^3; 
+
+outputArg1 = total_fuel_mass;
+outputArg2 = total_fuel_volume;
 end
 
