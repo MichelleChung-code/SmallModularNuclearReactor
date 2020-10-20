@@ -1,4 +1,4 @@
-function [outputArg1] = fuel_mass()
+function [outputArg1, outputArg2] = fuel_mass_vol()
 % Calculate the fuel mass
 
 % CONSTANTS
@@ -51,6 +51,10 @@ mass_all_coated_particles = mass_coated_particle * N_coated_particles_graphite_m
 vol_graphite_in_matrix = vol_graphite_matrix - vol_all_coated_particles;
 mass_graphite = (vol_graphite_in_matrix + vol_graphite_layer) * graphite_rho;
 
-outputArg1 = N_fuel_elements*(mass_graphite + mass_all_coated_particles)/1000;
+total_fuel_mass = N_fuel_elements*(mass_graphite + mass_all_coated_particles)/1000;
+total_fuel_volume = N_fuel_elements*(1/6) * pi * (graphite_matrix_d+ 2*graphite_layer_t)^3; 
+
+outputArg1 = total_fuel_mass;
+outputArg2 = total_fuel_volume;
 end
 
