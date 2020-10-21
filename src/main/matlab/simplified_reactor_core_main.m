@@ -1,8 +1,8 @@
 clear, close all
 clc
-
-UnitConversionFactors;
-
+base_path = fileparts(pwd)
+unit_conversion_path = strcat(base_path, '\matlab\UnitConversionFactors.m')
+run(unit_conversion_path);
 
 beta = 0.0067;
 beta1 = 0.000256;
@@ -24,24 +24,29 @@ alpha_c = (CelsiusToFahrenheit((-4.36E-5)^-1))^-1; % 1/F
 alpha_f = (CelsiusToFahrenheit((-9.40E-6)^-1))^-1;  % 1/F
 theta_1o = CelsiusToFahrenheit(250); % F
 theta_2o = CelsiusToFahrenheit(700); % F
-Tfo = 1382;% need to check
+Tfo = 1382;% need to check this is 750 decrees celius 
 
-A_fc = 14120.6; % need to calculate 
-A_fc1 = 7060.3; % need to calculate 
-A_fc2 = 7060.3; % need to calculate 
-Cp_c = 1.24;
-Cp_f = 0.059; % need to find 
+A_fc = 4.7501e+03*m2_over_ft2; % ft^2
+A_fc1 = A_fc/2; % ft^2
+A_fc2 = A_fc/2; % ft^2
+
+%http://www.endmemo.com/sconvert/j_kgcbtu_lbf.php#:~:text=F)%E2%86%94J%2F(g.C,Btu%2F(lb.
+Cp_c = 1.240327; % 5.193e3 J/kgK converted to Btu/lbm F
+Cp_f = 0.387277; % 1621.45 J/kgK converted to Btu/lbm F 
+
 f = 0.97; % need to find (fuel efficiency factor?) 
-mc = 6898.3; % need to find 
-mc1 = 3449.1; % need to find 
-mc2 = 3449.1; % need to find 
-mf = 198116.207; % in lbm
-Po = 434100241.3585974;
-Ufc = 0.0909; % need to find
-Wc = 388.014;
-T_inlet = 1000.4;
+mc = 131.8847497*kg_over_lbm; % in lbm
+mc1 = mc/2; 
+mc2 = mc/2; 
+mf =  8.5367e+04*kg_over_lbm; % in lbm
+Po = 250*MWatt_over_Btu_s; % in Btu/s
 
-base_path = fileparts(pwd);
+% http://www.endmemo.com/convert/heat%20transfer%20coefficient.php
+Ufc = 0.44583; % 9.1075e+03 W/m^2K converted to 0.44583 Btu/(s ft^2 F)
+
+Wc = 145*kg_over_lbm; % lbm/s
+T_inlet = CelsiusToFahrenheit(538); % F 
+
 sim_path = strcat(base_path, '\simulink\SMR_simplified_core.slx');
 disp(sim_path)
 disp('Starting to run simplified reactor core')
@@ -66,10 +71,10 @@ subplot(3,3,4), plot(ans.tout, ans.rho), grid on
 title('Reactivity (rho)')
 xlabel('time(s)'), ylabel('rho')
 
-subplot(3,3,5), plot(ans.tout, ans.theta_1), grid on
-title('Theta 1')
-xlabel('time(s)'), ylabel('Temperature (F)')
+% subplot(3,3,5), plot(ans.tout, ans.theta_1), grid on
+% title('Theta 1')
+% xlabel('time(s)'), ylabel('Temperature (F)')
 
-subplot(3,3,6), plot(ans.tout, ans.theta_2), grid on
-title('Theta 2')
-xlabel('time(s)'), ylabel('Temperature (F)')
+% subplot(3,3,6), plot(ans.tout, ans.theta_2), grid on
+% title('Theta 2')
+% xlabel('time(s)'), ylabel('Temperature (F)')

@@ -8,6 +8,6 @@ Ufo = reactor_core_Ufo(fuelVolume) % in W/(m^2*K)
 % Returns: 
 % Fuel Mass: 8.5367e+04 kg
 % Fuel Volume: 47.5009 m^3
-% Ufo: 9.1075e+03 W/(m^2*K)
+% Ufo: 116.9569 W/(m^2*K)
 
 
