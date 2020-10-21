@@ -1,5 +1,9 @@
 clear, close all
 clc
+
+UnitConversionFactors;
+
+
 beta = 0.0067;
 beta1 = 0.000256;
 beta2 = 0.0014;
@@ -8,7 +12,7 @@ beta4 = 0.0027;
 beta5 = 0.00086;
 beta6 = 0.00017;
 
-mean_prompt_neutron_gen_t = 7.66e-4; %calculate (1/beta sum(betai/lambdai))^-1
+mean_prompt_neutron_gen_t = .07669; 
 lambda1 = 0.0124;
 lambda2 = 0.0305;
 lambda3 = 0.111;
