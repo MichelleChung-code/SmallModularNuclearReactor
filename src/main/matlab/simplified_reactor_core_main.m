@@ -57,19 +57,19 @@ disp('Model has run')
 figure(1), subplot(3,3,1)
 plot(ans.tout, ans.T_outlet), grid on
 title('Toutlet')
-xlabel('time(s)'), ylabel('Temperature (F)')
+xlabel('time'), ylabel('Temperature (F)')
 
 subplot(3,3,2), plot(ans.tout, ans.Pth), grid on
 title('Fractional Reactor Power (Pth)')
-xlabel('time(s)'), ylabel('Pth')
+xlabel('time'), ylabel('Pth')
 
 subplot(3,3,3), plot(ans.tout, ans.Tf), grid on
 title('Fuel Temperature (Tf)')
-xlabel('time(s)'), ylabel('Temperature (F)')
+xlabel('time'), ylabel('Temperature (F)')
 
 subplot(3,3,4), plot(ans.tout, ans.rho), grid on
 title('Reactivity (rho)')
-xlabel('time(s)'), ylabel('rho')
+xlabel('time'), ylabel('rho')
 
 % subplot(3,3,5), plot(ans.tout, ans.theta_1), grid on
 % title('Theta 1')
