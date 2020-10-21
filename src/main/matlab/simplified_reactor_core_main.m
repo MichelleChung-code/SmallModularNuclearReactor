@@ -12,7 +12,7 @@ beta4 = 0.0027;
 beta5 = 0.00086;
 beta6 = 0.00017;
 
-mean_prompt_neutron_gen_t = .07669; 
+mean_prompt_neutron_gen_t = 0.07669; 
 lambda1 = 0.0124;
 lambda2 = 0.0305;
 lambda3 = 0.111;
@@ -20,10 +20,10 @@ lambda4 = 0.301;
 lambda5 = 1.14;
 lambda6 = 3.01;
 
-alpha_c = -5.22e-6; 
-alpha_f = -2.42e-5; 
-theta_1o = 482; % need to check
-theta_2o = 1382; % need to check
+alpha_c = (CelsiusToFahrenheit((-4.36E-5)^-1))^-1; % 1/F 
+alpha_f = (CelsiusToFahrenheit((-9.40E-6)^-1))^-1;  % 1/F
+theta_1o = CelsiusToFahrenheit(250); % F
+theta_2o = CelsiusToFahrenheit(700); % F
 Tfo = 1382;% need to check
 
 A_fc = 14120.6; % need to calculate 
