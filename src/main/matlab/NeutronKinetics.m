@@ -1,27 +1,41 @@
-clc, clear, close all 
+classdef NeutronKinetics
+    properties
+        beta_ls_delayed_groups {mustBeVector} 
+        lambda_ls_delayed_groups {mustBeVector}
+        coupling_coeffs_matrix {mustBeVector}
+        beta {mustBeNumeric}
+        lambda {mustBeNumeric}
+        tspan {mustBeVector}
+        x0 {mustBeVector}
+    end
+    
+    methods
+       function obj = NeutronKinetics(coupling_coeffs_matrix, tspan, x0)
+           % Constant class inputs that will not change 
+           obj.beta_ls_delayed_groups = 10^-2*[.0256 .14 .13 .27 .086 .017]';
+           obj.lambda = 7.66E-4;
+           obj.beta = .67;
+           obj.lambda_ls_delayed_groups = [.0256 .14 .13 .27 .086 .017]';
+           obj.tspan = tspan;
+           obj.x0 = x0 
+           
+           % Dyanmic inputs that can change
+           obj.coupling_coeffs_matrix = coupling_coeffs_matrix;
+       end
+       
+       function dxdt = relative_neutron_flux_first_node(obj) 
+           % x(1) = n1
+           % X(2) = nN (the last node) 
+           % 
+           dn1dt_term1 = (rho - obj.beta - obj.lambda_ls_delayed_groups(1,1))/lambda_ls_delayed_groups(1)*n1
+           dn1dt_term2 = (1/obj.lambda_ls_delayed_groups(1) * obj.coupling_coeffs_matrix(1,2) * 
+           
+       end
+       
+       function [tout x] = solve_neutron_kinetics(obj)
+            % This function is going to solve the ODE 
+       end
 
-% global constants accesssible to all functions 
-% use all caps for this 
-
-global BETA_LS_DELAYED_GROUPS
-global LAMBDA
-global BETA
-global LAMBDA_LS_DELAYED_GROUPS
-global COUPLING_COEFFS_MATRIX
-
-BETA_LS_DELAYED_GROUPS = 10^-2*[.0256 .14 .13 .27 .086 .017]';
-LAMBDA = 7.66E-4;
-BETA = .67;
-LAMBDA_LS_DELAYED_GROUPS = [.0256 .14 .13 .27 .086 .017]';
-COUPLING_COEFFS_MATRIX = [3.5 7.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0;
-                          1.8 7.1 5.5 0.0 0.0 0.0 0.0 0.0 0.0 0.0;
-                          0.0 2.2 6.9 3.9 0.0 0.0 0.0 0.0 0.0 0.0;
-                          0.0 0.0 3.1 7.0 3.3 0.0 0.0 0.0 0.0 0.0;
-                          0.0 0.0 0.0 3.7 7.0 2.9 0.0 0.0 0.0 0.0;
-                          0.0 0.0 0.0 0.0 4.2 7.0 2.8 0.0 0.0 0.0;
-                          0.0 0.0 0.0 0.0 0.0 4.5 7.0 2.6 0.0 0.0;
-                          0.0 0.0 0.0 0.0 0.0 0.0 4.7 7.0 2.4 0.0;
-                          0.0 0.0 0.0 0.0 0.0 0.0 0.0 5.0 7.0 2.2;
-                          0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 5.6 3.5]*10^-3;
-
-% for the initial set up of the numerical integration 
+    end
+    
+end
