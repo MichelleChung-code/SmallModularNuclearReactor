@@ -13,3 +13,8 @@ coupling_coeffs_matrix = [3.5 7.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0;
                           0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 5.6 3.5]*10^-3;
 
 % for the initial set up of the numerical integration 
+tspan = [0 20]';
+x0 = [0 [0 0 0 0 0 0]]';
+% C0 = zeros(10,6);
+neutron_kinetics = NeutronKinetics(coupling_coeffs_matrix);
+[tout, x] = neutron_kinetics.solve_neutron_kinetics(tspan, x0)
