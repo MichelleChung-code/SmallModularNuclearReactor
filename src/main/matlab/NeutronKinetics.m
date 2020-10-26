@@ -20,10 +20,10 @@ classdef NeutronKinetics
        end
        
        function dxdt = relative_neutron_flux_first_node(obj, t, x) 
-           % x(1) = n1
-           % x(2) = nN (the last node) 
-           % x(3) = Concentrations of node 1
-           n2 = 1; % needs to be replaced with an equation
+           % x(1) = n1 neutron flux of the first node
+           % x(2:7) = Concentrations of delayed groups for node 1
+           % x(8) = nN neutron flux of the last node
+           n2 = 1; % needs to be replaced with an equation 
            rho = 1; % needs to be replaced with an equation
            
            % Relative neutron flux for node 1
@@ -33,12 +33,17 @@ classdef NeutronKinetics
            dxdt(1) =  dn1dt_term1 + dn1dt_term2 + dn1dt_term3;
            
            % Delayed Neutron Group Concentrations for Node 1
+           % TODO - see if there is a nicer way to do this - I hate how
+           % this is done right now - MC
            dxdt(2) = obj.lambda_ls_delayed_groups(1)*(x(1)-x(2)); 
            dxdt(3) = obj.lambda_ls_delayed_groups(2)*(x(1)-x(3));
            dxdt(4) = obj.lambda_ls_delayed_groups(3)*(x(1)-x(4));
            dxdt(5) = obj.lambda_ls_delayed_groups(4)*(x(1)-x(5));
            dxdt(6) = obj.lambda_ls_delayed_groups(5)*(x(1)-x(6));
            dxdt(7) = obj.lambda_ls_delayed_groups(6)*(x(1)-x(7));
+           
+           % Relative neutron flux for the last node (N)
+           
            
            dxdt = dxdt';
        end
@@ -57,8 +62,10 @@ classdef NeutronKinetics
        
        function dCdt = relative_concentrations(obj, C, n)
            % concentration for one node
-           % See if can figure out how to use this... issues in ODE45
-           % within ODE45 function unfortunately
+           % TODO
+           % See if can figure out how to use this to minimize copy/pasting
+           % code... issues in ODE45 within ODE45 function unfortunately -
+           % MC
            dCdt(1) = obj.lambda_ls_delayed_groups(1)*(n-C(1));
            dCdt(2) = obj.lambda_ls_delayed_groups(2)*(n-C(2));
            dCdt(3) = obj.lambda_ls_delayed_groups(1)*(n-C(3));
