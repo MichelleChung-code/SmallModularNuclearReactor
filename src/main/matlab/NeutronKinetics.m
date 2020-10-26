@@ -5,10 +5,11 @@ classdef NeutronKinetics
         coupling_coeffs_matrix {mustBeNumeric}
         beta {mustBeNumeric}
         lambda {mustBeNumeric}
+        N {mustBeNumeric}
     end
     
     methods
-       function obj = NeutronKinetics(coupling_coeffs_matrix)
+       function obj = NeutronKinetics(coupling_coeffs_matrix, N)
            % Constant class inputs that will not change 
            obj.beta_ls_delayed_groups = 10^-2*[.0256 .14 .13 .27 .086 .017]';
            obj.lambda = 7.66E-4;
@@ -17,24 +18,31 @@ classdef NeutronKinetics
            
            % Dyanmic inputs that can change
            obj.coupling_coeffs_matrix = coupling_coeffs_matrix;
+           obj.N = N; % number of nodes
        end
        
        function dxdt = relative_neutron_flux_first_node(obj, t, x) 
+           % DOCUMENT WHAT EACH VALUE REPRESENTS
            % x(1) = n1 neutron flux of the first node
            % x(2:7) = Concentrations of delayed groups for node 1
            % x(8) = nN neutron flux of the last node
+           % x(9:14) = Concentrations of delayed groups for node N
+           
            n2 = 1; % needs to be replaced with an equation 
-           rho = 1; % needs to be replaced with an equation
+           rho_1 = 1; % needs to be replaced with an equation
+           rho_N = 1; % needs to be replaced with an equation
+           n_N_1 = 1; % needs to be replaced with an equation
            
            % Relative neutron flux for node 1
-           dn1dt_term1 = (rho - obj.beta - obj.lambda_ls_delayed_groups(1,1))/obj.lambda_ls_delayed_groups(1)*x(1);
-           dn1dt_term2 = (1/obj.lambda_ls_delayed_groups(1)) * obj.coupling_coeffs_matrix(1,2) * n2;
-           dn1dt_term3 = obj.sum_beta_concentration_over_lambda(x(2:7), obj.lambda_ls_delayed_groups(1));
+           dn1dt_term1 = (rho_1 - obj.beta - obj.lambda_ls_delayed_groups(1,1))/obj.lambda*x(1);
+           dn1dt_term2 = (1/obj.lambda) * obj.coupling_coeffs_matrix(1,2) * n2;
+           dn1dt_term3 = obj.sum_beta_concentration_over_lambda(x(2:7), obj.lambda);
            dxdt(1) =  dn1dt_term1 + dn1dt_term2 + dn1dt_term3;
            
            % Delayed Neutron Group Concentrations for Node 1
            % TODO - see if there is a nicer way to do this - I hate how
-           % this is done right now - MC
+           % this is done right now but solving the ODE45 inside the ODE45
+           % was causing issues
            dxdt(2) = obj.lambda_ls_delayed_groups(1)*(x(1)-x(2)); 
            dxdt(3) = obj.lambda_ls_delayed_groups(2)*(x(1)-x(3));
            dxdt(4) = obj.lambda_ls_delayed_groups(3)*(x(1)-x(4));
@@ -43,7 +51,18 @@ classdef NeutronKinetics
            dxdt(7) = obj.lambda_ls_delayed_groups(6)*(x(1)-x(7));
            
            % Relative neutron flux for the last node (N)
+           dnNdt_term1 = (rho_N - obj.beta - obj.coupling_coeffs_matrix(obj.N,obj.N))/obj.lambda*x(8);
+           dnNdt_term2 = (1/obj.lambda)*obj.coupling_coeffs_matrix(obj.N,obj.N-1)*n_N_1;
+           dnNdt_term3 = obj.sum_beta_concentration_over_lambda(x(9:14), obj.lambda);
+           dxdt(8) =  dnNdt_term1 + dnNdt_term2 + dnNdt_term3;
            
+           % Delayed Neutron Group Concentrations for Node N
+           dxdt(9) = obj.lambda_ls_delayed_groups(1)*(x(8)-x(9)); 
+           dxdt(10) = obj.lambda_ls_delayed_groups(2)*(x(8)-x(10));
+           dxdt(11) = obj.lambda_ls_delayed_groups(3)*(x(8)-x(11));
+           dxdt(12) = obj.lambda_ls_delayed_groups(4)*(x(8)-x(12));
+           dxdt(13) = obj.lambda_ls_delayed_groups(5)*(x(8)-x(13));
+           dxdt(14) = obj.lambda_ls_delayed_groups(6)*(x(8)-x(14));
            
            dxdt = dxdt';
        end
@@ -58,23 +77,6 @@ classdef NeutronKinetics
        
            sum_term3 = sum(ls_elements_to_sum,'all');
   
-       end
-       
-       function dCdt = relative_concentrations(obj, C, n)
-           % concentration for one node
-           % TODO
-           % See if can figure out how to use this to minimize copy/pasting
-           % code... issues in ODE45 within ODE45 function unfortunately -
-           % MC
-           dCdt(1) = obj.lambda_ls_delayed_groups(1)*(n-C(1));
-           dCdt(2) = obj.lambda_ls_delayed_groups(2)*(n-C(2));
-           dCdt(3) = obj.lambda_ls_delayed_groups(1)*(n-C(3));
-           dCdt(4) = obj.lambda_ls_delayed_groups(2)*(n-C(4));
-           dCdt(5) = obj.lambda_ls_delayed_groups(1)*(n-C(5));
-           dCdt(6) = obj.lambda_ls_delayed_groups(2)*(n-C(6));
-           
-           dCdt = dCdt';
-           
        end
        
        function [tout x] = solve_neutron_kinetics(obj, tspan, x0)

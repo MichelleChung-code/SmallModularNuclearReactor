@@ -13,11 +13,14 @@ coupling_coeffs_matrix = [3.5 7.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0;
                           0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 5.6 3.5]*10^-3;
 
 % for the initial set up of the numerical integration 
-tspan = [0 20]';
-x0 = [0 [0 0 0 0 0 0] 0]';
-% C0 = zeros(10,6);
-neutron_kinetics = NeutronKinetics(coupling_coeffs_matrix);
-[tout, x] = neutron_kinetics.solve_neutron_kinetics(tspan, x0)
+% think about how to set up such that nodes are dynamic
+tspan = [0 5]';
+
+% TODO need to get the actual initial conditions
+x0 = [0 [0 0 0 0 0 0] 0 [0 0 0 0 0 0]]';
+N = 10; % number of nodes
+neutron_kinetics = NeutronKinetics(coupling_coeffs_matrix, N);
+[tout, x] = neutron_kinetics.solve_neutron_kinetics(tspan, x0);
 
 % TODO, pass in tout and x and then run the plotting script
 % NeutronKineticsPlotting.m
