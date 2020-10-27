@@ -32,7 +32,7 @@ for i = 1:series_num
     end
     if (71 <= i) && (i <= 80); legendInfo{i} = ["Node " + num2str(i-70)]; end
     if (81 <= i) && (i <= 90); legendInfo{i} = ["Node " + num2str(i-80)]; end
-    if (90 <= i) && (i <= 94); legendInfo{i} = ["Temperature"]; end
+    if (91 <= i) && (i <= 94); legendInfo{i} = ["Temperature"]; end
     if (95 <= i) && (i <= 104); legendInfo{i} = ["Node "+ num2str(i-94)]; end
     if (i == 105); legendInfo{i} = ["Mass Flow Rate"]; end
 end
