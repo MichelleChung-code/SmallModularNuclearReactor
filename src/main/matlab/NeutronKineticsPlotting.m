@@ -1,1 +1,36 @@
 % For plotting the neutron kinetics results 
+
+% Plot neutron relative fluxxes
+% flux_labels = zeros(1,N)
+close all;
+
+diff_plot_titles = ["Relative Neutron Fluxes of Nodes","Concentration Node 1",...
+    "Concentration Node 2", "Concentration Node 3","Concentration Node 4",...
+    "Concentration Node 5","Concentration Node 6","Concentration Node 7",...
+    "Concentration Node 8","Concentration Node 9","Concentration Node 10"];
+diff_plot_ylabels = ["Neutron Fluxes",repelem(["Concentration"],[10])];
+diff_plots_index_end = [10, 11+5*(1), 10+6*(2), 10+6*(3), 10+6*(4),...
+    10+6*(5), 10+6*(6), 10+6*(7),10+6*(8), 10+6*(9), 10+6*(10)];
+series_num = length(x);
+
+const_label = "Node ";
+delayed_groups = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+for i = 1:series_num 
+    if (1 <= i) && (i <= 10); legendInfo{i} = [const_label + num2str(i)]; end
+    if (11 <= i) && (i <= 70)   
+        n = i-11;
+        if ismember(11+ n*6, delayed_groups*6+11); const_label = "Delayed Group "; end
+        group_num = i-([delayed_groups]*6+11);
+        legendInfo{i} = [const_label + num2str(min(group_num(group_num>=0))+1)]
+    end
+end
+
+starting_index = 1;
+for i=1:length(diff_plot_titles)
+    figure(i), plot(x(:, starting_index:diff_plots_index_end(i)),tout), grid on
+    title(diff_plot_titles(i))
+    ylabel(diff_plot_ylabels(i)), xlabel('Time, t')
+    legend(legendInfo{starting_index:diff_plots_index_end(i)})
+    starting_index = diff_plots_index_end(i) + 1
+end
+
