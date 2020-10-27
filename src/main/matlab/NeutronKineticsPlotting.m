@@ -28,7 +28,7 @@ for i = 1:series_num
         n = i-11;
         if ismember(11+ n*6, delayed_groups*6+11); const_label = "Delayed Group "; end
         group_num = i-([delayed_groups]*6+11);
-        legendInfo{i} = [const_label + num2str(min(group_num(group_num>=0))+1)]
+        legendInfo{i} = [const_label + num2str(min(group_num(group_num>=0))+1)];
     end
     if (71 <= i) && (i <= 80); legendInfo{i} = ["Node " + num2str(i-70)]; end
     if (81 <= i) && (i <= 90); legendInfo{i} = ["Node " + num2str(i-80)]; end
