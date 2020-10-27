@@ -17,8 +17,8 @@ coupling_coeffs_matrix = [3.5 7.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0;
 tspan = [0 5]';
 
 % TODO need to get the actual initial conditions
-x0 = [0 [0 0 0 0 0 0] 0 [0 0 0 0 0 0]]';
 N = 10; % number of nodes
+x0 = ones(105, 1);
 neutron_kinetics = NeutronKinetics(coupling_coeffs_matrix, N);
 [tout, x] = neutron_kinetics.solve_neutron_kinetics(tspan, x0);
 
