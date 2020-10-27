@@ -19,9 +19,10 @@ tspan = [0 5]';
 % TODO need to get the actual initial conditions
 N = 10; % number of nodes
 x0 = ones(105, 1);
+disp("Starting to Solve Equations");
 neutron_kinetics = NeutronKinetics(coupling_coeffs_matrix, N);
-[tout, x] = neutron_kinetics.solve_neutron_kinetics(tspan, x0);
-
+[tout, x] = neutron_kinetics.solve_neutron_kinetics(tspan, x0)
+disp("Solving Completed");
 % TODO, pass in tout and x and then run the plotting script
 % NeutronKineticsPlotting.m
 
