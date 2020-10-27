@@ -70,8 +70,8 @@ classdef NeutronKinetics
        end
        function dxdt = relative_neutron_flux(obj, t, x) 
            % DOCUMENT WHAT EACH VALUE REPRESENTS
-           % x(1:10) = ni neutron flux of the first node
-           % x(11:70) = Concentrations of delayed groups for node 1
+           % x(1:10) = ni neutron flux of the nodes
+           % x(11:70) = Concentrations of delayed groups for nodes
            % x(71:80) = ith Temperature of Fuel element nodes Tci
            % x(81:90) = ith Temperauter of Helium nodes Tdi
            Tr = obj.N*7+2*obj.N+1;% x(91) = Temperature of Reflector Tr
@@ -84,9 +84,7 @@ classdef NeutronKinetics
            cores = obj.N*7+1; %This is the number to jump to core (fuel element) temperature
            downs = obj.N*7+obj.N+1; % This is the number to jump to downcomer (helium) temperature
            hmass = obj.N*7+2*obj.N+5; %number to get to masses  
-           
-           
-           
+
            
            % Relative neutron flux for node 1
            rho_1 = obj.reactivity(x(cores),x(Tr)); % needs to be replaced with an equation
@@ -188,7 +186,7 @@ classdef NeutronKinetics
            dxdt(downs) = (dTd1dt_term1 + dTd1dt_term2)/(obj.porosity*x(hmass)*obj.Cp_helium);
            
            %Td nodes 2:N
-           for i = i:obj.N-1
+           for i = 1:obj.N-1
                dTdidt_term1 = Kd*Ad*(x(cores+i)-x(downs+i));
                dTdidt_term2 = obj.Cp_helium*x(hmass+i-1)*(x(downs+i-1)-x(downs+i));
                dxdt(downs+i)= (dTdidt_term1 + dTdidt_term2)/(obj.porosity*x(hmass+i)*obj.Cp_helium);
@@ -215,7 +213,7 @@ classdef NeutronKinetics
            
            dTohdt_term1 = k*Wlh*(x(Tlh)-x(Toh));
            dTohdt_term2 = x(hmass+obj.N-1)*(x(downs+obj.N-1)-x(Toh));
-           dxtdt(Toh) = (dTohdt_term1 + dTohdt_term2)/Woh;
+           dxdt(Toh) = (dTohdt_term1 + dTohdt_term2)/Woh;
            
            
            
@@ -223,7 +221,7 @@ classdef NeutronKinetics
        end
   
        
-       function sum_term3 = sum_beta_concentration_over_lambda(obj, C, lambda_node)
+       function result = sum_beta_concentration_over_lambda(obj, C, lambda_node)
            % C is a vector containing 6 elements, the concentration of each
            % delayed neutron group, for a given node
            ls_elements_to_sum = zeros(1, length(C));
@@ -231,16 +229,17 @@ classdef NeutronKinetics
                ls_elements_to_sum(i) = obj.beta_ls_delayed_groups(i) / lambda_node * C(i);
            end
        
-           sum_term3 = sum(ls_elements_to_sum,'all');
+           result = sum(ls_elements_to_sum,'all');
   
        end
        
        function [tout, x] = solve_neutron_kinetics(obj, tspan, x0)
             % This function is going to solve the ODE 
+            tic
             tstep = .1;
             tspan_fix = tspan(1):tstep:tspan(2);
-            [tout, x] = ode15s(@obj.relative_neutron_flux, tspan_fix, x0);
-            
+            [tout, x] = ode23tb(@obj.relative_neutron_flux, tspan_fix, x0);
+            toc
        end
 
     end
