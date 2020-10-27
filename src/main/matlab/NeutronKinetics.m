@@ -188,7 +188,7 @@ classdef NeutronKinetics
            dxdt(downs) = (dTd1dt_term1 + dTd1dt_term2)/(obj.porosity*x(hmass)*obj.Cp_helium);
            
            %Td nodes 2:N
-           for i = i:obj.N-1
+           for i = 1:obj.N-1
                dTdidt_term1 = Kd*Ad*(x(cores+i)-x(downs+i));
                dTdidt_term2 = obj.Cp_helium*x(hmass+i-1)*(x(downs+i-1)-x(downs+i));
                dxdt(downs+i)= (dTdidt_term1 + dTdidt_term2)/(obj.porosity*x(hmass+i)*obj.Cp_helium);
@@ -215,7 +215,7 @@ classdef NeutronKinetics
            
            dTohdt_term1 = k*Wlh*(x(Tlh)-x(Toh));
            dTohdt_term2 = x(hmass+obj.N-1)*(x(downs+obj.N-1)-x(Toh));
-           dxtdt(Toh) = (dTohdt_term1 + dTohdt_term2)/Woh;
+           dxdt(Toh) = (dTohdt_term1 + dTohdt_term2)/Woh;
            
            
            
