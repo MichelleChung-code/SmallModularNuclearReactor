@@ -16,8 +16,6 @@ coupling_coeffs_matrix = [3.5 7.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0;
 % for the initial set up of the numerical integration 
 % think about how to set up such that nodes are dynamic
 tspan = [0 1000]';
-% from_csv = readtable('mchung_test_to_delete.csv')
-% csv_array = table2array(from_csv)
 
 % TODO need to get the actual initial conditions
 N = 10; % number of nodes
