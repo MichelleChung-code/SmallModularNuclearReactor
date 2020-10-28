@@ -39,9 +39,8 @@ classdef NeutronKinetics
            obj.alpha_fuel = -4.36e-5; 
            obj.alpha_moderator = -0.94e-5;
            obj.alpha_reflector = 1.49e-5;
-           obj.Tc0  = 1000; %celsiu
-           obj.Tr0 = 475; %celsius
-           
+           obj.Tc0  = 1000; %celsius
+           obj.Tr0 = 475; %celsius 
            
            %Constant for Thermal Hydraulics
            obj.volume = 77.75441818; %m^3
@@ -114,9 +113,7 @@ classdef NeutronKinetics
            dnNdt_term2 = (1/obj.lambda)*obj.coupling_coeffs_matrix(obj.N,obj.N-1)*x(obj.N-1);
            dnNdt_term3 = obj.sum_beta_concentration_over_lambda(x(obj.N*7-5:obj.N*7), obj.lambda);
            dxdt(obj.N) =  dnNdt_term1 + dnNdt_term2 + dnNdt_term3;
-           
-           
-           
+          
            % Delayed Neutron Group Concentrations for Nodes
            var = obj.N;
            for i = 1:obj.N
@@ -126,8 +123,8 @@ classdef NeutronKinetics
               var = var + 6;
            end
            
-           
-       % THHERMAL HYDROLICS         
+
+       % THERMAL HYDROLICS         
            %Values that need to be defined for now these are all random
            %number I created
            Kd = 116.9569; %W/(m^2*K)
@@ -135,9 +132,9 @@ classdef NeutronKinetics
            Kr = 80; % W/(m^2K)
            Ar = 207.35/obj.N; % m^2
            K = 100; % W/(m^2K)
-           A = 28.27; % m^2
-           Ku = 80; % W/(m^2K)
-           Au = 241.9; %m^2 assuming reflector thickness = .5m
+           A = 28.27; % m^2 area of circle 
+           Ku = 80; % W/(m^2K) look into what the material is, fluid and wall 
+           Au = 241.9; %m^2 assuming reflector thickness = .5m 
            
            % Fuel Pile Temperature for 1st node
            dTc1dt_term1 = obj.P0*x(1);
@@ -170,15 +167,13 @@ classdef NeutronKinetics
            dTrdt_term2 = -Ku*Au*(x(Tr)-x(Tu));
            dxdt(Tr) = (dTrdt_term1 + dTrdt_term2)/(obj.density_reflector*obj.volume_reflector*obj.C_reflector);
            
-           
            % Downcomer Temperatrues
            %hmass node 1
            dxdt(hmass) = x(Wu) - x(hmass);
-           %density noe 2:N
+           %density node 2:N
            for i = 1:obj.N-1
                dxdt(hmass+i) = x(hmass+i-1) - x(hmass+i);
            end
-           
            
            %Td node 1
            dTd1dt_term1 = Kd*Ad*(x(cores)- x(downs));
@@ -192,7 +187,6 @@ classdef NeutronKinetics
                dxdt(downs+i)= (dTdidt_term1 + dTdidt_term2)/(obj.porosity*x(hmass+i)*obj.Cp_helium);
            end
            
-           
            %Riser Temperature
            k = .01; %leakage ratio
            
@@ -205,7 +199,7 @@ classdef NeutronKinetics
            dxdt(Tu) = (dTudt_term1 + dTudt_term2)/(x(Wu)*obj.Cp_helium);
            
            %Lower Header Tlh
-           Tin =250; %celium
+           Tin = 250; % Helium Celsius 
            dxdt(Tlh) = (Tin - x(Tlh));
            
            %Outer Header Toh
@@ -214,9 +208,7 @@ classdef NeutronKinetics
            dTohdt_term1 = k*Wlh*(x(Tlh)-x(Toh));
            dTohdt_term2 = x(hmass+obj.N-1)*(x(downs+obj.N-1)-x(Toh));
            dxdt(Toh) = (dTohdt_term1 + dTohdt_term2)/Woh;
-           
-           
-           
+          
            dxdt = dxdt';
        end
   
