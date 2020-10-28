@@ -17,12 +17,13 @@ coupling_coeffs_matrix = [3.5 7.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0;
 % think about how to set up such that nodes are dynamic
 
 disp("Starting to Solve Equations");
-tspan = [0 1]';
+tspan = [0 100]';
 % TODO need to get the actual initial conditions
 N = 10; % number of nodes
 from_csv = readtable('Initial Values.csv');
 csv_array = table2array(from_csv);
 x0 = csv_array;
+%x0 = ones(N*10+5, 1);
 
 neutron_kinetics = NeutronKinetics(coupling_coeffs_matrix, N);
 [tout, x] = neutron_kinetics.solve_neutron_kinetics(tspan, x0);
