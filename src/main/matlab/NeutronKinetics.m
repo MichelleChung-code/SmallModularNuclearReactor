@@ -44,7 +44,7 @@ classdef NeutronKinetics
            
            %Constant for Thermal Hydraulics
            obj.volume = 77.75441818; %m^3
-           obj.P0 = 250E6;  %Watts
+           obj.P0 = 250;  %MegaWatts
            obj.porosity = 0.39;
            obj.density_fuel = 1797.169975; % kg/m^3 From strem table of our PFD
            obj.volume_i = obj.volume/obj.N;
@@ -64,7 +64,7 @@ classdef NeutronKinetics
            % rho_control_rods = reactivity introduced by the control rods
            
            rho_control_rods = 1.8e-3; % Need to find a valid number
-           rho = rho_control_rods + (obj.alpha_fuel + obj.alpha_moderator)*(Tc - obj.Tc0) + obj.alpha_reflector*(Tr -obj.Tr0);
+           rho = rho_control_rods + (obj.alpha_fuel + obj.alpha_moderator)*(Tr - obj.Tc0) + obj.alpha_reflector*(Tr - obj.Tr0);
        
        end
        function dxdt = relative_neutron_flux(obj, t, x) 
