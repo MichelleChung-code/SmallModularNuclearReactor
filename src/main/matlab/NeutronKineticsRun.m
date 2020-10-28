@@ -17,6 +17,7 @@ coupling_coeffs_matrix = [3.5 7.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0;
 % think about how to set up such that nodes are dynamic
 
 disp("Starting to Solve Equations");
+
 tspan = [0 1000]';
 % TODO need to get the actual initial conditions
 N = 10; % number of nodes

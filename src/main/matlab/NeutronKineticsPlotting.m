@@ -21,10 +21,10 @@ diff_plots_index_end = [10, 11+5*(1), 10+6*(2), 10+6*(3), 10+6*(4),...
 series_num = length(x);
 
 const_label = "Node ";
-delayed_groups = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+delayed_groups = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 for i = 1:series_num 
     if (1 <= i) && (i <= 10); legendInfo{i} = [const_label + num2str(i)]; end
-    if (11 <= i) && (i <= 70)   
+    if (10 <= i) && (i <= 70)   
         n = i-11;
         if ismember(11+ n*6, delayed_groups*6+11); const_label = "Delayed Group "; end
         group_num = i-([delayed_groups]*6+11);
@@ -39,7 +39,7 @@ end
 
 starting_index = 1;
 for i=1:length(diff_plot_titles)
-    figure(i), plot(tout,x(:, starting_index:diff_plots_index_end(i))), grid on
+    figure(i), plot(tout, x(:, starting_index:diff_plots_index_end(i))), grid on
     title(diff_plot_titles(i))
     ylabel(diff_plot_ylabels(i)), xlabel('Time, t')
     legend(legendInfo{starting_index:diff_plots_index_end(i)})
