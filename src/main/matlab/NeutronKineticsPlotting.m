@@ -39,7 +39,7 @@ end
 
 starting_index = 1;
 for i=1:length(diff_plot_titles)
-    figure(i), plot(x(:, starting_index:diff_plots_index_end(i)),tout), grid on
+    figure(i), plot(tout,x(:, starting_index:diff_plots_index_end(i))), grid on
     title(diff_plot_titles(i))
     ylabel(diff_plot_ylabels(i)), xlabel('Time, t')
     legend(legendInfo{starting_index:diff_plots_index_end(i)})
