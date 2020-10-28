@@ -131,9 +131,9 @@ classdef NeutronKinetics
            %Values that need to be defined for now these are all random
            %number I created
            Kd = 116.9569; %W/(m^2*K)
-           Ad = (4*3.14*(3.00E-02)^2)*420000/10; % m^2 volume of one sphere8 number of spheres/10 sections
+           Ad = (4*3.14*(3.00E-02)^2)*420000/obj.N; % m^2 volume of one sphere8 number of spheres/10 sections
            Kr = 80; % W/(m^2K)
-           Ar = 207.35/10; % m^2
+           Ar = 207.35/obj.N; % m^2
            K = 100; % W/(m^2K)
            A = 28.27; % m^2
            Ku = 80; % W/(m^2K)
@@ -159,7 +159,7 @@ classdef NeutronKinetics
            dTcNdt_term1 = obj.P0*x(obj.N);
            dTcNdt_term2 = - Kd*Ad*(x(cores + obj.N-1)-x(downs + obj.N-1));
            dTcNdt_term3 = - Kr*Ar*(x(cores + obj.N-1)-x(Tr));
-           dTcNdt_term4 = -K*A*(x(cores + obj.N-1 - 1)-x(cores+ + obj.N-1));
+           dTcNdt_term4 = K*A*(x(cores + obj.N-1 - 1)-x(cores+ + obj.N-1));
            dxdt(cores + obj.N-1) = (dTcNdt_term1 +dTcNdt_term2 +dTcNdt_term3+ dTcNdt_term4)/((1-obj.porosity)*obj.density_fuel*obj.volume_i*obj.C_fuel);           
            
            % Reflector Temperature           
