@@ -1,7 +1,8 @@
 % For plotting the neutron kinetics results 
 
 % Plot neutron relative fluxxes
-% flux_labels = zeros(1,N)
+% TODO create labels dynamically, allow for different number of nodes
+
 close all;
 
 diff_plot_titles = ["Relative Neutron Fluxes of Nodes","Concentration Node 1",...

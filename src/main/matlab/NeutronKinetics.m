@@ -64,7 +64,7 @@ classdef NeutronKinetics
            % rho_control_rods = reactivity introduced by the control rods
            
            rho_control_rods = 1.8e-3; % Need to find a valid number
-           rho = rho_control_rods + (obj.alpha_fuel + obj.alpha_moderator)*(Tr - obj.Tc0) + obj.alpha_reflector*(Tr - obj.Tr0);
+           rho = rho_control_rods + (obj.alpha_fuel + obj.alpha_moderator)*(Tc - obj.Tc0) + obj.alpha_reflector*(Tr - obj.Tr0);
        
        end
        function dxdt = relative_neutron_flux(obj, t, x) 
@@ -72,14 +72,14 @@ classdef NeutronKinetics
            % x(1:10) = ni neutron flux of the nodes
            % x(11:70) = Concentrations of delayed groups for nodes
            % x(71:80) = ith Temperature of Fuel element nodes Tci
-           % x(81:90) = ith Temperauter of Helium nodes Tdi
+           % x(81:90) = ith Temperature of Helium nodes Tdi
            Tr = obj.N*7+2*obj.N+1;% x(91) = Temperature of Reflector Tr
            Tu = obj.N*7+2*obj.N+2;% x(92) = Average Temperature in riser Tu
            Tlh = obj.N*7+2*obj.N+3;% x(93) = Temperature of lower helium header Tlh
            Toh = obj.N*7+2*obj.N+4;% x(94) = Temperature of outlet header Toh
            % x(95:104) = mass flowrate of helium at ith nodes h_mass
            Wu = obj.N*7+3*obj.N+5;% x(105) = mass flowrate of riser Wu
-           Wlh = 145;% kg/s = mass flowrate fo lower helium header Wlh
+           Wlh = 145;% kg/s = mass flowrate for lower helium header Wlh
            cores = obj.N*7+1; %This is the number to jump to core (fuel element) temperature
            downs = obj.N*7+obj.N+1; % This is the number to jump to downcomer (helium) temperature
            hmass = obj.N*7+2*obj.N+5; %number to get to masses  
