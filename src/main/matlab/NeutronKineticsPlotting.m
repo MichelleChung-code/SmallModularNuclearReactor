@@ -20,6 +20,7 @@ diff_plots_index_end = [10, 11+5*(1), 10+6*(2), 10+6*(3), 10+6*(4),...
     10+6*(5), 10+6*(6), 10+6*(7),10+6*(8), 10+6*(9), 10+6*(10), 80, 90, 91,...
     92 ,93 ,94,  104, 105];
 series_num = length(x);
+legendInfo = cell(1, series_num); % predefine size for performance
 
 const_label = "Node ";
 delayed_groups = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];

@@ -31,19 +31,24 @@ classdef NeutronKinetics
         Ku {mustBeNumeric}
         Au {mustBeNumeric}
         k {mustBeNumeric}
+        Tin {mustBeNumeric}
     end
     
     methods
        function obj = NeutronKinetics(coupling_coeffs_matrix, N)
+           % Dyanmic inputs that can change
+           obj.coupling_coeffs_matrix = coupling_coeffs_matrix;
+           obj.N = N; % number of nodes
+           
+           % ALL VARIABLES THAT ARE DEFINED BELOW ARE CONSTANTS FOR THE
+           % ENTIRE SYSTEM.
+           % Dynamic inputs i.e. inputs that can change run to run should
+           % be fed into the class object
            % Constant class inputs that will not change 
            obj.beta_ls_delayed_groups = 10^-2*[.0256 .14 .13 .27 .086 .017]';
            obj.lambda = 7.66E-4;
            obj.beta = .67;
            obj.lambda_ls_delayed_groups = [.0256 .14 .13 .27 .086 .017]';
-           
-           % Dyanmic inputs that can change
-           obj.coupling_coeffs_matrix = coupling_coeffs_matrix;
-           obj.N = N; % number of nodes
            
            %Variable for reactivity
            obj.alpha_fuel = -4.36e-5; 
@@ -60,13 +65,13 @@ classdef NeutronKinetics
            obj.volume_i = obj.volume/obj.N;
            obj.C_fuel = 1621.45; %j/kgK
            obj.Cp_helium = 5.19E-3; % j/kgK
-           %The following I just made up
-           obj.density_reflector = 2000; % kg/m^3
-           obj.volume_reflector = 112.31193; % m^3 assuming that reflector all around and thickness of .5m
-           obj.C_reflector = 1621.45; % j/kgK     
            
            %Values that need to be defined for now these are all random
            %number I created
+           obj.density_reflector = 2000; % kg/m^3
+           obj.volume_reflector = 112.31193; % m^3 assuming that reflector all around and thickness of .5m
+           obj.C_reflector = 1621.45; % j/kgK     
+
            obj.Kd = 116.9569; %W/(m^2*K)
            obj.Ad = (4*3.14*(3.00E-02)^2)*420000/obj.N; % m^2 volume of one sphere8 number of spheres/10 sections
            obj.Kr = 80; % W/(m^2K)
@@ -77,63 +82,66 @@ classdef NeutronKinetics
            obj.Au = 241.9; %m^2 assuming reflector thickness = .5m 
            
            obj.k = .01; %leakage ratio
+           obj.Tin = 250; % Helium input temperature in Celsius
            
        end
        
        function rho = reactivity(obj, Tc, Tr)
-           % DOCUMENT WHAT EACH VALUE REPRESENT
+           % Args:
            % Tc = Temperature of the fuel element
            % Tr = Temperature of the reflector
+           
            % Tc0, tr0 = initial temperature of fuel elements and reflector 
            % rho_control_rods = reactivity introduced by the control rods
-           
            rho_control_rods = 1.8e-3; % Need to find a valid number
            rho = rho_control_rods + (obj.alpha_fuel + obj.alpha_moderator)*(Tc - obj.Tc0) + obj.alpha_reflector*(Tr - obj.Tr0);
        
        end
        function dxdt = relative_neutron_flux(obj, ~, x) 
-           % DOCUMENT WHAT EACH VALUE REPRESENTS
+           % Function solving simulataneous differential equations
+           % Args:
+           % ~ = timespan to solve over
+           % x = array containing intiial conditions for each differential
+           % equation
+           
+           % DOCUMENT WHAT EACH X VALUE REPRESENTS
            % x(1:10) = ni neutron flux of the nodes
            % x(11:70) = Concentrations of delayed groups for nodes
            % x(71:80) = ith Temperature of Fuel element nodes Tci
            % x(81:90) = ith Temperature of Helium nodes Tdi
-           Tr = obj.N*7+2*obj.N+1;% x(91) = Temperature of Reflector Tr
-           Tu = obj.N*7+2*obj.N+2;% x(92) = Average Temperature in riser Tu
-           Tlh = obj.N*7+2*obj.N+3;% x(93) = Temperature of lower helium header Tlh
-           Toh = obj.N*7+2*obj.N+4;% x(94) = Temperature of outlet header Toh
+           Tr = obj.N*7+2*obj.N+1; % x(91) = Temperature of Reflector Tr
+           Tu = obj.N*7+2*obj.N+2; % x(92) = Average Temperature in riser Tu
+           Tlh = obj.N*7+2*obj.N+3; % x(93) = Temperature of lower helium header Tlh
+           Toh = obj.N*7+2*obj.N+4; % x(94) = Temperature of outlet header Toh
            % x(95:104) = mass flowrate of helium at ith nodes h_mass
-           Wu = obj.N*7+3*obj.N+5;% x(105) = mass flowrate of riser Wu
-           dxdt = zeros(1, Wu); % predefine size for performance
-           Wlh = 145;% kg/s = mass flowrate for lower helium header Wlh
-           cores = obj.N*7+1; %This is the number to jump to core (fuel element) temperature
-           downs = obj.N*7+obj.N+1; % This is the number to jump to downcomer (helium) temperature
-           hmass = obj.N*7+2*obj.N+5; %number to get to masses  
+           Wu = obj.N*7+3*obj.N+5; % x(105) = mass flowrate of riser Wu
+           dxdt = zeros(1, Wu); % predefine size of result array for performance
+           Wlh = 145; % kg/s = mass flowrate for lower helium header Wlh
+           cores = obj.N*7+1; % This is the index number for core (fuel element) temperature
+           downs = obj.N*7+obj.N+1; % This is the index number for downcomer (helium) temperature
+           hmass = obj.N*7+2*obj.N+5; % index number for masses
 
            
            % Relative neutron flux for node 1
-           rho_1 = obj.reactivity(x(cores),x(Tr)); % needs to be replaced with an equation
-           
+           rho_1 = obj.reactivity(x(cores),x(Tr));
            dn1dt_term1 = (rho_1 - obj.beta - obj.lambda_ls_delayed_groups(1,1))/obj.lambda*x(1);
            dn1dt_term2 = (1/obj.lambda) * obj.coupling_coeffs_matrix(1,2) * x(2);
            dn1dt_term3 = obj.sum_beta_concentration_over_lambda(x(obj.N+1:obj.N+6), obj.lambda);
            dxdt(1) =  dn1dt_term1 + dn1dt_term2 + dn1dt_term3;
            
-           % Relative neutron flux for ith nodes
+           % Relative neutron flux for ith to N-1 nodes
            var = obj.N+7;
            for i = 2:(obj.N-1)
-               
-               rho_i = obj.reactivity(x(cores+i-1),x(Tr)); %need to be replaced withan equation
-               
+               rho_i = obj.reactivity(x(cores+i-1),x(Tr)); 
                dnidt_term1 = (rho_i - obj.beta - obj.coupling_coeffs_matrix(i,i))*(1/obj.lambda)*x(i);
                dnidt_term2 = (1/obj.lambda)*(obj.coupling_coeffs_matrix(i, i-1)*x(i-1) + obj.coupling_coeffs_matrix(i, i+1)*x(i+1));
                dnidt_term3 = obj.sum_beta_concentration_over_lambda(x(var:var+5), obj.lambda);
                dxdt(i) = dnidt_term1 + dnidt_term2 + dnidt_term3;
                var = var+6; 
-           
            end
+           
            % Relative neutron flux for node N
-           rho_N = obj.reactivity(x(cores+obj.N-1),x(Tr)); % needs to be replaced with an equation
-          
+           rho_N = obj.reactivity(x(cores+obj.N-1),x(Tr)); 
            dnNdt_term1 = (rho_N - obj.beta - obj.coupling_coeffs_matrix(obj.N,obj.N))/obj.lambda*x(obj.N);
            dnNdt_term2 = (1/obj.lambda)*obj.coupling_coeffs_matrix(obj.N,obj.N-1)*x(obj.N-1);
            dnNdt_term3 = obj.sum_beta_concentration_over_lambda(x(obj.N*7-5:obj.N*7), obj.lambda);
@@ -149,8 +157,7 @@ classdef NeutronKinetics
            end
            
 
-       % THERMAL HYDROLICS         
-           
+           % THERMAL HYDROLICS         
            % Fuel Pile Temperature for 1st node
            dTc1dt_term1 = obj.P0*x(1);
            dTc1dt_term2 = - obj.Kd*obj.Ad*(x(cores)-x(downs));
@@ -158,7 +165,7 @@ classdef NeutronKinetics
            dTc1dt_term4 = -obj.K*obj.A*(x(cores)-x(cores+1));
            dxdt(cores) = (dTc1dt_term1 +dTc1dt_term2 +dTc1dt_term3+ dTc1dt_term4)/((1-obj.porosity)*obj.density_fuel*obj.volume_i*obj.C_fuel);
            
-           % Fuel Pile Temperature for ith node
+           % Fuel Pile Temperature for ith to N-1 node
            for i = 1:obj.N-2
                dTcidt_term1 = obj.P0*x(cores+i);
                dTcidt_term2 = - obj.Kd*obj.Ad*(x(cores+i)-x(downs+i));
@@ -203,8 +210,6 @@ classdef NeutronKinetics
            end
            
            %Riser Temperature
-
-           
            %hmass of riser Wu
            dxdt(Wu) = (1-obj.k)*Wlh - x(Wu);
            
@@ -214,8 +219,7 @@ classdef NeutronKinetics
            dxdt(Tu) = (dTudt_term1 + dTudt_term2)/(x(Wu)*obj.Cp_helium);
            
            %Lower Header Tlh
-           Tin = 250; % Helium Celsius 
-           dxdt(Tlh) = (Tin - x(Tlh));
+           dxdt(Tlh) = (obj.Tin - x(Tlh));
            
            %Outer Header Toh
            Woh = obj.k*Wlh + x(hmass+obj.N-1);
@@ -235,13 +239,13 @@ classdef NeutronKinetics
            for i=1:length(C)
                ls_elements_to_sum(i) = obj.beta_ls_delayed_groups(i) / lambda_node * C(i);
            end
-       
            result = sum(ls_elements_to_sum,'all');
-  
        end
        
        function [tout, x] = solve_neutron_kinetics(obj, tspan, x0)
-            % This function is going to solve the ODE 
+            % Function called to simultaneously solve system of
+            % differential equations
+            
             tic
             tstep = .1;
             tspan_fix = tspan(1):tstep:tspan(2);
