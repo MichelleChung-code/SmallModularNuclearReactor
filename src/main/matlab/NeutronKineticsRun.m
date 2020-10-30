@@ -21,9 +21,12 @@ disp("Starting to Solve Equations");
 tspan = [0 1000]';
 % TODO need to get the actual initial conditions
 N = 10; % number of nodes
+
+
 from_csv = readtable('Initial Values.csv');
-csv_array = table2array(from_csv);
+csv_array = table2array(from_csv(:,4));
 x0 = csv_array;
+
 neutron_kinetics = NeutronKinetics(coupling_coeffs_matrix, N);
 [tout, x] = neutron_kinetics.solve_neutron_kinetics(tspan, x0);
 disp("Solving Completed");
