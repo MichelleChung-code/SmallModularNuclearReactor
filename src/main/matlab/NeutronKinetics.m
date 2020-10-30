@@ -56,6 +56,8 @@ classdef NeutronKinetics
               SA =  4*pi*(D/2)^2;
            elseif strcmp('cylinder', type)
               SA = (2*pi*(D/2)*H) + 2*pi*(D/2)^2;
+           elseif strcmp('cylinder_no_top', type)
+              SA = (2*pi*(D/2)*H);
            else
               error("Input type for SA calculation is not implemented")
            end
@@ -112,11 +114,11 @@ classdef NeutronKinetics
            
            obj.Ad = (obj.calc_surface_area('sphere', D_fuel_element))*N_fuel_elements_in_core/obj.N; % m^2 SA of one sphere * number of spheres/10 sections
            obj.Kr = 80; % W/(m^2K)
-           obj.Ar = 207.35/obj.N; % m^2
+           obj.Ar = obj.calc_surface_area('cylinder_no_top', D_reactor_core, H_reactor_core)/obj.N; % m^2 heat transfer area between fuel pile and reflector per node
            obj.K = 100; % W/(m^2K)
            obj.A = pi*(D_reactor_core/2)^2; % m^2 area of circle, cross-sectional area of the reactor core
            obj.Ku = 80; % W/(m^2K) look into what the material is, fluid and wall 
-           obj.Au = 241.9; %m^2 assuming reflector thickness = .5m 
+           obj.Au = obj.calc_surface_area('cylinder_no_top', D_reactor_core + 2*(reflector_thickness), H_reactor_core); %m^2 heat transfer area between coolant in reflector and riser, SA of reflector using outer diameter
            
            obj.k = .01; %leakage ratio
            obj.Tin = 250; % Helium input temperature in Celsius
