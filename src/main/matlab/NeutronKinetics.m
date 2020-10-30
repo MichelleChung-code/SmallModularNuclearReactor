@@ -152,7 +152,10 @@ classdef NeutronKinetics
            Toh = obj.N*7+2*obj.N+4; % x(94) = Temperature of outlet header Toh
            % x(95:104) = mass flowrate of helium at ith nodes h_mass
            Wu = obj.N*7+3*obj.N+5; % x(105) = mass flowrate of riser Wu
-           dxdt = zeros(1, Wu); % predefine size of result array for performance
+           % x(106:115) = reactivity values, these are not differential
+           % equations and are just included for plotting purposes
+           rho_index = Wu + 1; % x(106) starting index to go to the reactivity values
+           dxdt = zeros(1, Wu + obj.N); % predefine size of result array for performance
            Wlh = 145; % kg/s = mass flowrate for lower helium header Wlh
            cores = obj.N*7+1; % This is the index number for core (fuel element) temperature
            downs = obj.N*7+obj.N+1; % This is the index number for downcomer (helium) temperature
@@ -161,6 +164,7 @@ classdef NeutronKinetics
            
            % Relative neutron flux for node 1
            rho_1 = obj.reactivity(x(cores),x(Tr));
+           dxdt(rho_index) = rho_1;
            dn1dt_term1 = (rho_1 - obj.beta - obj.lambda_ls_delayed_groups(1,1))/obj.lambda*x(1);
            dn1dt_term2 = (1/obj.lambda) * obj.coupling_coeffs_matrix(1,2) * x(2);
            dn1dt_term3 = obj.sum_beta_concentration_over_lambda(x(obj.N+1:obj.N+6), obj.lambda);
@@ -170,6 +174,7 @@ classdef NeutronKinetics
            var = obj.N+7;
            for i = 2:(obj.N-1)
                rho_i = obj.reactivity(x(cores+i-1),x(Tr)); 
+               dxdt(rho_index + i -1) = rho_i;
                dnidt_term1 = (rho_i - obj.beta - obj.coupling_coeffs_matrix(i,i))*(1/obj.lambda)*x(i);
                dnidt_term2 = (1/obj.lambda)*(obj.coupling_coeffs_matrix(i, i-1)*x(i-1) + obj.coupling_coeffs_matrix(i, i+1)*x(i+1));
                dnidt_term3 = obj.sum_beta_concentration_over_lambda(x(var:var+5), obj.lambda);
@@ -179,6 +184,7 @@ classdef NeutronKinetics
            
            % Relative neutron flux for node N
            rho_N = obj.reactivity(x(cores+obj.N-1),x(Tr)); 
+           dxdt(rho_index + obj.N -1) = rho_N; 
            dnNdt_term1 = (rho_N - obj.beta - obj.coupling_coeffs_matrix(obj.N,obj.N))/obj.lambda*x(obj.N);
            dnNdt_term2 = (1/obj.lambda)*obj.coupling_coeffs_matrix(obj.N,obj.N-1)*x(obj.N-1);
            dnNdt_term3 = obj.sum_beta_concentration_over_lambda(x(obj.N*7-5:obj.N*7), obj.lambda);
