@@ -34,6 +34,37 @@ classdef NeutronKinetics
         Tin {mustBeNumeric}
     end
     
+    methods(Static)
+        function vol = calc_volume(type, D, H)
+           if nargin < 3
+               H = 'Not Used'; % apparently MATLAB doesn't support default arguments XD
+           end
+           if strcmp('sphere', type)
+              vol =  (4/3)*pi*(D/2)^2;
+           elseif strcmp('cylinder', type)
+              vol = pi*(D/2)^2*H;
+           else
+              error("Input type for volume calculation is not implemented")
+           end
+        end
+        
+        function SA = calc_surface_area(type, D, H)
+           if nargin < 3
+              H = 'Not Used'; 
+           end
+           if strcmp('sphere', type)
+              SA =  4*pi*(D/2)^2;
+           elseif strcmp('cylinder', type)
+              SA = (2*pi*(D/2)*H) + 2*pi*(D/2)^2;
+           elseif strcmp('cylinder_no_top', type)
+              SA = (2*pi*(D/2)*H);
+           else
+              error("Input type for SA calculation is not implemented")
+           end
+        end
+        
+    end
+    
     methods
        function obj = NeutronKinetics(coupling_coeffs_matrix, N)
            % Dyanmic inputs that can change
@@ -57,29 +88,37 @@ classdef NeutronKinetics
            obj.Tc0  = 1000; %celsius
            obj.Tr0 = 475; %celsius 
            
+           % Reactor Core Properties
+           D_fuel_element = 6E-2; % m
+           N_fuel_elements_in_core = 420000; % number of fuel elements
+           D_reactor_core = 3; % m reactor core diameter
+           H_reactor_core = 11; % m reactor core height
+           reflector_thickness = 0.5; % m we need to actually find this value
+           
            %Constant for Thermal Hydraulics
-           obj.volume = 77.75441818; %m^3
+           obj.volume = obj.calc_volume('cylinder', D_reactor_core, H_reactor_core); %m^3
            obj.P0 = 250;  %MegaWatts
            obj.porosity = 0.39;
-           obj.density_fuel = 1797.169975; % kg/m^3 From strem table of our PFD
+           obj.density_fuel = 1797.169975; % kg/m^3 From stream table of our PFD
            obj.volume_i = obj.volume/obj.N;
-           obj.C_fuel = 1621.45; %j/kgK
+           obj.C_fuel = 1621.45; % j/kgK
            obj.Cp_helium = 5.19E-3; % j/kgK
            
            %Values that need to be defined for now these are all random
            %number I created
            obj.density_reflector = 2000; % kg/m^3
-           obj.volume_reflector = 112.31193; % m^3 assuming that reflector all around and thickness of .5m
+           obj.volume_reflector = obj.calc_volume('cylinder', D_reactor_core + 2*(reflector_thickness), H_reactor_core); % m^3 
            obj.C_reflector = 1621.45; % j/kgK     
 
            obj.Kd = 116.9569; %W/(m^2*K)
-           obj.Ad = (4*3.14*(3.00E-02)^2)*420000/obj.N; % m^2 volume of one sphere8 number of spheres/10 sections
+           
+           obj.Ad = (obj.calc_surface_area('sphere', D_fuel_element))*N_fuel_elements_in_core/obj.N; % m^2 SA of one sphere * number of spheres/10 sections
            obj.Kr = 80; % W/(m^2K)
-           obj.Ar = 207.35/obj.N; % m^2
+           obj.Ar = obj.calc_surface_area('cylinder_no_top', D_reactor_core, H_reactor_core)/obj.N; % m^2 heat transfer area between fuel pile and reflector per node
            obj.K = 100; % W/(m^2K)
-           obj.A = 28.27; % m^2 area of circle 
+           obj.A = pi*(D_reactor_core/2)^2; % m^2 area of circle, cross-sectional area of the reactor core
            obj.Ku = 80; % W/(m^2K) look into what the material is, fluid and wall 
-           obj.Au = 241.9; %m^2 assuming reflector thickness = .5m 
+           obj.Au = obj.calc_surface_area('cylinder_no_top', D_reactor_core + 2*(reflector_thickness), H_reactor_core); %m^2 heat transfer area between coolant in reflector and riser, SA of reflector using outer diameter
            
            obj.k = .01; %leakage ratio
            obj.Tin = 250; % Helium input temperature in Celsius
@@ -115,7 +154,10 @@ classdef NeutronKinetics
            Toh = obj.N*7+2*obj.N+4; % x(94) = Temperature of outlet header Toh
            % x(95:104) = mass flowrate of helium at ith nodes h_mass
            Wu = obj.N*7+3*obj.N+5; % x(105) = mass flowrate of riser Wu
-           dxdt = zeros(1, Wu); % predefine size of result array for performance
+           % x(106:115) = reactivity values, these are not differential
+           % equations and are just included for plotting purposes
+           rho_index = Wu + 1; % x(106) starting index to go to the reactivity values
+           dxdt = zeros(1, Wu + obj.N); % predefine size of result array for performance
            Wlh = 145; % kg/s = mass flowrate for lower helium header Wlh
            cores = obj.N*7+1; % This is the index number for core (fuel element) temperature
            downs = obj.N*7+obj.N+1; % This is the index number for downcomer (helium) temperature
@@ -124,6 +166,7 @@ classdef NeutronKinetics
            
            % Relative neutron flux for node 1
            rho_1 = obj.reactivity(x(cores),x(Tr));
+           dxdt(rho_index) = rho_1;
            dn1dt_term1 = (rho_1 - obj.beta - obj.lambda_ls_delayed_groups(1,1))/obj.lambda*x(1);
            dn1dt_term2 = (1/obj.lambda) * obj.coupling_coeffs_matrix(1,2) * x(2);
            dn1dt_term3 = obj.sum_beta_concentration_over_lambda(x(obj.N+1:obj.N+6), obj.lambda);
@@ -133,6 +176,7 @@ classdef NeutronKinetics
            var = obj.N+7;
            for i = 2:(obj.N-1)
                rho_i = obj.reactivity(x(cores+i-1),x(Tr)); 
+               dxdt(rho_index + i -1) = rho_i;
                dnidt_term1 = (rho_i - obj.beta - obj.coupling_coeffs_matrix(i,i))*(1/obj.lambda)*x(i);
                dnidt_term2 = (1/obj.lambda)*(obj.coupling_coeffs_matrix(i, i-1)*x(i-1) + obj.coupling_coeffs_matrix(i, i+1)*x(i+1));
                dnidt_term3 = obj.sum_beta_concentration_over_lambda(x(var:var+5), obj.lambda);
@@ -142,6 +186,7 @@ classdef NeutronKinetics
            
            % Relative neutron flux for node N
            rho_N = obj.reactivity(x(cores+obj.N-1),x(Tr)); 
+           dxdt(rho_index + obj.N -1) = rho_N; 
            dnNdt_term1 = (rho_N - obj.beta - obj.coupling_coeffs_matrix(obj.N,obj.N))/obj.lambda*x(obj.N);
            dnNdt_term2 = (1/obj.lambda)*obj.coupling_coeffs_matrix(obj.N,obj.N-1)*x(obj.N-1);
            dnNdt_term3 = obj.sum_beta_concentration_over_lambda(x(obj.N*7-5:obj.N*7), obj.lambda);
