@@ -136,7 +136,7 @@ classdef NeutronKinetics
            % rho_control_rods = reactivity introduced by the control rods
            
            % control rod reactivity is defined as a sin wave based on the
-           % insertion position 
+           % insertion position Ohki2014_Chapter_FuelBurnupAndReactivityControl
            
            rho_control_rods_H = 5.25E-2; % from "Capstone_Group25_CHEMENGG\Reactor_Modelling\2006-design-aspect-of-the-chinese-modular-high-temperature-gas-cooled-reactor-htr-pm_zhang.pdf" control rod worth
            rho_control_rods = rho_control_rods_H * obj.control_rod_fraction_inserted - (1/(2*pi))*sin(2*pi*obj.control_rod_fraction_inserted); 
