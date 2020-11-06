@@ -32,7 +32,8 @@ classdef NeutronKinetics
         Au {mustBeNumeric}
         k {mustBeNumeric}
         Tin {mustBeNumeric}
-        control_rod_fraction_inserted {mustBeNumeric}
+        control_rod_length {mustBeNumeric}
+        
     end
     
     methods(Static)
@@ -123,12 +124,12 @@ classdef NeutronKinetics
            
            obj.k = .01; %leakage ratio
            obj.Tin = 250; % Helium input temperature in Celsius
-           obj.control_rod_fraction_inserted = .5; % this way we don't need to worry about the control rod length, I had difficulty finding
-           
+           obj.control_rod_length = 2.2; % This is for the HTR-10.  We need to find the HTR-PM value
        end
        
-       function rho = reactivity(obj, Tc, Tr)
+       function rho = reactivity(obj, control_rod_x,Tc, Tr)
            % Args:
+           % x = current control rod insertion position
            % Tc = Temperature of the fuel element
            % Tr = Temperature of the reflector
            
@@ -138,8 +139,9 @@ classdef NeutronKinetics
            % control rod reactivity is defined as a sin wave based on the
            % insertion position Ohki2014_Chapter_FuelBurnupAndReactivityControl
            
+           control_rod_fraction_inserted = control_rod_x / obj.control_rod_length; 
            rho_control_rods_H = 5.25E-2; % from "Capstone_Group25_CHEMENGG\Reactor_Modelling\2006-design-aspect-of-the-chinese-modular-high-temperature-gas-cooled-reactor-htr-pm_zhang.pdf" control rod worth
-           rho_control_rods = rho_control_rods_H * obj.control_rod_fraction_inserted - (1/(2*pi))*sin(2*pi*obj.control_rod_fraction_inserted); 
+           rho_control_rods = rho_control_rods_H * control_rod_fraction_inserted - (1/(2*pi))*sin(2*pi*control_rod_fraction_inserted); 
            rho = rho_control_rods + (obj.alpha_fuel + obj.alpha_moderator)*(Tc - obj.Tc0) + obj.alpha_reflector*(Tr - obj.Tr0);
        
        end
@@ -164,15 +166,24 @@ classdef NeutronKinetics
            % x(106:115) = reactivity values, these are not differential
            % equations and are just included for plotting purposes
            rho_index = Wu + 1; % x(106) starting index to go to the reactivity values
-           dxdt = zeros(1, Wu + obj.N); % predefine size of result array for performance
+           control_rod_position = rho_index + obj.N; % x(116) starting index to go to the control rod insertion position value
+           dxdt = zeros(1, control_rod_position); % predefine size of result array for performance
            Wlh = 145; % kg/s = mass flowrate for lower helium header Wlh
            cores = obj.N*7+1; % This is the index number for core (fuel element) temperature
            downs = obj.N*7+obj.N+1; % This is the index number for downcomer (helium) temperature
            hmass = obj.N*7+2*obj.N+5; % index number for masses
 
+           % control rod position - intech-the_theoretical_simulation_of_a_model_by_simulink_for_surveying_the_work_and_dynamical_stability_of_nuclear_reactors_cores (1)
+           control_rod_const_coeff = 0.1; % I made this up, this is the constant coefficient
+           Ko = 1; % I made this up, this is the initial value of Keff
+           Ksp = .5; % I made this up, this is supposed to be the secondary value of Keff in the recent position of control rod... Need to figure out how to access previous results in matlab ODE solver to get this
+           velocity_control_rod = 10; % Units of mm/s I made this up too, this is the control rod velocity
+           F = x(control_rod_position)*obj.control_rod_length*control_rod_const_coeff + Ko;
+           dxdt(control_rod_position) = velocity_control_rod*sign(F - Ksp);
+        
            
            % Relative neutron flux for node 1
-           rho_1 = obj.reactivity(x(cores),x(Tr));
+           rho_1 = obj.reactivity(x(control_rod_position),x(cores),x(Tr));
            dxdt(rho_index) = rho_1;
            dn1dt_term1 = (rho_1 - obj.beta - obj.lambda_ls_delayed_groups(1,1))/obj.lambda*x(1);
            dn1dt_term2 = (1/obj.lambda) * obj.coupling_coeffs_matrix(1,2) * x(2);
@@ -182,7 +193,7 @@ classdef NeutronKinetics
            % Relative neutron flux for ith to N-1 nodes
            var = obj.N+7;
            for i = 2:(obj.N-1)
-               rho_i = obj.reactivity(x(cores+i-1),x(Tr)); 
+               rho_i = obj.reactivity(x(control_rod_position), x(cores+i-1),x(Tr)); 
                dxdt(rho_index + i -1) = rho_i;
                dnidt_term1 = (rho_i - obj.beta - obj.coupling_coeffs_matrix(i,i))*(1/obj.lambda)*x(i);
                dnidt_term2 = (1/obj.lambda)*(obj.coupling_coeffs_matrix(i, i-1)*x(i-1) + obj.coupling_coeffs_matrix(i, i+1)*x(i+1));
@@ -192,7 +203,7 @@ classdef NeutronKinetics
            end
            
            % Relative neutron flux for node N
-           rho_N = obj.reactivity(x(cores+obj.N-1),x(Tr)); 
+           rho_N = obj.reactivity(x(control_rod_position), x(cores+obj.N-1),x(Tr)); 
            dxdt(rho_index + obj.N -1) = rho_N; 
            dnNdt_term1 = (rho_N - obj.beta - obj.coupling_coeffs_matrix(obj.N,obj.N))/obj.lambda*x(obj.N);
            dnNdt_term2 = (1/obj.lambda)*obj.coupling_coeffs_matrix(obj.N,obj.N-1)*x(obj.N-1);
