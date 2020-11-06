@@ -124,7 +124,7 @@ classdef NeutronKinetics
            
            obj.k = .01; %leakage ratio
            obj.Tin = 250; % Helium input temperature in Celsius
-           obj.control_rod_length = 2.2; % This is for the HTR-10.  We need to find the HTR-PM value
+           obj.control_rod_length = 4; % I made this up.  The HTR-10 value was 2.2m.  We need to find the HTR-PM value
        end
        
        function rho = reactivity(obj, control_rod_x,Tc, Tr)
