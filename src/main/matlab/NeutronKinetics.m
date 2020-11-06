@@ -32,6 +32,7 @@ classdef NeutronKinetics
         Au {mustBeNumeric}
         k {mustBeNumeric}
         Tin {mustBeNumeric}
+        control_rod_fraction_inserted {mustBeNumeric}
     end
     
     methods(Static)
@@ -122,6 +123,7 @@ classdef NeutronKinetics
            
            obj.k = .01; %leakage ratio
            obj.Tin = 250; % Helium input temperature in Celsius
+           obj.control_rod_fraction_inserted = .5; % this way we don't need to worry about the control rod length, I had difficulty finding
            
        end
        
@@ -132,7 +134,12 @@ classdef NeutronKinetics
            
            % Tc0, tr0 = initial temperature of fuel elements and reflector 
            % rho_control_rods = reactivity introduced by the control rods
-           rho_control_rods = 1.8e-3; % Need to find a valid number
+           
+           % control rod reactivity is defined as a sin wave based on the
+           % insertion position Ohki2014_Chapter_FuelBurnupAndReactivityControl
+           
+           rho_control_rods_H = 5.25E-2; % from "Capstone_Group25_CHEMENGG\Reactor_Modelling\2006-design-aspect-of-the-chinese-modular-high-temperature-gas-cooled-reactor-htr-pm_zhang.pdf" control rod worth
+           rho_control_rods = rho_control_rods_H * obj.control_rod_fraction_inserted - (1/(2*pi))*sin(2*pi*obj.control_rod_fraction_inserted); 
            rho = rho_control_rods + (obj.alpha_fuel + obj.alpha_moderator)*(Tc - obj.Tc0) + obj.alpha_reflector*(Tr - obj.Tr0);
        
        end
