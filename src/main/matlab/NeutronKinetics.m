@@ -175,8 +175,8 @@ classdef NeutronKinetics
 
            % control rod position - intech-the_theoretical_simulation_of_a_model_by_simulink_for_surveying_the_work_and_dynamical_stability_of_nuclear_reactors_cores (1)
            control_rod_const_coeff = 0.1; % I made this up, this is the constant coefficient
-           Ko = 1; % I made this up, this is the initial value of Keff
-           Ksp = .5; % I made this up, this is supposed to be the secondary value of Keff in the recent position of control rod... Need to figure out how to access previous results in matlab ODE solver to get this
+           Ko = 0.5; % I made this up, this is the initial value of Keff
+           Ksp = 0.5; % I made this up, this is supposed to be the secondary value of Keff in the recent position of control rod... Need to figure out how to access previous results in matlab ODE solver to get this
            velocity_control_rod = 10; % Units of mm/s I made this up too, this is the control rod velocity
            F = x(control_rod_position)*obj.control_rod_length*control_rod_const_coeff + Ko;
            dxdt(control_rod_position) = velocity_control_rod*sign(F - Ksp);
