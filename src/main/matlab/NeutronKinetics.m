@@ -185,7 +185,7 @@ classdef NeutronKinetics
            % Relative neutron flux for node 1
            rho_1 = obj.reactivity(x(control_rod_position),x(cores),x(Tr));
            dxdt(rho_index) = rho_1;
-           dn1dt_term1 = (rho_1 - obj.beta - obj.lambda_ls_delayed_groups(1,1))/obj.lambda*x(1);
+           dn1dt_term1 = (rho_1 - obj.beta - obj.coupling_coeffs_matrix(1,1))/obj.lambda*x(1);
            dn1dt_term2 = (1/obj.lambda) * obj.coupling_coeffs_matrix(1,2) * x(2);
            dn1dt_term3 = obj.sum_beta_concentration_over_lambda(x(obj.N+1:obj.N+6), obj.lambda);
            dxdt(1) =  dn1dt_term1 + dn1dt_term2 + dn1dt_term3;
