@@ -79,23 +79,23 @@ classdef NeutronKinetics
            % be fed into the class object
            % Constant class inputs that will not change 
            obj.beta_ls_delayed_groups = 10^-2*[.0256 .14 .13 .27 .086 .017]';
-           obj.lambda = 7.66E-4;
-           obj.beta = .67;
-           obj.lambda_ls_delayed_groups = [.0256 .14 .13 .27 .086 .017]';
+           obj.lambda = 7.669E-2; % uses initial paper's values
+           obj.beta = 10^-2*.67;
+           obj.lambda_ls_delayed_groups = [.0124 .0305 .111 .301 1.14 3.01]'; % uses initial paper's values
            
            %Variable for reactivity
            obj.alpha_fuel = -4.36e-5; 
            obj.alpha_moderator = -0.94e-5;
            obj.alpha_reflector = 1.49e-5;
-           obj.Tc0  = 1000; %celsius
-           obj.Tr0 = 475; %celsius 
+           obj.Tc0  = 1000; %celsius CAN MODIFY
+           obj.Tr0 = 450; %celsius CAN MODIFY
            
            % Reactor Core Properties
            D_fuel_element = 6E-2; % m
            N_fuel_elements_in_core = 420000; % number of fuel elements
            D_reactor_core = 3; % m reactor core diameter
            H_reactor_core = 11; % m reactor core height
-           reflector_thickness = 0.5; % m we need to actually find this value
+           reflector_thickness = 0.5; % m we need to actually find this value CAN MODIFY
            
            %Constant for Thermal Hydraulics
            obj.volume = obj.calc_volume('cylinder', D_reactor_core, H_reactor_core); %m^3
@@ -108,22 +108,22 @@ classdef NeutronKinetics
            
            %Values that need to be defined for now these are all random
            %number I created
-           obj.density_reflector = 2000; % kg/m^3
+           obj.density_reflector = 2000; % kg/m^3 CAN MODIFY
            obj.volume_reflector = obj.calc_volume('cylinder', D_reactor_core + 2*(reflector_thickness), H_reactor_core); % m^3 
-           obj.C_reflector = 1621.45; % j/kgK     
+           obj.C_reflector = 1621.45; % j/kgK CAN MODIFY    
 
-           obj.Kd = 116.9569; %W/(m^2*K)
+           obj.Kd = 116.9569; %W/(m^2*K) CAN MODIFY
            
            obj.Ad = (obj.calc_surface_area('sphere', D_fuel_element))*N_fuel_elements_in_core/obj.N; % m^2 SA of one sphere * number of spheres/10 sections
-           obj.Kr = 80; % W/(m^2K)
+           obj.Kr = 80; % W/(m^2K) CAN MODIFY
            obj.Ar = obj.calc_surface_area('cylinder_no_top', D_reactor_core, H_reactor_core)/obj.N; % m^2 heat transfer area between fuel pile and reflector per node
-           obj.K = 100; % W/(m^2K)
+           obj.K = 100; % W/(m^2K) CAN MODIFY
            obj.A = pi*(D_reactor_core/2)^2; % m^2 area of circle, cross-sectional area of the reactor core
-           obj.Ku = 80; % W/(m^2K) look into what the material is, fluid and wall 
+           obj.Ku = 80; % W/(m^2K) look into what the material is, fluid and wall CAN MODIFY
            obj.Au = obj.calc_surface_area('cylinder_no_top', D_reactor_core + 2*(reflector_thickness), H_reactor_core); %m^2 heat transfer area between coolant in reflector and riser, SA of reflector using outer diameter
            
-           obj.k = .01; %leakage ratio
-           obj.Tin = 250; % Helium input temperature in Celsius
+           obj.k = .01; %leakage ratio CAN MODIFY
+           obj.Tin = 250; % Helium input temperature in Celsius 
            obj.control_rod_length = 4; % I made this up.  The HTR-10 value was 2.2m.  We need to find the HTR-PM value
        end
        
@@ -136,14 +136,15 @@ classdef NeutronKinetics
            % Tc0, tr0 = initial temperature of fuel elements and reflector 
            % rho_control_rods = reactivity introduced by the control rods
            
-           % control rod reactivity is defined as a sin wave based on the
+           % control rod reactivity is defined as a sin wave based o1n the
            % insertion position Ohki2014_Chapter_FuelBurnupAndReactivityControl
            
            control_rod_fraction_inserted = control_rod_x / obj.control_rod_length; 
            rho_control_rods_H = 5.25E-2; % from "Capstone_Group25_CHEMENGG\Reactor_Modelling\2006-design-aspect-of-the-chinese-modular-high-temperature-gas-cooled-reactor-htr-pm_zhang.pdf" control rod worth
-           rho_control_rods = rho_control_rods_H * control_rod_fraction_inserted - (1/(2*pi))*sin(2*pi*control_rod_fraction_inserted); 
+           rho_control_rods = rho_control_rods_H * (control_rod_fraction_inserted - (1/(2*pi))*sin(2*pi*control_rod_fraction_inserted)); 
+           rho_control_rods = 0.01; % CAN CHANGE TO SEE IF BETTER GRAPH
            rho = rho_control_rods + (obj.alpha_fuel + obj.alpha_moderator)*(Tc - obj.Tc0) + obj.alpha_reflector*(Tr - obj.Tr0);
-       
+
        end
        function dxdt = relative_neutron_flux(obj, ~, x) 
            % Function solving simulataneous differential equations
@@ -174,10 +175,10 @@ classdef NeutronKinetics
            hmass = obj.N*7+2*obj.N+5; % index number for masses
 
            % control rod position - intech-the_theoretical_simulation_of_a_model_by_simulink_for_surveying_the_work_and_dynamical_stability_of_nuclear_reactors_cores (1)
-           control_rod_const_coeff = 0.1; % I made this up, this is the constant coefficient
-           Ko = 0.5; % I made this up, this is the initial value of Keff
+           control_rod_const_coeff = 0.1; % I made this up, this is the constant coefficient CAN MODIFY
+           Ko = 0.5; % I made this up, this is the initial value of Keff CAN MODIFY
            Ksp = 0.5; % I made this up, this is supposed to be the secondary value of Keff in the recent position of control rod... Need to figure out how to access previous results in matlab ODE solver to get this
-           velocity_control_rod = 10; % Units of mm/s I made this up too, this is the control rod velocity
+           velocity_control_rod = 10; % Units of mm/s I made this up too, this is the control rod velocity CAN MODIFY
            F = x(control_rod_position)*obj.control_rod_length*control_rod_const_coeff + Ko;
            dxdt(control_rod_position) = velocity_control_rod*sign(F - Ksp);
         
