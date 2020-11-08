@@ -104,7 +104,7 @@ classdef NeutronKinetics
            obj.density_fuel = 1797.169975; % kg/m^3 From stream table of our PFD
            obj.volume_i = obj.volume/obj.N;
            obj.C_fuel = 1621.45; % j/kgK
-           obj.Cp_helium = 5.19E-3; % j/kgK
+           obj.Cp_helium = 5.19E3; % j/kgK
            
            %Values that need to be defined for now these are all random
            %number I created
