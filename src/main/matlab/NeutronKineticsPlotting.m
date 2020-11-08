@@ -52,6 +52,9 @@ for i = 1:series_num
     if (10*N + 5 < i) && (i <= 11*N + 5); legendInfo{i} = ["Node "+ num2str(i-(10*N + 5))]; end
 end
 
+% Make this better
+x(:, 106:115) = rdivide(x(:, 106:115), tout);
+
 starting_index = 1;
 for i=1:length(diff_plot_titles)
     figure(i), plot(tout, x(:, starting_index:diff_plots_index_end(i))), grid on
@@ -61,3 +64,4 @@ for i=1:length(diff_plot_titles)
     starting_index = diff_plots_index_end(i) + 1;
 end
 
+disp("Plotting Completed");
