@@ -11,6 +11,7 @@ classdef NeutronKinetics
         alpha_reflector {mustBeNumeric}
         volume {mustBeNumeric}
         P0 {mustBeNumeric}
+        P0_node {mustBeNumeric}
         porosity {mustBeNumeric}
         density_fuel {mustBeNumeric}
         volume_i {mustBeNumeric}
@@ -33,6 +34,8 @@ classdef NeutronKinetics
         k {mustBeNumeric}
         Tin {mustBeNumeric}
         control_rod_length {mustBeNumeric}
+        mass_flow_rate_helium {mustBeNumeric}
+        Tout {mustBeNumeric}
         
     end
     
@@ -99,12 +102,18 @@ classdef NeutronKinetics
            
            %Constant for Thermal Hydraulics
            obj.volume = obj.calc_volume('cylinder', D_reactor_core, H_reactor_core); %m^3
-           obj.P0 = 250/obj.N;  %MegaWatts
+
            obj.porosity = 0.39;
            obj.density_fuel = 1797.169975; % kg/m^3 From stream table of our PFD
            obj.volume_i = obj.volume/obj.N;
            obj.C_fuel = 1621.45; % j/kgK
            obj.Cp_helium = 5.19E3; % j/kgK
+           obj.mass_flow_rate_helium = 145; % kg/s
+           obj.Tin = 250; % Helium input temperature in Celsius 
+           obj.Tout = 700; % Helium 
+           obj.P0 = obj.mass_flow_rate_helium * obj.Cp_helium * (obj.Tout - obj.Tin); %W
+           obj.P0_node = obj.P0/obj.N;  % Watts
+           
            
            %Values that need to be defined for now these are all random
            %number I created
@@ -123,7 +132,6 @@ classdef NeutronKinetics
            obj.Au = obj.calc_surface_area('cylinder_no_top', D_reactor_core + 2*(reflector_thickness), H_reactor_core); %m^2 heat transfer area between coolant in reflector and riser, SA of reflector using outer diameter
            
            obj.k = 0; %leakage ratio CAN MODIFY
-           obj.Tin = 250; % Helium input temperature in Celsius 
            obj.control_rod_length = 4; % I made this up.  The HTR-10 value was 2.2m.  We need to find the HTR-PM value
        end
        
@@ -169,7 +177,7 @@ classdef NeutronKinetics
            rho_index = Wu + 1; % x(106) starting index to go to the reactivity values
            control_rod_position = rho_index + obj.N; % x(116) starting index to go to the control rod insertion position value
            dxdt = zeros(1, control_rod_position); % predefine size of result array for performance
-           Wlh = 145; % kg/s = mass flowrate for lower helium header Wlh
+           Wlh = obj.mass_flow_rate_helium; % kg/s = mass flowrate for lower helium header Wlh
            cores = obj.N*7+1; % This is the index number for core (fuel element) temperature
            downs = obj.N*7+obj.N+1; % This is the index number for downcomer (helium) temperature
            hmass = obj.N*7+2*obj.N+5; % index number for masses
@@ -223,7 +231,7 @@ classdef NeutronKinetics
 
            % THERMAL HYDROLICS         
            % Fuel Pile Temperature for 1st node
-           dTc1dt_term1 = obj.P0*x(1);
+           dTc1dt_term1 = obj.P0_node*x(1);
            dTc1dt_term2 = - obj.Kd*obj.Ad*(x(cores)-x(downs));
            dTc1dt_term3 = - obj.Kr*obj.Ar*(x(cores)-x(Tr));
            dTc1dt_term4 = -obj.K*obj.A*(x(cores)-x(cores+1));
@@ -231,7 +239,7 @@ classdef NeutronKinetics
            
            % Fuel Pile Temperature for ith to N-1 node
            for i = 1:obj.N-2
-               dTcidt_term1 = obj.P0*x(i+1);
+               dTcidt_term1 = obj.P0_node*x(i+1);
                dTcidt_term2 = - obj.Kd*obj.Ad*(x(cores+i)-x(downs+i));
                dTcidt_term3 = - obj.Kr*obj.Ar*(x(cores+i)-x(Tr));
                dTcidt_term4 = -obj.K*obj.A*(x(cores+i)-x(cores+i+1)) + obj.K*obj.A*(x(cores+i-1)- x(cores+i));
@@ -239,7 +247,7 @@ classdef NeutronKinetics
            end
            
            % Fuel Pile Temperature for Nth node
-           dTcNdt_term1 = obj.P0*x(obj.N);
+           dTcNdt_term1 = obj.P0_node*x(obj.N);
            dTcNdt_term2 = - obj.Kd*obj.Ad*(x(cores + obj.N-1)-x(downs + obj.N-1));
            dTcNdt_term3 = - obj.Kr*obj.Ar*(x(cores + obj.N-1)-x(Tr));
            dTcNdt_term4 = obj.K*obj.A*(x(cores + obj.N-1 - 1)-x(cores+ + obj.N-1));
@@ -314,7 +322,18 @@ classdef NeutronKinetics
             tstep = .1;
             tspan_fix = tspan(1):tstep:tspan(2);
             [tout, x] = ode23tb(@obj.relative_neutron_flux, tspan_fix, x0);
+            
             toc
+            
+            % POST-PROCESSING
+            % Don't hardcode this 
+            % Divide nodal reactivity by tout, as it was included in the
+            % ODE solving to extract reactivity values
+            x(:, 106:115) = rdivide(x(:, 106:115), tout);
+            
+            % calculate power output
+            % Per node
+            x(:, 117:126) = x(:, 1:10) * (1/obj.N) * (obj.P0*10^-6);
        end
 
     end

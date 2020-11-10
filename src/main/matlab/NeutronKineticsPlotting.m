@@ -14,12 +14,12 @@ end
 diff_plot_titles2 = ["Temperature of Fuel Elements", "Temperature of Helium", "Temperature of Reflector",...
 "Average Temperature in Riser", "Temperature of Lower Helium Header",...
 "Temperature of Outlet Header", "Nodal Mass Flow Rates of Helium",...
-"Mass Flow Rate to Lower Helium Header", "Nodal Reactivities"];
+"Mass Flow Rate to Lower Helium Header", "Nodal Reactivities", "Rod Position - todo for future", "Nodal Power Output"];
 
 diff_plot_titles = [diff_plot_titles, diff_plot_titles2];
 
 diff_plot_ylabels = ["Neutron Fluxes",repelem(["Concentration"],...
-    [N]),repelem(["Temperature"],[6]), repelem(["Mass Flow Rate"],[2]),"Reactivities"];
+    [N]),repelem(["Temperature"],[6]), repelem(["Mass Flow Rate"],[2]),"Reactivities", "Position", "Power Output (MW)"];
 
 
 for i = 1:N+1
@@ -27,7 +27,7 @@ for i = 1:N+1
 end
 
 diff_plots_index_end2 = [N*8, 9*N, 9*N + 1,...
-    9*N + 2 ,9*N + 3 ,9*N + 4,  10*N + 4, 10*N + 5, 11*N + 5];
+    9*N + 2 ,9*N + 3 ,9*N + 4,  10*N + 4, 10*N + 5, 11*N + 5, 11*N + 6,12*N + 6];
 
 diff_plots_index_end = [diff_plots_index_end, diff_plots_index_end2];
 
@@ -50,10 +50,9 @@ for i = 1:series_num
     if (9*N + 5 <= i) && (i <= 10*N + 4); legendInfo{i} = ["Node "+ num2str(i-(9*N + 4))]; end
     if (i == 10*N + 5); legendInfo{i} = ["Mass Flow Rate"]; end
     if (10*N + 5 < i) && (i <= 11*N + 5); legendInfo{i} = ["Node "+ num2str(i-(10*N + 5))]; end
+    if (i == 11*N + 6); legendInfo{i} = ["Rod Position"]; end
+    if (11*N + 6 < i) && (12*N + 6); legendInfo{i} = ["Node "+ num2str(i-(11*N + 6))]; end
 end
-
-% Make this better
-x(:, 106:115) = rdivide(x(:, 106:115), tout);
 
 starting_index = 1;
 for i=1:length(diff_plot_titles)
@@ -62,6 +61,10 @@ for i=1:length(diff_plot_titles)
     ylabel(diff_plot_ylabels(i)), xlabel('Time, t')
     legend(legendInfo{starting_index:diff_plots_index_end(i)})
     starting_index = diff_plots_index_end(i) + 1;
+    if i == 22 %todo dont hardcode
+        total_at_end = num2str(round(sum(x(length(tout), 117:126))));
+        annotation('textarrow',[0.5484 0.8778],[0.5775 0.5088],'String',strcat('Total Power:  ', total_at_end, 'MW'))
+    end
 end
 
 disp("Plotting Completed");
