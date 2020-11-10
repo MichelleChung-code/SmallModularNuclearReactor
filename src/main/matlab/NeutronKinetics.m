@@ -99,7 +99,7 @@ classdef NeutronKinetics
            
            %Constant for Thermal Hydraulics
            obj.volume = obj.calc_volume('cylinder', D_reactor_core, H_reactor_core); %m^3
-           obj.P0 = 250;  %MegaWatts
+           obj.P0 = 250/obj.N;  %MegaWatts
            obj.porosity = 0.39;
            obj.density_fuel = 1797.169975; % kg/m^3 From stream table of our PFD
            obj.volume_i = obj.volume/obj.N;
