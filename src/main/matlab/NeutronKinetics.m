@@ -126,7 +126,7 @@ classdef NeutronKinetics
            obj.Ar = obj.calc_surface_area('cylinder_no_top', D_reactor_core, H_reactor_core)/obj.N *(1 - obj.porosity); % m^2 heat transfer area between fuel pile and reflector per node
            obj.K = 60; % W/(m^2K) CAN MODIFY
            obj.A = pi*(D_reactor_core/2)^2*(1- obj.porosity); % m^2 area of circle, cross-sectional area of the reactor core
-           obj.Ku = 112; % W/(m^2K) look into what the material is, fluid and wall CAN MODIFY This number can be figure out by looking at the overall heat transfer between a flate plate and a flowing fluid!!!!!!
+           obj.Ku = 112; % W/(m^2K) look into what the material is, fluid and wall CAN MODIFY This number can be figure out by looking at the overall heat transfer between a flate plate and a flowing fluid!!!!!! Should be ho 
            obj.Au = obj.calc_surface_area('cylinder_no_top', D_reactor_core + 2*(reflector_thickness), H_reactor_core); %m^2 heat transfer area between coolant in reflector and riser, SA of reflector using outer diameter
            
            obj.k = 0; %leakage ratio CAN MODIFY
