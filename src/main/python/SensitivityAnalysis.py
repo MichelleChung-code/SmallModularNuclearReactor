@@ -41,7 +41,7 @@ class SensitivityAnalysis:
         processed_cashflows.loc[max(processed_cashflows.index), WC_plus_L] = 1
 
         processed_cashflows[
-            d] = adjust_FCI * self.FCI / 10  # I think she just assumes that depreciation is /10 of the FCI???
+            d] = adjust_FCI * self.FCI / 10  # I think this is the FCI divided by the number of years i.e. linear relationship #TODO check
         processed_cashflows.loc[1:, Profit_b4_tax] = processed_cashflows[R] + processed_cashflows[E] - \
                                                      processed_cashflows[d]
         processed_cashflows[Tax] = -self.tax_rate * processed_cashflows[Profit_b4_tax]
