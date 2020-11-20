@@ -51,7 +51,10 @@ class SensitivityAnalysis:
         return processed_cashflows.fillna(0)
 
     def __call__(self):
-        adjust_R_LS = [*np.arange(0.1, 2.1, 0.1)] # ranging from a 10% decrease to a doubling
+        # NOTE:
+        # A 0.1 adjustment factor means a 90% decrease from the base case
+        # A 1.4 adjustment factor means a 40% increase from the base case
+        adjust_R_LS = [*np.arange(0.1, 2.1, 0.1)] # ranging from a 90% decrease to a doubling
         adjust_E_LS = copy.deepcopy(adjust_R_LS)
         adjust_FCI_LS = copy.deepcopy(adjust_R_LS)
         LS_ALL = [adjust_R_LS, adjust_E_LS, adjust_FCI_LS]
@@ -75,3 +78,5 @@ if __name__ == '__main__':
     results = x()
 
     results.to_csv(os.path.join(p, r'mfs/sensitivity_analysis_results.csv'))
+
+# todo add plotting of the results  
