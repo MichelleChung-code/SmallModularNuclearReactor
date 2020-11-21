@@ -54,20 +54,20 @@ sim(sim_path);
 disp('Model has run')
 
 % Some Plotting
-figure(1), subplot(3,3,1)
-plot(ans.tout, ans.T_outlet), grid on
-title('Toutlet')
-xlabel('time'), ylabel('Temperature (F)')
 
-subplot(3,3,2), plot(ans.tout, ans.Pth), grid on
-title('Fractional Reactor Power (Pth)')
-xlabel('time'), ylabel('Pth')
-
-subplot(3,3,3), plot(ans.tout, ans.Tf), grid on
+% plot(ans.tout, ans.T_outlet), grid on
+% title('Toutlet')
+% xlabel('time'), ylabel('Temperature (F)')
+% 
+% nexttile, plot(ans.tout, ans.Pth), grid on
+% title('Fractional Reactor Power (Pth)')
+% xlabel('time'), ylabel('Pth')
+figure(1)
+nexttile, plot(ans.tout, ans.Tf), grid on
 title('Fuel Temperature (Tf)')
 xlabel('time'), ylabel('Temperature (F)')
 
-subplot(3,3,4), plot(ans.tout, ans.rho), grid on
+nexttile, plot(ans.tout, ans.rho), grid on
 title('Reactivity (rho)')
 xlabel('time'), ylabel('rho')
 
