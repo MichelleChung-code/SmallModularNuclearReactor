@@ -58,12 +58,12 @@ starting_index = 1;
 for i=1:length(diff_plot_titles)
     figure(i), plot(tout, x(:, starting_index:diff_plots_index_end(i))), grid on
     title(diff_plot_titles(i))
-    ylabel(diff_plot_ylabels(i)), xlabel('Time, t')
+    ylabel(diff_plot_ylabels(i)), xlabel('Time, t (s)')
     legend(legendInfo{starting_index:diff_plots_index_end(i)})
     starting_index = diff_plots_index_end(i) + 1;
     if i == 22 %todo dont hardcode
         total_at_end = num2str(round(sum(x(length(tout), 117:126))));
-        annotation('textarrow',[0.5484 0.8778],[0.5775 0.5088],'String',strcat('Total Power:  ', total_at_end, 'MW'))
+        annotation('textbox',[.4 .5 .3 .4],'String',strcat('Total Power:  ', total_at_end, 'MW'),'FitBoxToText','on')
     end
 end
 
