@@ -319,7 +319,7 @@ classdef NeutronKinetics
             tic
             tstep = .1;
             tspan_fix = tspan(1):tstep:tspan(2);
-            [tout, x] = ode23tb(@obj.relative_neutron_flux, tspan_fix, x0);
+            [tout, x] = ode23s(@obj.relative_neutron_flux, tspan_fix, x0);
             
             toc
             
