@@ -13,6 +13,7 @@ E = 'EXPENSE'
 # Gemma's column headings zzz
 FCI = 'FCI'
 WC_plus_L = 'WC+L'
+OC_plus_SU = 'OC+SU'  # offsite capital plus start up expenses, not recovered at the end
 d = 'd'  # I think this is depreciation
 Profit_b4_tax = 'Profit_before_tax'
 Tax = 'Tax'
@@ -21,11 +22,14 @@ interest_rate = 'i'
 
 
 class SensitivityAnalysis:
-    def __init__(self, base_case_path, tax_rate=0.5, FCI=10, WC=0.9, Land=0.1, i=0.1):
+    def __init__(self, base_case_path, tax_rate=0.125, FCI=1052.92, WC=170.99, Land=2.75, i=0.1, offsite_capital=52.65,
+                 start_up_expenses=31.59):
         self.tax_rate = tax_rate
         self.FCI = FCI
         self.WC = WC
         self.Land = Land
+        self.offsite_cap = offsite_capital
+        self.startup_expenses = start_up_expenses
         self.i = i  # interest/discount rate
         self.base_case = pd.read_csv(base_case_path, index_col=0)
         self.base_case_copy = copy.deepcopy(self.base_case)  # self.base_case should not change between scenarios
@@ -38,15 +42,18 @@ class SensitivityAnalysis:
         processed_cashflows[E] = self.base_case[E] * adjust_E
 
         processed_cashflows.loc[0, WC_plus_L] = -(self.Land + self.WC)
-        processed_cashflows.loc[max(processed_cashflows.index), WC_plus_L] = 1
+        processed_cashflows.loc[max(processed_cashflows.index), WC_plus_L] = (
+                self.Land + self.WC)  # assume land and WC recovered at the end
 
-        processed_cashflows[
-            d] = adjust_FCI * self.FCI / 10  # I think this is the FCI divided by the number of years i.e. linear relationship #TODO check
+        processed_cashflows.loc[0, OC_plus_SU] = -(self.offsite_cap + self.startup_expenses)
+
+        processed_cashflows.loc[1:,
+            d] = adjust_FCI * self.FCI / max(processed_cashflows.index)  # linear relationship for depreciation
         processed_cashflows.loc[1:, Profit_b4_tax] = processed_cashflows[R] + processed_cashflows[E] - \
                                                      processed_cashflows[d]
         processed_cashflows[Tax] = -self.tax_rate * processed_cashflows[Profit_b4_tax]
 
-        processed_cashflows[Cash_flow] = processed_cashflows[[FCI, R, E, WC_plus_L, Tax]].sum(axis=1)
+        processed_cashflows[Cash_flow] = processed_cashflows[[FCI, R, E, WC_plus_L, OC_plus_SU, Tax]].sum(axis=1)
 
         return processed_cashflows.fillna(0)
 
@@ -54,7 +61,7 @@ class SensitivityAnalysis:
         # NOTE:
         # A 0.1 adjustment factor means a 90% decrease from the base case
         # A 1.4 adjustment factor means a 40% increase from the base case
-        adjust_R_LS = [*np.arange(0.1, 2.1, 0.1)] # ranging from a 90% decrease to a doubling
+        adjust_R_LS = [*np.arange(0.1, 2.1, 0.1)]  # ranging from a 90% decrease to a doubling
         adjust_E_LS = copy.deepcopy(adjust_R_LS)
         adjust_FCI_LS = copy.deepcopy(adjust_R_LS)
         LS_ALL = [adjust_R_LS, adjust_E_LS, adjust_FCI_LS]
@@ -70,6 +77,7 @@ class SensitivityAnalysis:
             results.loc[index, 'IRR'] = IRR
 
         return results
+
 
 if __name__ == '__main__':
     p = str(Path(__file__).parents[3])

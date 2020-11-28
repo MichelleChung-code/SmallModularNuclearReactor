@@ -5,7 +5,7 @@
 
 close all;
 
-diff_plot_titles = ["Relative Neutron Fluxes of Nodes"];
+diff_plot_titles = ["Relative Neutron Flux of Nodes"];
 
 for i = 1:N 
     diff_plot_titles(1 + i) = "Concentration Node " + num2str(i);
@@ -13,13 +13,13 @@ end
 
 diff_plot_titles2 = ["Temperature of Fuel Elements", "Temperature of Helium", "Temperature of Reflector",...
 "Average Temperature in Riser", "Temperature of Lower Helium Header",...
-"Temperature of Outlet Header", "Nodal Mass Flow Rates of Helium",...
-"Mass Flow Rate to Lower Helium Header", "Nodal Reactivities", "Rod Position - todo for future", "Nodal Power Output"];
+"Temperature of Outlet Header", "Mass Flow Rates of Helium",...
+"Mass Flow Rate to Lower Helium Header", "Nodal Reactivity", "Rod Position - todo for future", "Nodal Power Output"];
 
 diff_plot_titles = [diff_plot_titles, diff_plot_titles2];
 
-diff_plot_ylabels = ["Neutron Fluxes",repelem(["Concentration"],...
-    [N]),repelem(["Temperature"],[6]), repelem(["Mass Flow Rate"],[2]),"Reactivities", "Position", "Power Output (MW)"];
+diff_plot_ylabels = ["Neutron Flux",repelem(["Concentration"],...
+    [N]),repelem(["Temperature"],[6]), repelem(["Mass Flow Rate"],[2]),"Reactivity", "Position", "Power Output (MW)"];
 
 
 for i = 1:N+1
