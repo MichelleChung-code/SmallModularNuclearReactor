@@ -110,7 +110,7 @@ classdef NeutronKinetics
            obj.Cp_helium = 5.19E3; % j/kgK
            obj.mass_flow_rate_helium = 145; % kg/s
            obj.Tin = 250; % Helium input temperature in Celsius 
-           obj.Tout = 700; % Helium 
+           obj.Tout = 750; % Helium 
            obj.P0 = obj.mass_flow_rate_helium * obj.Cp_helium * (obj.Tout - obj.Tin); %W
            obj.P0_node = obj.P0/obj.N;  % Watts
            
@@ -148,7 +148,7 @@ classdef NeutronKinetics
            control_rod_fraction_inserted = control_rod_x / obj.control_rod_length; 
            rho_control_rods_H = 5.25E-2; % from "Capstone_Group25_CHEMENGG\Reactor_Modelling\2006-design-aspect-of-the-chinese-modular-high-temperature-gas-cooled-reactor-htr-pm_zhang.pdf" control rod worth
            rho_control_rods = rho_control_rods_H * (control_rod_fraction_inserted - (1/(2*pi))*sin(2*pi*control_rod_fraction_inserted)); 
-           rho_control_rods = 0.028; % CAN CHANGE TO SEE IF BETTER GRAPH
+           rho_control_rods = 0.0331; % CAN CHANGE TO SEE IF BETTER GRAPH
            rho = rho_control_rods + (obj.alpha_fuel + obj.alpha_moderator)*(Tc - obj.Tc0) + obj.alpha_reflector*(Tr - obj.Tr0);
 
        end
