@@ -47,7 +47,7 @@ class SensitivityAnalysis:
 
         processed_cashflows.loc[0, OC_plus_SU] = -(self.offsite_cap + self.startup_expenses)
 
-        processed_cashflows[
+        processed_cashflows.loc[1:,
             d] = adjust_FCI * self.FCI / max(processed_cashflows.index)  # linear relationship for depreciation
         processed_cashflows.loc[1:, Profit_b4_tax] = processed_cashflows[R] + processed_cashflows[E] - \
                                                      processed_cashflows[d]

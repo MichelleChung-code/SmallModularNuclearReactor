@@ -5,6 +5,7 @@
 *.asv
 *.autosave
 slprj/*
+*.pyc
 
 # Pycharm IntelliJ Project files
 *.iml
