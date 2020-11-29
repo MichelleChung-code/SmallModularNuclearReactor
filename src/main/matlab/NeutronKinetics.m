@@ -98,7 +98,7 @@ classdef NeutronKinetics
            N_fuel_elements_in_core = 420000; % number of fuel elements
            D_reactor_core = 3; % m reactor core diameter
            H_reactor_core = 11; % m reactor core height
-           reflector_thickness = 0.5; % m we need to actually find this value CAN MODIFY
+           reflector_thickness = 0.5; % m 
            
            %Constant for Thermal Hydraulics
            obj.volume = obj.calc_volume('cylinder', D_reactor_core, H_reactor_core); %m^3
@@ -106,11 +106,18 @@ classdef NeutronKinetics
            obj.porosity = 0.39;
            obj.density_fuel = 1797.169975; % kg/m^3 From stream table of our PFD
            obj.volume_i = obj.volume/obj.N;
-           obj.C_fuel = 1621.45; % j/kgK
-           obj.Cp_helium = 5.19E3; % j/kgK
+           
            obj.mass_flow_rate_helium = 145; % kg/s
            obj.Tin = 250; % Helium input temperature in Celsius 
            obj.Tout = 750; % Helium 
+           Tavg_celsius = (250+750)/2;
+           Tavg_Kelvin = Tavg_celsius + 273.15;
+           % graphite thermal specific heat capacity using correlation from
+           % http://aries.ucsd.edu/LIB/PROPS/PANOS/c.html
+           
+           obj.C_fuel = -474.0 + 4.9532*Tavg_Kelvin - 3.6093E-3*(Tavg_Kelvin^2) + 9.3068E-7*(Tavg_Kelvin^3); % j/kgK
+           obj.Cp_helium = 5.19E3; % j/kgK
+           
            obj.P0 = obj.mass_flow_rate_helium * obj.Cp_helium * (obj.Tout - obj.Tin); %W
            obj.P0_node = obj.P0/obj.N;  % Watts
            
