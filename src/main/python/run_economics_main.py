@@ -9,9 +9,9 @@ discount_rate = 0.1
 # read in the base_case revenue and expenses
 p = str(Path(__file__).parents[3])
 base_case_path = os.path.join(p, r'mfs/base_case.csv')
-x = SensitivityAnalysis(base_case_path, tax_rate=0.125, FCI=1052.92, WC=170.99, Land=2.75, i=discount_rate,
-                        offsite_capital=52.65,
-                        start_up_expenses=31.59)
+x = SensitivityAnalysis(base_case_path, tax_rate=0.125, FCI=1318.58, WC=214.02, Land=2.75, i=discount_rate,
+                        offsite_capital=65.93,
+                        start_up_expenses=72.27)
 
 # build base case annual cashflows
 base_case_cashflows = x.build_cashflows()
