@@ -3,7 +3,7 @@
 
 % https://www.hindawi.com/journals/stni/2020/5090597/
 % Electrical efficiency is 42% 
-% Use as sanity check that total power is under 300 MWth 
+% Use as sanity check that total power is under 300 MW electric
 
 % Reflector thickness
 % HTR-PM L/D = 3.67, HTR-10 L/D = 1.09
