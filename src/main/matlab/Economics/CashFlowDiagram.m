@@ -4,12 +4,30 @@
 % get valid numvers
 
 clc
+close all
 
-cashflow_dates = [20200110, 20210502, 20231001];
-cashflow_dates = datenum(num2str(cashflow_dates'),'yyyymmdd')';
+from_csv = readtable('Cashflows.csv');
 
-cashflow_amts = [-10, 100, 200]; 
+cashflow_dates1 = table2array(from_csv(1:21,1));
+cashflow_dates1 = datenum(num2str(cashflow_dates1),'yyyymmdd')';
 
-figure;
-show_pts = 0:1:length(cashflow_amts);
-[h, axes_handle] = cfplot(cashflow_dates, cashflow_amts, 'Groups', 'off', 'ShowAmnt', 1, 'DateSpacing', 1, 'DateFormat', 1)
+cashflow_amts1 = table2array(from_csv(1:21,2)); 
+
+figure(1);
+[h, axes_handle] = cfplot(cashflow_dates1, cashflow_amts1', 'Groups', 'off', 'ShowAmnt', 1, 'DateSpacing', 1, 'DateFormat', 11)
+set(gca,'YTickLabel',[]);
+title('Cash Flow Diagram for Year 0 to 20')
+xlabel('Year')
+
+
+cashflow_dates2 = table2array(from_csv(22:41,1));
+cashflow_dates2 = datenum(num2str(cashflow_dates2),'yyyymmdd')';
+
+cashflow_amts2 = table2array(from_csv(22:41,2)); 
+
+figure(2)
+[h, axes_handle] = cfplot(cashflow_dates2, cashflow_amts2', 'Groups', 'off', 'ShowAmnt', 1, 'DateSpacing', 1, 'DateFormat', 11)
+set(gca,'YTickLabel',[]);
+title('Cash Flow Diagram for Year 21 to 40')
+xlabel('Year')
+ylabel('Cashflow Amounts ($MM)')
