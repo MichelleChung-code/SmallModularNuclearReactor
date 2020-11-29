@@ -17,7 +17,6 @@ x = SensitivityAnalysis(base_case_path, tax_rate=0.13, FCI=1319.274128, WC=214.1
 base_case_cashflows = x.build_cashflows()
 base_case_cashflows.to_csv(os.path.join(p, r'mfs/processed/base_case_annual_cashflows.csv'))
 
-# todo add plotting of the results
 base_case_cashflows = base_case_cashflows['Cash_Flow'].to_frame()
 base_case_cashflows.rename(columns={'Cash_Flow': 'CASHFLOW'}, inplace=True)
 profit_x = ProfitabilityAnalysis(base_case_cashflows, discount_rate)
@@ -30,3 +29,5 @@ print('IRR: ', irr)
 
 discounted_payback_period = profit_x.discounted_payback_period()  # defaults to a desired 10% return
 print('Discounted Payback Period', discounted_payback_period)
+
+# todo add plotting of the results
