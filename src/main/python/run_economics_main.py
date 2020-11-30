@@ -4,7 +4,11 @@ import os
 from pathlib import Path
 
 # inputs
-discount_rate = 0.1
+discount_rate_nominal = 0.15
+inflation_rate = 0.0311
+discount_rate = ((1 + discount_rate_nominal) / (1 + inflation_rate)) - 1
+
+print('Real Discount Rate: ', discount_rate)
 
 # read in the base_case revenue and expenses
 p = str(Path(__file__).parents[3])
@@ -33,4 +37,6 @@ print('Discounted Payback Period', discounted_payback_period)
 # Run Sensitivity Analysis
 # - H2 price variances
 
-# todo add plotting of the results
+sensitivity_analysis_results = x()
+sensitivity_analysis_results.to_csv(os.path.join(p, r'mfs/sensitivity_analysis_results.csv'))
+

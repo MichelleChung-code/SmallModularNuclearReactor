@@ -5,6 +5,7 @@ import os
 import copy
 import numpy_financial as np_fi
 import itertools
+import matplotlib.pyplot as plt
 
 # All values are in $MM (Millions)
 R = 'REVENUE'
@@ -22,8 +23,10 @@ interest_rate = 'i'
 
 
 class SensitivityAnalysis:
-    def __init__(self, base_case_path, tax_rate=0.125, FCI=1052.92, WC=170.99, Land=2.75, i=0.1, offsite_capital=52.65,
+    def __init__(self, base_case_path, results_path, tax_rate=0.125, FCI=1052.92, WC=170.99, Land=2.75, i=0.1,
+                 offsite_capital=52.65,
                  start_up_expenses=31.59):
+        self.results_path = results_path
         self.tax_rate = tax_rate
         self.FCI = FCI
         self.WC = WC
@@ -48,7 +51,7 @@ class SensitivityAnalysis:
         processed_cashflows.loc[0, OC_plus_SU] = -(self.offsite_cap + self.startup_expenses)
 
         processed_cashflows.loc[1:,
-            d] = adjust_FCI * self.FCI / max(processed_cashflows.index)  # linear relationship for depreciation
+        d] = adjust_FCI * self.FCI / max(processed_cashflows.index)  # linear relationship for depreciation
         processed_cashflows.loc[1:, Profit_b4_tax] = processed_cashflows[R] + processed_cashflows[E] - \
                                                      processed_cashflows[d]
         processed_cashflows[Tax] = -self.tax_rate * processed_cashflows[Profit_b4_tax]
@@ -61,7 +64,7 @@ class SensitivityAnalysis:
         # NOTE:
         # A 0.1 adjustment factor means a 90% decrease from the base case
         # A 1.4 adjustment factor means a 40% increase from the base case
-        adjust_R_LS = [*np.arange(0.1, 2.1, 0.1)]  # ranging from a 90% decrease to a doubling
+        adjust_R_LS = [*np.arange(0.1, 2.1, 0.2)]  # ranging from a 90% decrease to a doubling
         adjust_E_LS = copy.deepcopy(adjust_R_LS)
         adjust_FCI_LS = copy.deepcopy(adjust_R_LS)
         LS_ALL = [adjust_R_LS, adjust_E_LS, adjust_FCI_LS]
@@ -76,13 +79,51 @@ class SensitivityAnalysis:
             results.loc[index, 'NPV'] = NPV
             results.loc[index, 'IRR'] = IRR
 
+        self.plot_results(results)
         return results
+
+    def plot_results(self, results):
+        # NPV plot
+        fig = plt.figure(figsize=(13, 10))
+        ax = fig.add_subplot(111, projection='3d')
+
+        x = np.array(results['R_AdjustFact'])
+        y = np.array(results['E_AdjustFact'])
+        z = np.array(results['FCI_AdjustFact'])
+        c = np.array(results['NPV'])
+        ax.set_xlabel('Revenue Fraction of Base Case')
+        ax.set_ylabel('Expense Fraction of Base Case')
+        ax.set_zlabel('FCI Fraction of Base Case')
+
+        plt.title('Net Present Value Sensitivity Analysis Results')
+
+        img = ax.scatter(x, y, z, c=c, cmap='GnBu')
+        fig.colorbar(img)
+        plt.savefig(os.path.join(self.results_path, 'NPV_combined.png'))
+        plt.show()
+
+        fig = plt.figure(figsize=(13, 10))
+        ax = fig.add_subplot(111, projection='3d')
+        c = np.array(results['IRR'])
+        ax.set_xlabel('Revenue Fraction of Base Case')
+        ax.set_ylabel('Expense Fraction of Base Case')
+        ax.set_zlabel('FCI Fraction of Base Case')
+
+        plt.title('Internal Rate of Return Sensitivity Analysis Results')
+
+        img = ax.scatter(x, y, z, c=c, cmap='Reds')
+        fig.colorbar(img)
+        plt.savefig(os.path.join(self.results_path, 'IRR_combined.png'))
+        plt.show()
+
+
 
 
 if __name__ == '__main__':
     p = str(Path(__file__).parents[3])
+    results_path = os.path.join(p, r'mfs/processed')
     base_case_path = os.path.join(p, r'mfs/base_case.csv')
-    x = SensitivityAnalysis(base_case_path)
+    x = SensitivityAnalysis(base_case_path, results_path)
     results = x()
 
     results.to_csv(os.path.join(p, r'mfs/sensitivity_analysis_results.csv'))
