@@ -117,7 +117,7 @@ classdef NeutronKinetics
            % for 300 K <= T <= 1500 K
            
            obj.C_fuel = -474.0 + 4.9532*Tavg_Kelvin - 3.6093E-3*(Tavg_Kelvin^2) + 9.3068E-7*(Tavg_Kelvin^3); % j/kgK
-           obj.Cp_helium = 5.19E3; % j/kgK
+           obj.Cp_helium = 5246.5; % J/kgK from Symmetry at 500 degrees Celsius
            
            obj.P0 = obj.mass_flow_rate_helium * obj.Cp_helium * (obj.Tout - obj.Tin); %W
            obj.P0_node = obj.P0/obj.N;  % Watts
@@ -134,7 +134,7 @@ classdef NeutronKinetics
            obj.Ar = obj.calc_surface_area('cylinder_no_top', D_reactor_core, H_reactor_core)/obj.N *(1 - obj.porosity); % m^2 heat transfer area between fuel pile and reflector per node
            obj.K = 70; % W/(m^2K) CAN MODIFY
            obj.A = pi*(D_reactor_core/2)^2*(1- obj.porosity); % m^2 area of circle, cross-sectional area of the reactor core
-           obj.Ku = 66300.8; %3.43E+06; %110.7661157; % W/(m^2K) look into what the material is, fluid and wall CAN MODIFY This number can be figure out by looking at the overall heat transfer between a flate plate and a flowing fluid!!!!!! Should be ho 
+           obj.Ku = 26494.5; %3.43E+06; %110.7661157; % W/(m^2K) look into what the material is, fluid and wall CAN MODIFY This number can be figure out by looking at the overall heat transfer between a flate plate and a flowing fluid!!!!!! Should be ho 
            obj.Au = obj.calc_surface_area('cylinder_no_top', .2,H_reactor_core)*30;%obj.calc_surface_area('cylinder_no_top', D_reactor_core + 2*(reflector_thickness), H_reactor_core); %m^2 heat transfer area between coolant in reflector and riser, SA of reflector using outer diameter
            
            obj.k = 0; %leakage ratio CAN MODIFY
@@ -156,7 +156,7 @@ classdef NeutronKinetics
            control_rod_fraction_inserted = control_rod_x / obj.control_rod_length; 
            rho_control_rods_H = 5.25E-2; % from "Capstone_Group25_CHEMENGG\Reactor_Modelling\2006-design-aspect-of-the-chinese-modular-high-temperature-gas-cooled-reactor-htr-pm_zhang.pdf" control rod worth
            rho_control_rods = rho_control_rods_H * (control_rod_fraction_inserted - (1/(2*pi))*sin(2*pi*control_rod_fraction_inserted)); 
-           rho_control_rods = 0.0331; % CAN CHANGE TO SEE IF BETTER GRAPH
+           rho_control_rods = 0.03419; % CAN CHANGE TO SEE IF BETTER GRAPH
            rho = rho_control_rods + (obj.alpha_fuel + obj.alpha_moderator)*(Tc - obj.Tc0) + obj.alpha_reflector*(Tr - obj.Tr0);
 
        end
