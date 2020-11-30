@@ -30,4 +30,7 @@ print('IRR: ', irr)
 discounted_payback_period = profit_x.discounted_payback_period()  # defaults to a desired 10% return
 print('Discounted Payback Period', discounted_payback_period)
 
+# Run Sensitivity Analysis
+# - H2 price variances
+
 # todo add plotting of the results
