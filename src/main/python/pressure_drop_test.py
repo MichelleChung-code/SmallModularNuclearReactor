@@ -22,11 +22,10 @@ gc = 1  # dimensional constant m3⋅kg−1⋅s−2
 
 delta_pf = f_circ * (L / D) * (rho * (u ** 2)) / (2 * gc)  # pressure loss
 
-print(delta_pf / 1e3)  # kPa
-
 K_in = 0.5
 delta_pe_in = K_in * (rho * (u ** 2)) / (2 * gc)  # pressure loss
 
 K_out = 1
 delta_pe_out = K_out * (rho * (u ** 2)) / (2 * gc)  # pressure loss
-print((delta_pe_out + delta_pe_in) / 1e3)  # kPa
+
+print('Pressure drop across the reactor core:', round((delta_pe_out + delta_pe_in + delta_pf) / 1e3, 2), 'kPa')
