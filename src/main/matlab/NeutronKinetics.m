@@ -125,17 +125,17 @@ classdef NeutronKinetics
            
            %Values that need to be defined for now these are all random
            %number I created
-           obj.density_reflector = 1760; % kg/m^3 CAN MODIFY (Density of graphite)file:///C:/Users/marce/University%20of%20Calgary/Michelle%20Chung%20-%20Capstone_Group25_CHEMENGG/Reactor_Modelling/Reactor_Core_Modelling/Sources_Used/brochure-properties-and-characteristics-of-graphite-7329.pdf
+           obj.density_reflector = 2230; % kg/m^3 CAN MODIFY (Density of graphite)file:///C:/Users/marce/University%20of%20Calgary/Michelle%20Chung%20-%20Capstone_Group25_CHEMENGG/Reactor_Modelling/Reactor_Core_Modelling/Sources_Used/brochure-properties-and-characteristics-of-graphite-7329.pdf
            obj.volume_reflector = obj.calc_volume('cylinder', D_reactor_core + 2*(reflector_thickness), H_reactor_core); % m^3 
-           obj.C_reflector = 1735.5; % j/kgK CAN MODIFY (value of specific heat capacity of graphite at 750C)    file:///C:/Users/marce/University%20of%20Calgary/Michelle%20Chung%20-%20Capstone_Group25_CHEMENGG/Reactor_Modelling/Reactor_Core_Modelling/Sources_Used/brochure-properties-and-characteristics-of-graphite-7329.pdf
+           obj.C_reflector = 1025.8; % j/kgK This actually an equation CAN MODIFY (value of specific heat capacity of graphite at 400C)    file:///C:/Users/marce/University%20of%20Calgary/Michelle%20Chung%20-%20Capstone_Group25_CHEMENGG/Reactor_Modelling/Reactor_Core_Modelling/Sources_Used/brochure-properties-and-characteristics-of-graphite-7329.pdf
            obj.Ad = (1- obj.porosity)*(obj.calc_surface_area('sphere', D_fuel_element))*N_fuel_elements_in_core/obj.N; % m^2 SA of one sphere * number of spheres/10 sections
            obj.Kd = obj.P0/(obj.Ad*(obj.Tout-obj.Tin)); %116.9569; %W/(m^2*K) include porosity
-           obj.Kr = 60; % W/(m^2K) CAN MODIFY 
+           obj.Kr = 70; % W/(mK) This number needs to be multiplied by some sort of thickness 
            obj.Ar = obj.calc_surface_area('cylinder_no_top', D_reactor_core, H_reactor_core)/obj.N *(1 - obj.porosity); % m^2 heat transfer area between fuel pile and reflector per node
-           obj.K = 60; % W/(m^2K) CAN MODIFY
+           obj.K = 70; % W/(m^2K) CAN MODIFY
            obj.A = pi*(D_reactor_core/2)^2*(1- obj.porosity); % m^2 area of circle, cross-sectional area of the reactor core
-           obj.Ku = 112; % W/(m^2K) look into what the material is, fluid and wall CAN MODIFY This number can be figure out by looking at the overall heat transfer between a flate plate and a flowing fluid!!!!!! Should be ho 
-           obj.Au = obj.calc_surface_area('cylinder_no_top', D_reactor_core + 2*(reflector_thickness), H_reactor_core); %m^2 heat transfer area between coolant in reflector and riser, SA of reflector using outer diameter
+           obj.Ku = 66300.8; %3.43E+06; %110.7661157; % W/(m^2K) look into what the material is, fluid and wall CAN MODIFY This number can be figure out by looking at the overall heat transfer between a flate plate and a flowing fluid!!!!!! Should be ho 
+           obj.Au = obj.calc_surface_area('cylinder_no_top', .2,H_reactor_core)*30;%obj.calc_surface_area('cylinder_no_top', D_reactor_core + 2*(reflector_thickness), H_reactor_core); %m^2 heat transfer area between coolant in reflector and riser, SA of reflector using outer diameter
            
            obj.k = 0; %leakage ratio CAN MODIFY
            obj.control_rod_length = 4; % I made this up.  The HTR-10 value was 2.2m.  We need to find the HTR-PM value
