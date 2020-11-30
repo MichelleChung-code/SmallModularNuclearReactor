@@ -126,8 +126,8 @@ classdef NeutronKinetics
            obj.Ar = obj.calc_surface_area('cylinder_no_top', D_reactor_core, H_reactor_core)/obj.N *(1 - obj.porosity); % m^2 heat transfer area between fuel pile and reflector per node
            obj.K = 70; % W/(m^2K) CAN MODIFY
            obj.A = pi*(D_reactor_core/2)^2*(1- obj.porosity); % m^2 area of circle, cross-sectional area of the reactor core
-           obj.Ku = 110.7661157; % W/(m^2K) look into what the material is, fluid and wall CAN MODIFY This number can be figure out by looking at the overall heat transfer between a flate plate and a flowing fluid!!!!!! Should be ho 
-           obj.Au = obj.calc_surface_area('cylinder_no_top', D_reactor_core + 2*(reflector_thickness), H_reactor_core); %m^2 heat transfer area between coolant in reflector and riser, SA of reflector using outer diameter
+           obj.Ku = 66300.8; %3.43E+06; %110.7661157; % W/(m^2K) look into what the material is, fluid and wall CAN MODIFY This number can be figure out by looking at the overall heat transfer between a flate plate and a flowing fluid!!!!!! Should be ho 
+           obj.Au = obj.calc_surface_area('cylinder_no_top', .2,H_reactor_core)*30;%obj.calc_surface_area('cylinder_no_top', D_reactor_core + 2*(reflector_thickness), H_reactor_core); %m^2 heat transfer area between coolant in reflector and riser, SA of reflector using outer diameter
            
            obj.k = 0; %leakage ratio CAN MODIFY
            obj.control_rod_length = 4; % I made this up.  The HTR-10 value was 2.2m.  We need to find the HTR-PM value
