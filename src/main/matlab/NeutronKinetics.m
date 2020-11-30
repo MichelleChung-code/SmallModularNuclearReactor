@@ -114,6 +114,7 @@ classdef NeutronKinetics
            Tavg_Kelvin = Tavg_celsius + 273.15;
            % graphite thermal specific heat capacity using correlation from
            % http://aries.ucsd.edu/LIB/PROPS/PANOS/c.html
+           % for 300 K <= T <= 1500 K
            
            obj.C_fuel = -474.0 + 4.9532*Tavg_Kelvin - 3.6093E-3*(Tavg_Kelvin^2) + 9.3068E-7*(Tavg_Kelvin^3); % j/kgK
            obj.Cp_helium = 5.19E3; % j/kgK
