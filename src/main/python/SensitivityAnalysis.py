@@ -83,6 +83,8 @@ class SensitivityAnalysis:
         return results
 
     def plot_results(self, results):
+        base_case_row = results[
+            (results['R_AdjustFact'] == 1) & (results['E_AdjustFact'] == 1) & (results['FCI_AdjustFact'] == 1)]
         # NPV plot
         fig = plt.figure(figsize=(13, 10))
         ax = fig.add_subplot(111, projection='3d')
@@ -94,6 +96,7 @@ class SensitivityAnalysis:
         ax.set_xlabel('Revenue Fraction of Base Case')
         ax.set_ylabel('Expense Fraction of Base Case')
         ax.set_zlabel('FCI Fraction of Base Case')
+        ax.text(1, 1, 1, 'Base Case', color='k')
 
         plt.title('Net Present Value Sensitivity Analysis Results')
 
@@ -108,6 +111,7 @@ class SensitivityAnalysis:
         ax.set_xlabel('Revenue Fraction of Base Case')
         ax.set_ylabel('Expense Fraction of Base Case')
         ax.set_zlabel('FCI Fraction of Base Case')
+        ax.text(1, 1, 1, 'Base Case', color='k')
 
         plt.title('Internal Rate of Return Sensitivity Analysis Results')
 
@@ -115,8 +119,6 @@ class SensitivityAnalysis:
         fig.colorbar(img)
         plt.savefig(os.path.join(self.results_path, 'IRR_combined.png'))
         plt.show()
-
-
 
 
 if __name__ == '__main__':
