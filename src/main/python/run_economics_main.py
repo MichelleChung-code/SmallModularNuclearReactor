@@ -13,9 +13,11 @@ print('Real Discount Rate: ', discount_rate)
 # read in the base_case revenue and expenses
 p = str(Path(__file__).parents[3])
 base_case_path = os.path.join(p, r'mfs/base_case.csv')
-x = SensitivityAnalysis(base_case_path, tax_rate=0.13, FCI=1319.274128, WC=214.135114, Land=2.751365, i=discount_rate,
-                        offsite_capital=65.963706,
-                        start_up_expenses=72.288269)
+results_path = os.path.join(p, r'mfs/processed')
+x = SensitivityAnalysis(base_case_path, results_path, tax_rate=0.13, FCI=1250.472665, WC=206.776112, Land=2.751365,
+                        i=discount_rate,
+                        offsite_capital=62.523633,
+                        start_up_expenses=62.759753)
 
 # build base case annual cashflows
 base_case_cashflows = x.build_cashflows()
@@ -39,4 +41,3 @@ print('Discounted Payback Period', discounted_payback_period)
 
 sensitivity_analysis_results = x()
 sensitivity_analysis_results.to_csv(os.path.join(p, r'mfs/sensitivity_analysis_results.csv'))
-
