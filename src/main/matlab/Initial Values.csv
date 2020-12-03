@@ -103,14 +103,14 @@ Mass Flow Rate - Helium,Node 8,,145
 Mass Flow Rate - Helium,Node 9,,145
 Mass Flow Rate - Helium,Node 10,,145
 Mass Flow Rate - Riser ,,,145
-Reactivity,Node 1,,171.8429491
-Reactivity,Node 2,,724.1326324
-Reactivity,Node 3,,448.2941184
-Reactivity,Node 4,,-348.0898567
-Reactivity,Node 5,,-1001.536074
-Reactivity,Node 6,,-1522.224333
-Reactivity,Node 7,,-1881.718731
-Reactivity,Node 8,,-2137.960553
-Reactivity,Node 9,,-2376.778439
-Reactivity,Node 10,,-2739.400169
+Reactivity,Node 1,,0.001281982
+Reactivity,Node 2,,0.005403966
+Reactivity,Node 3,,0.003345266
+Reactivity,Node 4,,-0.002598492
+Reactivity,Node 5,,-0.007475443
+Reactivity,Node 6,,-0.011361563
+Reactivity,Node 7,,-0.014044623
+Reactivity,Node 8,,-0.015957064
+Reactivity,Node 9,,-0.017739463
+Reactivity,Node 10,,-0.020445863
 Control Rod Position,,,0
