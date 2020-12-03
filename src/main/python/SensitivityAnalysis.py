@@ -76,9 +76,9 @@ class SensitivityAnalysis:
         # NOTE:
         # A 0.1 adjustment factor means a 90% decrease from the base case
         # A 1.4 adjustment factor means a 40% increase from the base case
-        adjust_R_LS = [*np.arange(0.60, 2.41, 0.1)]
-        adjust_E_LS = [*np.arange(0.90, 1.11, 0.1)]
-        adjust_FCI_LS = [*np.arange(0.5, 1.71, 0.1)]
+        adjust_R_LS = [*np.arange(0.60, 2.41, 0.1)]  # add the 0.01 to the end bound so that it goals to 2.40
+        adjust_E_LS = [*np.arange(0.90, 1.11, 0.1)]  # add the 0.01 to the end bound so that it goals to 1.10
+        adjust_FCI_LS = [*np.arange(0.5, 1.71, 0.1)]  # add the 0.01 to the end bound so that it goals to 1.70
         LS_ALL = [adjust_R_LS, adjust_E_LS, adjust_FCI_LS]
 
         combinations = list(itertools.product(*LS_ALL))
@@ -194,14 +194,13 @@ class SensitivityAnalysis:
         LS_DF = [results_vary_R, results_vary_E, results_vary_FCI]
         LS_TYPES = [R_AdjustFact, E_AdjustFact, FCI_AdjustFact]
         for i in range(len(LS_DF)):
-            print('==' * 10, LS_TYPES[i], '=='*10)
+            print('==' * 10, LS_TYPES[i], '==' * 10)
             assert (LS_DF[i]['NPV'].idxmax() == LS_DF[i]['IRR'].idxmax())
             assert (LS_DF[i]['NPV'].idxmin() == LS_DF[i]['IRR'].idxmin())
-            print('>>>',' MAX')
+            print('>>>', ' MAX')
             print(LS_DF[i].loc[LS_DF[i]['NPV'].idxmax()])
-            print('>>>',' MIN')
+            print('>>>', ' MIN')
             print(LS_DF[i].loc[LS_DF[i]['NPV'].idxmin()])
-
 
     def plot_combined_results(self, results):
         # NPV plot
