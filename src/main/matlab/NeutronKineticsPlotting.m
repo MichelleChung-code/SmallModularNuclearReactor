@@ -61,6 +61,16 @@ for i=1:length(diff_plot_titles)
     ylabel(diff_plot_ylabels(i)), xlabel('Time, t (s)')
     legend(legendInfo{starting_index:diff_plots_index_end(i)})
     starting_index = diff_plots_index_end(i) + 1;
+    
+    % set y lim just for the DBM graphs
+    if or(i==14,i==15)
+        ylim([100 280])
+    end
+        
+    if i==20
+        ylim([-0.005 0.005])
+    end
+    
     if i == 22 %todo dont hardcode
         total_at_end = num2str(round(sum(x(length(tout), 117:126))));
         annotation('textbox',[.4 .5 .3 .4],'String',strcat('Total Power:  ', total_at_end, 'MW'),'FitBoxToText','on')
