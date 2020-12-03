@@ -93,6 +93,14 @@ class SensitivityAnalysis:
         self.plot_individual_results(adjust_R_LS=adjust_R_LS, adjust_E_LS=adjust_E_LS, adjust_FCI_LS=adjust_FCI_LS,
                                      base_case_row=base_case_row)
 
+        print('==' * 10, ' COMBINED RESULTS ', '==' * 10)
+        assert (combined_results['NPV'].idxmax() == combined_results['IRR'].idxmax())
+        assert (combined_results['NPV'].idxmin() == combined_results['IRR'].idxmin())
+        print('>>>', ' MAX')
+        print(combined_results.loc[combined_results['NPV'].idxmax()])
+        print('>>>', ' MIN')
+        print(combined_results.loc[combined_results['NPV'].idxmin()])
+
         return combined_results
 
     def build_sensitivity_results(self, results_df):
@@ -181,6 +189,19 @@ class SensitivityAnalysis:
         self.plot_individual_chart(base_case_row, results_vary_E, output_path=self.results_path, vary_type=E_AdjustFact)
         self.plot_individual_chart(base_case_row, results_vary_FCI, output_path=self.results_path,
                                    vary_type=FCI_AdjustFact)
+
+        # print max and min
+        LS_DF = [results_vary_R, results_vary_E, results_vary_FCI]
+        LS_TYPES = [R_AdjustFact, E_AdjustFact, FCI_AdjustFact]
+        for i in range(len(LS_DF)):
+            print('==' * 10, LS_TYPES[i], '=='*10)
+            assert (LS_DF[i]['NPV'].idxmax() == LS_DF[i]['IRR'].idxmax())
+            assert (LS_DF[i]['NPV'].idxmin() == LS_DF[i]['IRR'].idxmin())
+            print('>>>',' MAX')
+            print(LS_DF[i].loc[LS_DF[i]['NPV'].idxmax()])
+            print('>>>',' MIN')
+            print(LS_DF[i].loc[LS_DF[i]['NPV'].idxmin()])
+
 
     def plot_combined_results(self, results):
         # NPV plot
