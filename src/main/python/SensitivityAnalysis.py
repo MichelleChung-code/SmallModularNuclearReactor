@@ -24,6 +24,15 @@ Tax = 'Tax'
 Cash_flow = 'Cash_Flow'
 interest_rate = 'i'
 
+dict_individual_plots = {
+    R_AdjustFact: {'title': ' When Varying Annual Revenue', 'x_axis': 'Revenue Adjustment Factor From Base Case',
+                   'series_name': 'Varying Annual Revenue', 'legend_loc': 2},
+    E_AdjustFact: {'title': ' When Varying Annual Expense', 'x_axis': 'Expense Adjustment Factor From Base Case',
+                   'series_name': 'Varying Annual Expense', 'legend_loc': 1},
+    FCI_AdjustFact: {'title': ' When Varying Fixed Capital Investment',
+                     'x_axis': 'FCI Adjustment Factor From Base Case', 'series_name': 'Varying FCI', 'legend_loc': 1}
+}
+
 
 class SensitivityAnalysis:
     def __init__(self, base_case_path, results_path, tax_rate=0.125, FCI=1052.92, WC=170.99, Land=2.75, i=0.1,
@@ -77,7 +86,9 @@ class SensitivityAnalysis:
         combined_results = self.build_sensitivity_results(combined_results)
         self.plot_combined_results(combined_results)
         base_case_row = combined_results[
-            (combined_results['R_AdjustFact'] == 1) & (combined_results['E_AdjustFact'] == 1) & (combined_results['FCI_AdjustFact'] == 1)]
+            (abs(combined_results['R_AdjustFact'] - 1) <= 1E-6) & (
+                    abs(combined_results['E_AdjustFact'] - 1) <= 1E-6) & (
+                    abs(combined_results['FCI_AdjustFact'] - 1) <= 1E-6)]
 
         self.plot_individual_results(adjust_R_LS=adjust_R_LS, adjust_E_LS=adjust_E_LS, adjust_FCI_LS=adjust_FCI_LS,
                                      base_case_row=base_case_row)
@@ -95,8 +106,50 @@ class SensitivityAnalysis:
         return results_df
 
     @staticmethod
-    def plot_individual_chart(base_case_row, results, type='NPV'):
-        pass
+    def plot_individual_chart(base_case_row, results, output_path, vary_type):
+        """
+
+        :param base_case_row:
+        :param results:
+        :param output_path:
+        :param vary_type: R_AdjustFact, E_AdjustFact, or FCI_AdjustFact
+        :return:
+        """
+        x = results[vary_type]
+        y_NPV = results["NPV"]
+        y_IRR = results['IRR']
+
+        # Plot NPV
+        fig, ax1 = plt.subplots(figsize=(13, 10))
+
+        color = 'tab:red'
+        ax1.plot(x, y_NPV, color=color, label=dict_individual_plots[vary_type]['series_name'] + ': NPV')
+        base_case_series = ax1.scatter(base_case_row[vary_type], base_case_row['NPV'], c='k', label='Base Case')
+        plt.title(dict_individual_plots[vary_type]['title'])
+        ax1.set_xlabel(dict_individual_plots[vary_type]['x_axis'])
+        ax1.set_ylabel('NPV ($M USD)', color=color)
+        ax1.tick_params(axis='y', labelcolor=color)
+
+        ax2 = ax1.twinx()
+        color = 'tab:blue'
+        ax2.set_ylabel('IRR', color=color)
+        ax2.plot(x, y_IRR, color=color, label=dict_individual_plots[vary_type]['series_name'] + ': IRR')
+        ax2.scatter(base_case_row[vary_type], base_case_row['IRR'], c='k')
+        ax2.tick_params(axis='y', labelcolor=color)
+
+        if vary_type == E_AdjustFact:
+            ax1.set_ylim(90, 200)
+            ax2.set_ylim(0.120, 0.13)
+        elif vary_type == R_AdjustFact:
+            ax1.set_ylim(-1000, 3500)
+            ax2.set_ylim(0.05, 0.4)
+        elif vary_type == FCI_AdjustFact:
+            ax1.set_ylim(-700, 800)
+            ax2.set_ylim(0.08, 0.24)
+
+        plt.legend([base_case_series], ['Base Case'], loc=dict_individual_plots[vary_type]['legend_loc'])
+        plt.tight_layout()
+        plt.savefig(os.path.join(output_path, vary_type + '.png'))
 
     def helper_populate_remaining_factors_ones(self, results, LS_include):
         LS_fill_ones = [x for x in LS_include if x not in results.columns]
@@ -124,6 +177,11 @@ class SensitivityAnalysis:
         results_vary_E.to_csv(os.path.join(self.results_path, 'sensitivity_analysis_results_vary_E.csv'))
         results_vary_FCI.to_csv(os.path.join(self.results_path, 'sensitivity_analysis_results_vary_FCI.csv'))
 
+        self.plot_individual_chart(base_case_row, results_vary_R, output_path=self.results_path, vary_type=R_AdjustFact)
+        self.plot_individual_chart(base_case_row, results_vary_E, output_path=self.results_path, vary_type=E_AdjustFact)
+        self.plot_individual_chart(base_case_row, results_vary_FCI, output_path=self.results_path,
+                                   vary_type=FCI_AdjustFact)
+
     def plot_combined_results(self, results):
         # NPV plot
         fig = plt.figure(figsize=(13, 10))
@@ -143,7 +201,6 @@ class SensitivityAnalysis:
         img = ax.scatter(x, y, z, c=c, cmap='GnBu')
         fig.colorbar(img)
         plt.savefig(os.path.join(self.results_path, 'NPV_combined.png'))
-        plt.show()
 
         fig = plt.figure(figsize=(13, 10))
         ax = fig.add_subplot(111, projection='3d')
@@ -158,7 +215,6 @@ class SensitivityAnalysis:
         img = ax.scatter(x, y, z, c=c, cmap='Reds')
         fig.colorbar(img)
         plt.savefig(os.path.join(self.results_path, 'IRR_combined.png'))
-        plt.show()
 
 
 if __name__ == '__main__':
