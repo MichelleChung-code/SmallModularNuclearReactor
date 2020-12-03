@@ -5,12 +5,12 @@ IRR:  0.1262
 Discounted Payback Period 21.76
 ==================== R_AdjustFact ====================
 >>>  MAX
-R_AdjustFact         2.3000
+R_AdjustFact         2.4000
 E_AdjustFact         1.0000
 FCI_AdjustFact       1.0000
-NPV               3018.6200
-IRR                  0.3348
-Name: 17, dtype: float64
+NPV               3239.6000
+IRR                  0.3507
+Name: 18, dtype: float64
 >>>  MIN
 R_AdjustFact        0.6000
 E_AdjustFact        1.0000
@@ -42,26 +42,26 @@ NPV               777.2300
 IRR                 0.2103
 Name: 0, dtype: float64
 >>>  MIN
-FCI_AdjustFact      1.6000
+FCI_AdjustFact      1.7000
 R_AdjustFact        1.0000
 E_AdjustFact        1.0000
-NPV              -611.4600
-IRR                 0.0837
-Name: 11, dtype: float64
+NPV              -737.7100
+IRR                 0.0789
+Name: 12, dtype: float64
 ====================  COMBINED RESULTS  ====================
 >>>  MAX
-R_AdjustFact         2.3000
-E_AdjustFact         0.9000
-FCI_AdjustFact       0.5000
-NPV               3698.5000
-IRR                  0.5633
-Name: 612, dtype: float64
+R_AdjustFact         2.40
+E_AdjustFact         0.90
+FCI_AdjustFact       0.50
+NPV               3919.47
+IRR                  0.59
+Name: 702, dtype: float64
 >>>  MIN
-R_AdjustFact         0.600
-E_AdjustFact         1.100
-FCI_AdjustFact       1.600
-NPV              -1544.000
-IRR                  0.029
-Name: 35, dtype: float64
+R_AdjustFact         0.6000
+E_AdjustFact         1.1000
+FCI_AdjustFact       1.7000
+NPV              -1670.2500
+IRR                  0.0262
+Name: 38, dtype: float64
 
 Process finished with exit code 0

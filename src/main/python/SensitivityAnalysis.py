@@ -76,9 +76,9 @@ class SensitivityAnalysis:
         # NOTE:
         # A 0.1 adjustment factor means a 90% decrease from the base case
         # A 1.4 adjustment factor means a 40% increase from the base case
-        adjust_R_LS = [*np.arange(0.60, 2.4, 0.1)]
-        adjust_E_LS = [*np.arange(0.90, 1.1, 0.1)]
-        adjust_FCI_LS = [*np.arange(0.5, 1.7, 0.1)]
+        adjust_R_LS = [*np.arange(0.60, 2.41, 0.1)]
+        adjust_E_LS = [*np.arange(0.90, 1.11, 0.1)]
+        adjust_FCI_LS = [*np.arange(0.5, 1.71, 0.1)]
         LS_ALL = [adjust_R_LS, adjust_E_LS, adjust_FCI_LS]
 
         combinations = list(itertools.product(*LS_ALL))
