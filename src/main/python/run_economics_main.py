@@ -25,7 +25,8 @@ base_case_cashflows.to_csv(os.path.join(p, r'mfs/processed/base_case_annual_cash
 
 base_case_cashflows = base_case_cashflows['Cash_Flow'].to_frame()
 base_case_cashflows.rename(columns={'Cash_Flow': 'CASHFLOW'}, inplace=True)
-profit_x = ProfitabilityAnalysis(base_case_cashflows, discount_rate)
+profit_x = ProfitabilityAnalysis(results_path, 'base_case_annual_cashflows_payback_period.csv', base_case_cashflows,
+                                 discount_rate)
 
 net_present_value = profit_x.net_present_value()
 print('NPV: ', net_present_value)
