@@ -73,13 +73,16 @@ class SensitivityAnalysis:
         LS_ALL = [adjust_R_LS, adjust_E_LS, adjust_FCI_LS]
 
         combinations = list(itertools.product(*LS_ALL))
-        results = pd.DataFrame(combinations, columns=['R_AdjustFact', 'E_AdjustFact', 'FCI_AdjustFact'])
-        results = self.build_sensitivity_results(results)
-        self.plot_combined_results(results)
-        base_case_row = results[
-            (results['R_AdjustFact'] == 1) & (results['E_AdjustFact'] == 1) & (results['FCI_AdjustFact'] == 1)]
+        combined_results = pd.DataFrame(combinations, columns=['R_AdjustFact', 'E_AdjustFact', 'FCI_AdjustFact'])
+        combined_results = self.build_sensitivity_results(combined_results)
+        self.plot_combined_results(combined_results)
+        base_case_row = combined_results[
+            (combined_results['R_AdjustFact'] == 1) & (combined_results['E_AdjustFact'] == 1) & (combined_results['FCI_AdjustFact'] == 1)]
 
-        return results
+        self.plot_individual_results(adjust_R_LS=adjust_R_LS, adjust_E_LS=adjust_E_LS, adjust_FCI_LS=adjust_FCI_LS,
+                                     base_case_row=base_case_row)
+
+        return combined_results
 
     def build_sensitivity_results(self, results_df):
         for index, row in results_df.iterrows():
@@ -95,8 +98,12 @@ class SensitivityAnalysis:
     def plot_individual_chart(base_case_row, results, type='NPV'):
         pass
 
-    def helper_populate_remaining_factors_ones(self):
-        pass
+    def helper_populate_remaining_factors_ones(self, results, LS_include):
+        LS_fill_ones = [x for x in LS_include if x not in results.columns]
+        for col_name in LS_fill_ones:
+            results[col_name] = 1
+
+        return results
 
     def plot_individual_results(self, adjust_R_LS, adjust_E_LS, adjust_FCI_LS, base_case_row):
 
@@ -105,7 +112,17 @@ class SensitivityAnalysis:
         results_vary_E = pd.DataFrame(adjust_E_LS, columns=[E_AdjustFact])
         results_vary_FCI = pd.DataFrame(adjust_FCI_LS, columns=[FCI_AdjustFact])
 
+        results_vary_R = self.helper_populate_remaining_factors_ones(results_vary_R, LS_vary_factors)
+        results_vary_E = self.helper_populate_remaining_factors_ones(results_vary_E, LS_vary_factors)
+        results_vary_FCI = self.helper_populate_remaining_factors_ones(results_vary_FCI, LS_vary_factors)
 
+        results_vary_R = self.build_sensitivity_results(results_vary_R)
+        results_vary_E = self.build_sensitivity_results(results_vary_E)
+        results_vary_FCI = self.build_sensitivity_results(results_vary_FCI)
+
+        results_vary_R.to_csv(os.path.join(self.results_path, 'sensitivity_analysis_results_vary_R.csv'))
+        results_vary_E.to_csv(os.path.join(self.results_path, 'sensitivity_analysis_results_vary_E.csv'))
+        results_vary_FCI.to_csv(os.path.join(self.results_path, 'sensitivity_analysis_results_vary_FCI.csv'))
 
     def plot_combined_results(self, results):
         # NPV plot
@@ -145,6 +162,7 @@ class SensitivityAnalysis:
 
 
 if __name__ == '__main__':
+    print('WARNING - RUNNING FROM CLASS SCRIPT FILE')
     p = str(Path(__file__).parents[3])
     results_path = os.path.join(p, r'mfs/processed')
     base_case_path = os.path.join(p, r'mfs/base_case.csv')
@@ -152,5 +170,3 @@ if __name__ == '__main__':
     results = x()
 
     results.to_csv(os.path.join(p, r'mfs/sensitivity_analysis_results.csv'))
-
-# todo add plotting of the results

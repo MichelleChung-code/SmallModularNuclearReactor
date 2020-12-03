@@ -53,6 +53,7 @@ class ProfitabilityAnalysis:
 
 
 if __name__ == '__main__':
+    print('WARNING - RUNNING FROM CLASS SCRIPT FILE')
     p = str(Path(__file__).parents[3])
     cash_flow_path = os.path.join(p, r'mfs/cashflows_test_mchung.csv')
     cash_flow_df = pd.read_csv(cash_flow_path, index_col=0)
