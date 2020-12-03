@@ -10,6 +10,9 @@ import matplotlib.pyplot as plt
 # All values are in $MM (Millions)
 R = 'REVENUE'
 E = 'EXPENSE'
+R_AdjustFact = 'R_AdjustFact'
+E_AdjustFact = 'E_AdjustFact'
+FCI_AdjustFact = 'FCI_AdjustFact'
 
 # Gemma's column headings zzz
 FCI = 'FCI'
@@ -64,27 +67,47 @@ class SensitivityAnalysis:
         # NOTE:
         # A 0.1 adjustment factor means a 90% decrease from the base case
         # A 1.4 adjustment factor means a 40% increase from the base case
-        adjust_R_LS = [*np.arange(0.1, 2.1, 0.2)]  # ranging from a 90% decrease to a doubling
-        adjust_E_LS = copy.deepcopy(adjust_R_LS)
-        adjust_FCI_LS = copy.deepcopy(adjust_R_LS)
+        adjust_R_LS = [*np.arange(0.60, 2.4, 0.1)]
+        adjust_E_LS = [*np.arange(0.90, 1.1, 0.1)]
+        adjust_FCI_LS = [*np.arange(0.5, 1.7, 0.1)]
         LS_ALL = [adjust_R_LS, adjust_E_LS, adjust_FCI_LS]
 
         combinations = list(itertools.product(*LS_ALL))
         results = pd.DataFrame(combinations, columns=['R_AdjustFact', 'E_AdjustFact', 'FCI_AdjustFact'])
-        for index, row in results.iterrows():
+        results = self.build_sensitivity_results(results)
+        self.plot_combined_results(results)
+        base_case_row = results[
+            (results['R_AdjustFact'] == 1) & (results['E_AdjustFact'] == 1) & (results['FCI_AdjustFact'] == 1)]
+
+        return results
+
+    def build_sensitivity_results(self, results_df):
+        for index, row in results_df.iterrows():
             processed_cashflows = self.build_cashflows(row["R_AdjustFact"], row["E_AdjustFact"], row["FCI_AdjustFact"])
             cashflow_arr = np.array(processed_cashflows[Cash_flow])
             NPV = round(np_fi.npv(self.i, cashflow_arr), 2)
             IRR = round(np_fi.irr(cashflow_arr), 4)
-            results.loc[index, 'NPV'] = NPV
-            results.loc[index, 'IRR'] = IRR
+            results_df.loc[index, 'NPV'] = NPV
+            results_df.loc[index, 'IRR'] = IRR
+        return results_df
 
-        self.plot_results(results)
-        return results
+    @staticmethod
+    def plot_individual_chart(base_case_row, results, type='NPV'):
+        pass
 
-    def plot_results(self, results):
-        base_case_row = results[
-            (results['R_AdjustFact'] == 1) & (results['E_AdjustFact'] == 1) & (results['FCI_AdjustFact'] == 1)]
+    def helper_populate_remaining_factors_ones(self):
+        pass
+
+    def plot_individual_results(self, adjust_R_LS, adjust_E_LS, adjust_FCI_LS, base_case_row):
+
+        LS_vary_factors = [R_AdjustFact, E_AdjustFact, FCI_AdjustFact]
+        results_vary_R = pd.DataFrame(adjust_R_LS, columns=[R_AdjustFact])
+        results_vary_E = pd.DataFrame(adjust_E_LS, columns=[E_AdjustFact])
+        results_vary_FCI = pd.DataFrame(adjust_FCI_LS, columns=[FCI_AdjustFact])
+
+
+
+    def plot_combined_results(self, results):
         # NPV plot
         fig = plt.figure(figsize=(13, 10))
         ax = fig.add_subplot(111, projection='3d')
