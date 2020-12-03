@@ -1,0 +1,7 @@
+To run econ profitability and sensitivity analysis:
+In Python:
+(1) Run from src/main/python/run_economics_main.py
+
+To produce cash flow diagrams:
+In MATLAB:
+(1) Run from src/main/matlab/Economics/CashFlowDiagram.m
