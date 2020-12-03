@@ -1,0 +1,67 @@
+C:\Users\tkdmc\AppData\Local\Continuum\anaconda3\envs\py37\python.exe C:/Users/tkdmc/OneDrive/Documents/ENGG_Year_4/Fall_2020/ENCH_511/MATLAB/src/main/python/run_economics_main.py
+Real Discount Rate:  0.11531374260498506
+NPV:  146.0
+IRR:  0.1262
+Discounted Payback Period 21.76
+==================== R_AdjustFact ====================
+>>>  MAX
+R_AdjustFact         2.4000
+E_AdjustFact         1.0000
+FCI_AdjustFact       1.0000
+NPV               3239.6000
+IRR                  0.3507
+Name: 18, dtype: float64
+>>>  MIN
+R_AdjustFact        0.6000
+E_AdjustFact        1.0000
+FCI_AdjustFact      1.0000
+NPV              -737.8800
+IRR                 0.0573
+Name: 0, dtype: float64
+==================== E_AdjustFact ====================
+>>>  MAX
+E_AdjustFact        0.9000
+R_AdjustFact        1.0000
+FCI_AdjustFact      1.0000
+NPV               194.6600
+IRR                 0.1298
+Name: 0, dtype: float64
+>>>  MIN
+E_AdjustFact       1.1000
+R_AdjustFact       1.0000
+FCI_AdjustFact     1.0000
+NPV               97.3500
+IRR                0.1226
+Name: 2, dtype: float64
+==================== FCI_AdjustFact ====================
+>>>  MAX
+FCI_AdjustFact      0.5000
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+NPV               777.2300
+IRR                 0.2103
+Name: 0, dtype: float64
+>>>  MIN
+FCI_AdjustFact      1.7000
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+NPV              -737.7100
+IRR                 0.0789
+Name: 12, dtype: float64
+====================  COMBINED RESULTS  ====================
+>>>  MAX
+R_AdjustFact         2.40
+E_AdjustFact         0.90
+FCI_AdjustFact       0.50
+NPV               3919.47
+IRR                  0.59
+Name: 702, dtype: float64
+>>>  MIN
+R_AdjustFact         0.6000
+E_AdjustFact         1.1000
+FCI_AdjustFact       1.7000
+NPV              -1670.2500
+IRR                  0.0262
+Name: 38, dtype: float64
+
+Process finished with exit code 0
