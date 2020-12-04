@@ -42,7 +42,7 @@ classdef NeutronKinetics
     methods(Static)
         function vol = calc_volume(type, D, H)
            if nargin < 3
-               H = 'Not Used'; % apparently MATLAB doesn't support default arguments XD
+               H = 'Not Used'; % MATLAB does not support default arguments
            end
            if strcmp('sphere', type)
               vol =  (4/3)*pi*(D/2)^2;
@@ -72,26 +72,26 @@ classdef NeutronKinetics
     
     methods
        function obj = NeutronKinetics(coupling_coeffs_matrix, N)
-           % Dyanmic inputs that can change
+           % Dynamic inputs that can change
            obj.coupling_coeffs_matrix = coupling_coeffs_matrix;
            obj.N = N; % number of nodes
            
-           % ALL VARIABLES THAT ARE DEFINED BELOW ARE CONSTANTS FOR THE
+           % VARIABLES DEFINED BELOW ARE CONSTANTS FOR THE
            % ENTIRE SYSTEM.
            % Dynamic inputs i.e. inputs that can change run to run should
            % be fed into the class object
            % Constant class inputs that will not change 
            obj.beta_ls_delayed_groups = 10^-2*[.0256 .14 .13 .27 .086 .017]';
-           obj.lambda = 7.669E-2; % uses initial paper's values
+           obj.lambda = 7.669E-2; 
            obj.beta = 10^-2*.67;
-           obj.lambda_ls_delayed_groups = [.0124 .0305 .111 .301 1.14 3.01]'; % uses initial paper's values
+           obj.lambda_ls_delayed_groups = [.0124 .0305 .111 .301 1.14 3.01]'; 
            
-           %Variable for reactivity
+           % Variable for reactivity
            obj.alpha_fuel = -4.36e-5; 
            obj.alpha_moderator = -0.94e-5;
            obj.alpha_reflector = 1.49e-5;
-           obj.Tc0  = 0; %celsius CAN MODIFY
-           obj.Tr0 = 0; %celsius CAN MODIFY
+           obj.Tc0  = 0; % celsius - reference temperature  
+           obj.Tr0 = 0; % celsius - reference temperature
            
            % Reactor Core Properties
            D_fuel_element = 6E-2; % m
@@ -104,7 +104,7 @@ classdef NeutronKinetics
            obj.volume = obj.calc_volume('cylinder', D_reactor_core, H_reactor_core); %m^3
 
            obj.porosity = 0.39;
-           obj.density_fuel = 1797.169975; % kg/m^3 From stream table of our PFD
+           obj.density_fuel = 1797.169975; % kg/m^3 
            obj.volume_i = obj.volume/obj.N;
            
            obj.mass_flow_rate_helium = 145; % kg/s
@@ -124,21 +124,20 @@ classdef NeutronKinetics
            
            
            %Values that need to be defined for now these are all random
-           %number I created
-           obj.density_reflector = 2230; % kg/m^3 CAN MODIFY (Density of graphite)file:///C:/Users/marce/University%20of%20Calgary/Michelle%20Chung%20-%20Capstone_Group25_CHEMENGG/Reactor_Modelling/Reactor_Core_Modelling/Sources_Used/brochure-properties-and-characteristics-of-graphite-7329.pdf
+           obj.density_reflector = 2230; % kg/m^3 (Density of graphite)file:Capstone_Group25_CHEMENGG/Reactor_Modelling/Reactor_Core_Modelling/Sources_Used/brochure-properties-and-characteristics-of-graphite-7329.pdf
            obj.volume_reflector = obj.calc_volume('cylinder', D_reactor_core + 2*(reflector_thickness), H_reactor_core); % m^3 
-           obj.C_reflector = 1025.8; % j/kgK This actually an equation CAN MODIFY (value of specific heat capacity of graphite at 400C)    file:///C:/Users/marce/University%20of%20Calgary/Michelle%20Chung%20-%20Capstone_Group25_CHEMENGG/Reactor_Modelling/Reactor_Core_Modelling/Sources_Used/brochure-properties-and-characteristics-of-graphite-7329.pdf
+           obj.C_reflector = 1025.8; % j/kgK  value of specific heat capacity of graphite at 400C   file: Capstone_Group25_CHEMENGG/Reactor_Modelling/Reactor_Core_Modelling/Sources_Used/brochure-properties-and-characteristics-of-graphite-7329.pdf
            obj.Ad = (1- obj.porosity)*(obj.calc_surface_area('sphere', D_fuel_element))*N_fuel_elements_in_core/obj.N; % m^2 SA of one sphere * number of spheres/10 sections
            obj.Kd = obj.P0/(obj.Ad*(obj.Tout-obj.Tin)); %116.9569; %W/(m^2*K) include porosity
-           obj.Kr = 70; % W/(mK) This number needs to be multiplied by some sort of thickness 
+           obj.Kr = 70; % W/(m^2K) 
            obj.Ar = obj.calc_surface_area('cylinder_no_top', D_reactor_core, H_reactor_core)/obj.N *(1 - obj.porosity); % m^2 heat transfer area between fuel pile and reflector per node
-           obj.K = 70; % W/(m^2K) CAN MODIFY
+           obj.K = 70; % W/(m^2K)
            obj.A = pi*(D_reactor_core/2)^2*(1- obj.porosity); % m^2 area of circle, cross-sectional area of the reactor core
-           obj.Ku = 26494.5; %3.43E+06; %110.7661157; % W/(m^2K) look into what the material is, fluid and wall CAN MODIFY This number can be figure out by looking at the overall heat transfer between a flate plate and a flowing fluid!!!!!! Should be ho 
+           obj.Ku = 26494.5; %3.43E+06; %110.7661157; % W/(m^2K) This number can be figure out by looking at the overall heat transfer between a flate plate and a flowing fluid
            obj.Au = obj.calc_surface_area('cylinder_no_top', .2,H_reactor_core)*30;%obj.calc_surface_area('cylinder_no_top', D_reactor_core + 2*(reflector_thickness), H_reactor_core); %m^2 heat transfer area between coolant in reflector and riser, SA of reflector using outer diameter
            
-           obj.k = 0; %leakage ratio CAN MODIFY
-           obj.control_rod_length = 4; % I made this up.  The HTR-10 value was 2.2m.  We need to find the HTR-PM value
+           obj.k = 0; %leakage ratio 
+           obj.control_rod_length = 4; % Currently not being used.  For future use.  The HTR-10 value was 2.2m.  We need to find the HTR-PM value
        end
        
        function rho = reactivity(obj, control_rod_x,Tc, Tr)
@@ -153,10 +152,15 @@ classdef NeutronKinetics
            % control rod reactivity is defined as a sin wave based o1n the
            % insertion position Ohki2014_Chapter_FuelBurnupAndReactivityControl
            
+           % control rod based on insertion position is currently not being used in the overall system
+           % (rho_control_rods being overwritten below)  This is for future
+           % use and reference only
            control_rod_fraction_inserted = control_rod_x / obj.control_rod_length; 
            rho_control_rods_H = 5.25E-2; % from "Capstone_Group25_CHEMENGG\Reactor_Modelling\2006-design-aspect-of-the-chinese-modular-high-temperature-gas-cooled-reactor-htr-pm_zhang.pdf" control rod worth
            rho_control_rods = rho_control_rods_H * (control_rod_fraction_inserted - (1/(2*pi))*sin(2*pi*control_rod_fraction_inserted)); 
-           rho_control_rods = 0.03419; % CAN CHANGE TO SEE IF BETTER GRAPH
+           % 
+           
+           rho_control_rods = 0.03419; % This value will need to be part of the future control scheme
            rho = rho_control_rods + (obj.alpha_fuel + obj.alpha_moderator)*(Tc - obj.Tc0) + obj.alpha_reflector*(Tr - obj.Tr0);
 
        end
@@ -188,14 +192,17 @@ classdef NeutronKinetics
            downs = obj.N*7+obj.N+1; % This is the index number for downcomer (helium) temperature
            hmass = obj.N*7+2*obj.N+5; % index number for masses
 
+           % CONTROL ROD POSITION not being used as part of the reactivity
+           % function, only for testing purposes for now and future
+           % reference
            % control rod position - intech-the_theoretical_simulation_of_a_model_by_simulink_for_surveying_the_work_and_dynamical_stability_of_nuclear_reactors_cores (1)
-           control_rod_const_coeff = 0.1; % I made this up, this is the constant coefficient CAN MODIFY
-           Ko = 0.5; % I made this up, this is the initial value of Keff CAN MODIFY
+           control_rod_const_coeff = 0.1; % this is the constant coefficient 
+           Ko = 0.5; % I made this up, this is the initial value of Keff 
            Ksp = 0.5; % I made this up, this is supposed to be the secondary value of Keff in the recent position of control rod... Need to figure out how to access previous results in matlab ODE solver to get this
-           velocity_control_rod = 10; % Units of mm/s I made this up too, this is the control rod velocity CAN MODIFY
+           velocity_control_rod = 10; % Units of mm/s this is the control rod velocity 
            F = x(control_rod_position)*obj.control_rod_length*control_rod_const_coeff + Ko;
            dxdt(control_rod_position) = velocity_control_rod*sign(F - Ksp);
-        
+           %
            
            % Relative neutron flux for node 1
            rho_1 = obj.reactivity(x(control_rod_position),x(cores),x(Tr));
@@ -332,9 +339,11 @@ classdef NeutronKinetics
             toc
             
             % POST-PROCESSING
-            % Don't hardcode this 
+            % TODO don't hardcode this 
             % Divide nodal reactivity by tout, as it was included in the
-            % ODE solving to extract reactivity values
+            % ODE solving to extract reactivity values and integrated over
+            % time unneccessarily when wanting to extract for plotting
+            % purposes
             x(:, 106:115) = rdivide(x(:, 106:115), tout);
             
             % calculate power output
