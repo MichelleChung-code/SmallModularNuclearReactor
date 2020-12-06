@@ -64,5 +64,5 @@ title('Fuel Temperature (Tf)')
 xlabel('time'), ylabel('Temperature (F)')
 
 nexttile, plot(ans.tout, ans.rho), grid on
-title('Reactivity (rho)')
-xlabel('time'), ylabel('rho')
+title('Reactivity (\rho)')
+xlabel('time'), ylabel('\rho')
