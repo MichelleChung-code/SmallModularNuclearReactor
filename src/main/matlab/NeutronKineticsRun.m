@@ -13,13 +13,9 @@ coupling_coeffs_matrix = [3.5 7.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0;
                           0.0 0.0 0.0 0.0 0.0 0.0 0.0 5.0 7.0 2.2;
                           0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 5.6 3.5]*10^-3;
 
-% for the initial set up of the numerical integration 
-% think about how to set up such that nodes are dynamic
-
 disp("Starting to Solve Equations");
 
 tspan = [0 10000]';
-% TODO need to get the actual initial conditions
 N = 10; % number of nodes
 
 
