@@ -24,7 +24,9 @@ Syngas_Combined_Final_DBM.vsym:
 
 Integrated file of simulation of SMR output and syngas process. Latest revision: Dec. 7th 2020
 ## ECONOMICS FOLDER:
-ISABELLA PUT EXCEL HERE
+DBM_Economics.xlsx
+
+Excel file containing the equipment costs, fixed capital investment, total capital investment, and timeline.
 
 ###### Econ_Matlab Folder
 CashFlowDiagram.m
