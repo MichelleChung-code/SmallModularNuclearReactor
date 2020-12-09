@@ -122,8 +122,6 @@ classdef NeutronKinetics
            obj.P0 = obj.mass_flow_rate_helium * obj.Cp_helium * (obj.Tout - obj.Tin); %W
            obj.P0_node = obj.P0/obj.N;  % Watts
            
-           
-           %Values that need to be defined for now these are all random
            obj.density_reflector = 2230; % kg/m^3 (Density of graphite)file:Capstone_Group25_CHEMENGG/Reactor_Modelling/Reactor_Core_Modelling/Sources_Used/brochure-properties-and-characteristics-of-graphite-7329.pdf
            obj.volume_reflector = obj.calc_volume('cylinder', D_reactor_core + 2*(reflector_thickness), H_reactor_core); % m^3 
            obj.C_reflector = 1025.8; % j/kgK  value of specific heat capacity of graphite at 400C   file: Capstone_Group25_CHEMENGG/Reactor_Modelling/Reactor_Core_Modelling/Sources_Used/brochure-properties-and-characteristics-of-graphite-7329.pdf
@@ -197,12 +195,12 @@ classdef NeutronKinetics
            % reference
            % control rod position - intech-the_theoretical_simulation_of_a_model_by_simulink_for_surveying_the_work_and_dynamical_stability_of_nuclear_reactors_cores (1)
            control_rod_const_coeff = 0.1; % this is the constant coefficient 
-           Ko = 0.5; % I made this up, this is the initial value of Keff 
-           Ksp = 0.5; % I made this up, this is supposed to be the secondary value of Keff in the recent position of control rod... Need to figure out how to access previous results in matlab ODE solver to get this
+           Ko = 0.5; % testing, this is the initial value of Keff 
+           Ksp = 0.5; % testing, this is supposed to be the secondary value of Keff in the recent position of control rod... Need to figure out how to access previous results in matlab ODE solver to get this
            velocity_control_rod = 10; % Units of mm/s this is the control rod velocity 
            F = x(control_rod_position)*obj.control_rod_length*control_rod_const_coeff + Ko;
            dxdt(control_rod_position) = velocity_control_rod*sign(F - Ksp);
-           %
+           %%%%%%%%%%% UNUSED END
            
            % Relative neutron flux for node 1
            rho_1 = obj.reactivity(x(control_rod_position),x(cores),x(Tr));
