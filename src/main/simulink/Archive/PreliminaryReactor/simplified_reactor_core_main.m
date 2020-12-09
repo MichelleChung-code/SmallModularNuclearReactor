@@ -6,7 +6,7 @@ run(unit_conversion_path);
 
 
 % All units are in english units
-% input data is for explanatory purposes - not accurate for the specific
+% input data is for explanatory purposes - may not be accurate for the specific
 % model
 beta = 0.0067;
 beta1 = 0.000256;
@@ -34,7 +34,6 @@ A_fc = 4.7501e+03*m2_over_ft2; % ft^2
 A_fc1 = A_fc/2; % ft^2
 A_fc2 = A_fc/2; % ft^2
 
-%http://www.endmemo.com/sconvert/j_kgcbtu_lbf.php#:~:text=F)%E2%86%94J%2F(g.C,Btu%2F(lb.
 Cp_c = 1.240327; % 5.193e3 J/kgK converted to Btu/lbm F
 Cp_f = 0.387277; % 1621.45 J/kgK converted to Btu/lbm F 
 
@@ -45,7 +44,6 @@ mc2 = mc/2;
 mf =  8.5367e+04*kg_over_lbm; % in lbm
 Po = 250*MWatt_over_Btu_s; % in Btu/s
 
-% http://www.endmemo.com/convert/heat%20transfer%20coefficient.php
 Ufc = 0.44583; % 9.1075e+03 W/m^2K converted to 0.44583 Btu/(s ft^2 F)
 
 Wc = 145*kg_over_lbm; % lbm/s
