@@ -162,12 +162,16 @@ classdef NeutronKinetics
            rho = rho_control_rods + (obj.alpha_fuel + obj.alpha_moderator)*(Tc - obj.Tc0) + obj.alpha_reflector*(Tr - obj.Tr0);
 
        end
-       function dxdt = relative_neutron_flux(obj, ~, x) 
+       function dxdt = relative_neutron_flux(obj, ~, x, Lam) 
            % Function solving simulataneous differential equations
            % Args:
            % ~ = timespan to solve over
            % x = array containing intiial conditions for each differential
            % equation
+           
+           % APPLY STEP RESPONSES
+           % Example of Applying step response to x(1)
+           x(1) = -Lam(1)* x(1);
            
            % DOCUMENT WHAT EACH X VALUE REPRESENTS
            % x(1:10) = ni neutron flux of the nodes
@@ -325,14 +329,19 @@ classdef NeutronKinetics
            result = sum(ls_elements_to_sum,'all');
        end
        
-       function [tout, x] = solve_neutron_kinetics(obj, tspan, x0)
+       function [tout, x] = solve_neutron_kinetics(obj, tspan, x0, step_size)
             % Function called to simultaneously solve system of
             % differential equations
             
             tic
-            tstep = .1;
+            tstep = 0.1;
             tspan_fix = tspan(1):tstep:tspan(2);
-            [tout, x] = ode23s(@obj.relative_neutron_flux, tspan_fix, x0);
+            x1 = x0 + step_size;
+            solver = 'ode23tb';
+            fhan = @obj.relative_neutron_flux;
+            
+%             [tout, x] = ode23tb(@obj.relative_neutron_flux, tspan_fix, x0, 0);
+            [tout, x] = Step_ODE(fhan, solver, 1000, tspan(2), x0, x1, x0);
             
             toc
             
