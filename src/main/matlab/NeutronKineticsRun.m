@@ -22,7 +22,7 @@ N = 10; % number of nodes
 from_csv = readtable('Initial Values.csv');
 csv_array = table2array(from_csv(:,4));
 x0 = csv_array;
-step_size = 0;
+step_size = 0.1;
 
 neutron_kinetics = NeutronKinetics(coupling_coeffs_matrix, N);
 [tout, x] = neutron_kinetics.solve_neutron_kinetics(tspan, x0, step_size);
