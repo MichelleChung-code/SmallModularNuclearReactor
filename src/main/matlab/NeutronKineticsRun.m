@@ -22,11 +22,10 @@ N = 10; % number of nodes
 from_csv = readtable('Initial Values.csv');
 csv_array = table2array(from_csv(:,4));
 x0 = csv_array;
-step_size = 1;
 step_time = 1000; % time by which the step occurs.  Must be tpan(1) < step_time < tpan(2)
-
+post_step_x1 = table2array(from_csv(:,5)); % second column contains the post step values.  same if no step
 neutron_kinetics = NeutronKinetics(coupling_coeffs_matrix, N);
-[tout, x] = neutron_kinetics.solve_neutron_kinetics(tspan, x0, step_size, step_time);
+[tout, x] = neutron_kinetics.solve_neutron_kinetics(tspan, x0, step_time, post_step_x1);
 
 disp("Solving Completed");
 
