@@ -169,9 +169,9 @@ classdef NeutronKinetics
            % x = array containing intiial conditions for each differential
            % equation
            
-           % APPLY STEP RESPONSES
+           % APPLY STEP RESPONSES 
            % Example of Applying step response to x(1)
-           x(1) = -Lam(1)* x(1);
+           x(1) = Lam(1)* x(1);
            
            % DOCUMENT WHAT EACH X VALUE REPRESENTS
            % x(1:10) = ni neutron flux of the nodes
@@ -329,7 +329,7 @@ classdef NeutronKinetics
            result = sum(ls_elements_to_sum,'all');
        end
        
-       function [tout, x] = solve_neutron_kinetics(obj, tspan, x0, step_size)
+       function [tout, x] = solve_neutron_kinetics(obj, tspan, x0, step_size, step_time)
             % Function called to simultaneously solve system of
             % differential equations
             
@@ -341,7 +341,7 @@ classdef NeutronKinetics
             fhan = @obj.relative_neutron_flux;
             
 %             [tout, x] = ode23tb(@obj.relative_neutron_flux, tspan_fix, x0, 0);
-            [tout, x] = Step_ODE(fhan, solver, 1000, tspan(2), x0, x1, x0);
+            [tout, x] = Step_ODE(fhan, solver, step_time, tspan(2), x0, x1, x0);
             
             toc
             
