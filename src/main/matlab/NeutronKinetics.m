@@ -344,10 +344,10 @@ classdef NeutronKinetics
             tspan_fix = tspan(1):tstep:tspan(2);
             solver = 'ode23tb';
             fhan = @obj.relative_neutron_flux;
-            initial_step = zeros(length(x0),1)
+%             initial_step = zeros(length(x0),1)
             
 %             [tout, x] = ode23tb(@obj.relative_neutron_flux, tspan_fix, x0, 0);
-            [tout, x] = Step_ODE(fhan, solver, step_time, tspan(2), initial_step, x1, x0);
+            [tout, x] = Step_ODE(fhan, solver, step_time, tspan(2), x0, x1, x0);
             
             toc
             
