@@ -170,14 +170,8 @@ classdef NeutronKinetics
            % equation
            
            % APPLY STEP RESPONSES 
-           x(1) = Lam(1) * x(1);
-%            x = x.*Lam;
-%            for i = 1:length(x)
-%                if x(i) ~= Lam(i)
-%                    x(i) = Lam(i) * x(i);
-%                end
-%            end
-           
+%            x(1) = Lam(1) * x(1);
+%            x = Lam.*x;
            
            % DOCUMENT WHAT EACH X VALUE REPRESENTS
            % x(1:10) = ni neutron flux of the nodes
