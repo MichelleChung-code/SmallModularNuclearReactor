@@ -1,8 +1,3 @@
-% Example of how to do a cashflow diagram
-
-% Cashflows and Dates should be read in from a CSV in the future when we
-% get valid numvers
-
 clc
 close all
 
