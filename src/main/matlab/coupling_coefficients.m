@@ -74,4 +74,8 @@ for i=1:num_nodes
     
 end
 
+common_factor = 1E-25;
+
+a_matrix = a_matrix.*common_factor; % okay because we normalize to node 1 prior to plotting anyways.  This just makes the numbers easier to deal with.
+
 disp(a_matrix)
