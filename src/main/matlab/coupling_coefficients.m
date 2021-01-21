@@ -6,6 +6,10 @@
 % - sigma_f per fth node = fission cross section of node i - N
 % - v is the fission number - N 
 
+% NOTES
+% Can only do up to 10 nodes since that is what we have initial nodal
+% fluxes up to 
+
 % Calculate diffusion coefficient ourselves from SS values and assume it
 % remains constant
 % Calculated following: 
