@@ -10,6 +10,7 @@
 % remains constant
 % Calculated following: 
 % https://www.nuclear-power.net/nuclear-power/reactor-physics/neutron-diffusion-theory/diffusion-coefficient/
+clear, clc
 uranium_mass_number = 235;
 mu_avg = 2/(3*uranium_mass_number);
 
@@ -40,16 +41,37 @@ A = pi*(node_diameter/2)^2; %m^2
 V = A*node_height; %m^3
 
 
-a_matrix = zeros(num_nodes, num_nodes)
+a_matrix = zeros(num_nodes, num_nodes);
 
 % Everything in SI units
 D = D*0.01; % m diffusion coefficient
 absorption_cross_section = absorption_cross_section * 0.0001; %m^2
 fission_cross_section = fission_cross_section* 0.0001; %m^2
 
-for i=1:(num_nodes)
+% for initial neutron fluxes (use SS values, which are the initial
+% conditions)
+% Therefore, the maximum amount of nodes we can have is 10 
+
+from_csv = readtable('Initial Values.csv');
+nodal_neutron_fluxes_0 = table2array(from_csv(1:10,4));
+
+for i=1:num_nodes
     %INSERT CODE TO CALCULATE COUPLING COEFFICIENTS HERE
+    if i==1
+        j = [2];
+        a_matrix(i,i) = D*A/(fission_number*fission_cross_section*V*node_height);
+    elseif i == num_nodes
+        j = [num_nodes];
+        a_matrix(i,i) = (D*A)/(fission_number*fission_cross_section*V*node_height);
+    else
+        j = [i-1, i+1];
+        a_matrix(i,i) = (D*A*(2*(1/fission_cross_section)))/(fission_number*V*node_height);
+    end
+    
+    for k=1:length(j)
+        a_matrix(i,j(k)) = (nodal_neutron_fluxes_0(j(k))/nodal_neutron_fluxes_0(i)) * (D*A/(fission_number*fission_cross_section*V*node_height));
+    end
     
 end
 
-
+disp(a_matrix)
