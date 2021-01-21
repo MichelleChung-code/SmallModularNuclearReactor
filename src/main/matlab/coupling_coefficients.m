@@ -56,12 +56,11 @@ from_csv = readtable('Initial Values.csv');
 nodal_neutron_fluxes_0 = table2array(from_csv(1:10,4));
 
 for i=1:num_nodes
-    %INSERT CODE TO CALCULATE COUPLING COEFFICIENTS HERE
     if i==1
         j = [2];
         a_matrix(i,i) = D*A/(fission_number*fission_cross_section*V*node_height);
     elseif i == num_nodes
-        j = [num_nodes];
+        j = [num_nodes-1];
         a_matrix(i,i) = (D*A)/(fission_number*fission_cross_section*V*node_height);
     else
         j = [i-1, i+1];
