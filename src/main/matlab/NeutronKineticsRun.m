@@ -13,16 +13,15 @@ warning('off','all')
 %                           0.0 0.0 0.0 0.0 0.0 0.0 0.0 5.0 7.0 2.2;
 %                           0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 5.6 3.5]*10^-3;
 
-num_nodes = 10; 
-coupling_coeffs_matrix = compute_coupling_coefficients(num_nodes);
+% Number of Nodes
+N = 10; 
+coupling_coeffs_matrix = compute_coupling_coefficients(N);
 
 disp("Starting to Solve Equations");
 
 tspan = [0 10000]';
-N = 10; % number of nodes
 
-
-from_csv = readtable('Initial Values.csv');
+from_csv = readtable(strcat("Initial Values", "_", string(N), "_Nodes.csv"));
 csv_array = table2array(from_csv(:,4));
 x0 = csv_array;
 

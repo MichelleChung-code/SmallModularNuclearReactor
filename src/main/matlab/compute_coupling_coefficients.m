@@ -56,7 +56,7 @@ function a_matrix = compute_coupling_coefficients(num_nodes)
     % conditions)
     % Therefore, the maximum amount of nodes we can have is 10 
 
-    from_csv = readtable('Initial Values.csv');
+    from_csv = readtable('Initial Values_10_Nodes.csv');
     nodal_neutron_fluxes_0 = table2array(from_csv(1:10,4));
 
     for i=1:num_nodes
