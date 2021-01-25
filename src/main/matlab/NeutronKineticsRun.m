@@ -14,7 +14,7 @@ warning('off','all')
 %                           0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 5.6 3.5]*10^-3;
 
 % Number of Nodes
-N = 10; 
+N = 10; % cannot do 1 node yet because in the code we sometimes index with obj.N-1 which an index of 0 is invalid for MATLAB
 coupling_coeffs_matrix = compute_coupling_coefficients(N);
 
 disp("Starting to Solve Equations");
