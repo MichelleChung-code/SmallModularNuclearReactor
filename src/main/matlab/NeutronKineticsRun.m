@@ -14,7 +14,7 @@ warning('off','all')
 %                           0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 5.6 3.5]*10^-3;
 
 % Number of Nodes
-N = 9; 
+N = 10; 
 coupling_coeffs_matrix = compute_coupling_coefficients(N);
 
 disp("Starting to Solve Equations");
