@@ -337,19 +337,21 @@ classdef NeutronKinetics
             toc
             
             % POST-PROCESSING
-            % TODO don't hardcode this 
             % Divide nodal reactivity by tout, as it was included in the
             % ODE solving to extract reactivity values and integrated over
             % time unneccessarily when wanting to extract for plotting
             % purposes
-            x(:, 106:115) = rdivide(x(:, 106:115), tout);
+            
+            [num_row_x, num_col_x] = size(x);
+            reactivity_final_col_num = num_col_x - 1;
+            x(:, reactivity_final_col_num-(obj.N-1):reactivity_final_col_num) = rdivide(x(:, reactivity_final_col_num-(obj.N-1):reactivity_final_col_num), tout);
             
             % calculate power output
             % Per node
-            x(:, 117:126) = x(:, 1:10) * (1/obj.N) * (obj.P0*10^-6);
+            x(:, num_col_x + 1:num_col_x + obj.N) = x(:, 1:obj.N) * (1/obj.N) * (obj.P0*10^-6);
             
             % normalize the concentrations with the SS of the first node
-            [g1_fact,g2_fact,g3_fact,g4_fact,g5_fact,g6_fact] = subsref(num2cell(x(length(tout), 11:16)),struct('type',{'{}'},'subs',{{1:6}}));
+            [g1_fact,g2_fact,g3_fact,g4_fact,g5_fact,g6_fact] = subsref(num2cell(x(length(tout), obj.N + 1:obj.N + 6)),struct('type',{'{}'},'subs',{{1:6}}));
             LS_normalize_facts = [g1_fact,g2_fact,g3_fact,g4_fact,g5_fact,g6_fact];
             counter = obj.N;
             for j = 1:obj.N
