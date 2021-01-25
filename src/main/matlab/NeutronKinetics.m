@@ -37,6 +37,8 @@ classdef NeutronKinetics
         mass_flow_rate_helium {mustBeNumeric}
         Tout {mustBeNumeric}
         
+        control_rod_reactivity_step_size {mustBeNumeric}
+        control_rod_reactivity_step_time {mustBeNumeric} 
     end
     
     methods(Static)
@@ -71,10 +73,17 @@ classdef NeutronKinetics
     end
     
     methods
-       function obj = NeutronKinetics(coupling_coeffs_matrix, N)
+       function obj = NeutronKinetics(coupling_coeffs_matrix, N, control_rod_reactivity_step_size, control_rod_reactivity_step_time)
            % Dynamic inputs that can change
            obj.coupling_coeffs_matrix = coupling_coeffs_matrix;
            obj.N = N; % number of nodes
+           obj.control_rod_reactivity_step_size = control_rod_reactivity_step_size;
+           obj.control_rod_reactivity_step_time = control_rod_reactivity_step_time;
+           
+           if obj.control_rod_reactivity_step_size == 0
+               disp("No step response inputted, running in Steady State Operation")
+           end
+           
            
            % VARIABLES DEFINED BELOW ARE CONSTANTS FOR THE
            % ENTIRE SYSTEM.
@@ -138,7 +147,7 @@ classdef NeutronKinetics
            obj.control_rod_length = 4; % Currently not being used.  For future use.  The HTR-10 value was 2.2m.  We need to find the HTR-PM value
        end
        
-       function rho = reactivity(obj, control_rod_x,Tc, Tr)
+       function rho = reactivity(obj, control_rod_x,Tc, Tr, t)
            % Args:
            % x = current control rod insertion position
            % Tc = Temperature of the fuel element
@@ -159,10 +168,16 @@ classdef NeutronKinetics
            % 
            
            rho_control_rods = 0.03419; % This value will need to be part of the future control scheme
+           
+           % STEP change in control rod natural reactivity
+           if t >= obj.control_rod_reactivity_step_time
+               rho_control_rods = rho_control_rods + obj.control_rod_reactivity_step_size;
+           end
+           
            rho = rho_control_rods + (obj.alpha_fuel + obj.alpha_moderator)*(Tc - obj.Tc0) + obj.alpha_reflector*(Tr - obj.Tr0);
 
        end
-       function dxdt = relative_neutron_flux(obj, ~, x) 
+       function dxdt = relative_neutron_flux(obj, t, x) 
            % Function solving simulataneous differential equations
            % Args:
            % ~ = timespan to solve over
@@ -203,7 +218,7 @@ classdef NeutronKinetics
            %%%%%%%%%%% UNUSED END
            
            % Relative neutron flux for node 1
-           rho_1 = obj.reactivity(x(control_rod_position),x(cores),x(Tr));
+           rho_1 = obj.reactivity(x(control_rod_position),x(cores),x(Tr), t);
            dxdt(rho_index) = rho_1;
            dn1dt_term1 = (rho_1 - obj.beta - obj.coupling_coeffs_matrix(1,1))/obj.lambda*x(1);
            dn1dt_term2 = (1/obj.lambda) * obj.coupling_coeffs_matrix(1,2) * x(2);
@@ -213,7 +228,7 @@ classdef NeutronKinetics
            % Relative neutron flux for ith to N-1 nodes
            var = obj.N+7;
            for i = 2:(obj.N-1)
-               rho_i = obj.reactivity(x(control_rod_position), x(cores+i-1),x(Tr)); 
+               rho_i = obj.reactivity(x(control_rod_position), x(cores+i-1),x(Tr), t); 
                dxdt(rho_index + i -1) = rho_i;
                dnidt_term1 = (rho_i - obj.beta - obj.coupling_coeffs_matrix(i,i))*(1/obj.lambda)*x(i);
                dnidt_term2 = (1/obj.lambda)*(obj.coupling_coeffs_matrix(i, i-1)*x(i-1) + obj.coupling_coeffs_matrix(i, i+1)*x(i+1));
@@ -223,7 +238,7 @@ classdef NeutronKinetics
            end
            
            % Relative neutron flux for node N
-           rho_N = obj.reactivity(x(control_rod_position), x(cores+obj.N-1),x(Tr)); 
+           rho_N = obj.reactivity(x(control_rod_position), x(cores+obj.N-1),x(Tr), t); 
            dxdt(rho_index + obj.N -1) = rho_N; 
            dnNdt_term1 = (rho_N - obj.beta - obj.coupling_coeffs_matrix(obj.N,obj.N))/obj.lambda*x(obj.N);
            dnNdt_term2 = (1/obj.lambda)*obj.coupling_coeffs_matrix(obj.N,obj.N-1)*x(obj.N-1);
