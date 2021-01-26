@@ -4,22 +4,22 @@
 % TODO create labels dynamically, allow for different number of nodes
 
 close all;
-
-diff_plot_titles = ["Relative Neutron Flux of Nodes"];
+deg_sign = char(0176);
+diff_plot_titles = ["Relative Nodal Neutron Flux"];
 
 for i = 1:N 
-    diff_plot_titles(1 + i) = "Concentration Node " + num2str(i);
+    diff_plot_titles(1 + i) = "Relative Delayed Neutron Concentration of Node " + num2str(i);
 end
 
-diff_plot_titles2 = ["Temperature of Fuel Elements", "Temperature of Helium", "Temperature of Reflector",...
+diff_plot_titles2 = ["Temperature of Fuel Elements", "Temperature of Helium in Nodes", "Temperature of Reflector",...
 "Average Temperature in Riser", "Temperature of Lower Helium Header",...
-"Temperature of Outlet Header", "Mass Flow Rates of Helium",...
+"Temperature of Outlet Header", "Mass Flow Rates of Helium through Nodes",...
 "Mass Flow Rate to Lower Helium Header", "Nodal Reactivity", "Rod Position - todo for future", "Nodal Power Output"];
 
 diff_plot_titles = [diff_plot_titles, diff_plot_titles2];
 
-diff_plot_ylabels = ["Neutron Flux",repelem(["Concentration"],...
-    [N]),repelem(["Temperature"],[6]), repelem(["Mass Flow Rate"],[2]),"Reactivity", "Position", "Power Output (MW)"];
+diff_plot_ylabels = ["Relative Neutron Flux",repelem(["Relative Concentration"],...
+    [N]),repelem([strcat("Temperature (", deg_sign, "C)")],[6]), repelem(["Mass Flow Rate (kg/s)"],[2]),"Reactivity", "Position", "Power Output (MW)"];
 
 
 for i = 1:N+1
@@ -58,11 +58,14 @@ starting_index = 1;
 for i=1:length(diff_plot_titles)
     figure(i), plot(tout, x(:, starting_index:diff_plots_index_end(i))), grid on
     title(diff_plot_titles(i))
-    ylabel(diff_plot_ylabels(i)), xlabel('Time, t (s)')
-    legend(legendInfo{starting_index:diff_plots_index_end(i)})
+    ylabel(diff_plot_ylabels(i)), xlabel('Time (s)')
+    legend(legendInfo{starting_index:diff_plots_index_end(i)}) %'Location','southeast'
     starting_index = diff_plots_index_end(i) + 1;
-    if i == 22 %todo dont hardcode
-        total_at_end = num2str(round(sum(x(length(tout), 117:126))));
+    
+    [num_row_x, num_col_x] = size(x);
+    total_graphs = 22 - (10-N); % 22 is the number of graphs for 10 nodes 
+    if i == total_graphs 
+        total_at_end = num2str(round(sum(x(length(tout), num_col_x - (N-1): num_col_x))));
         annotation('textbox',[.4 .5 .3 .4],'String',strcat('Total Power:  ', total_at_end, 'MW'),'FitBoxToText','on')
     end
 end
