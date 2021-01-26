@@ -165,7 +165,6 @@ classdef NeutronKinetics
            control_rod_fraction_inserted = control_rod_x / obj.control_rod_length; 
            rho_control_rods_H = 5.25E-2; % from "Capstone_Group25_CHEMENGG\Reactor_Modelling\2006-design-aspect-of-the-chinese-modular-high-temperature-gas-cooled-reactor-htr-pm_zhang.pdf" control rod worth
            rho_control_rods = rho_control_rods_H * (control_rod_fraction_inserted - (1/(2*pi))*sin(2*pi*control_rod_fraction_inserted)); 
-
            
            rho_control_rods_natural = 0.03419; % This value will need to be part of the future control scheme
            
@@ -176,7 +175,6 @@ classdef NeutronKinetics
            
            rho_control_rods = -control_rod_x*0.03; 
            rho = rho_control_rods_natural +rho_control_rods + (obj.alpha_fuel + obj.alpha_moderator)*(Tc - obj.Tc0) + obj.alpha_reflector*(Tr - obj.Tr0);
-
 
        end
        function dxdt = relative_neutron_flux(obj, t, x) 
@@ -234,7 +232,6 @@ classdef NeutronKinetics
            
            % Relative neutron flux for node 1
            rho_1 = obj.reactivity(control_rod_array(1),x(cores),x(Tr), t);
-
            dxdt(rho_index) = rho_1;
            dn1dt_term1 = (rho_1 - obj.beta - obj.coupling_coeffs_matrix(1,1))/obj.lambda*x(1);
            dn1dt_term2 = (1/obj.lambda) * obj.coupling_coeffs_matrix(1,2) * x(2);
@@ -244,7 +241,6 @@ classdef NeutronKinetics
            % Relative neutron flux for ith to N-1 nodes
            var = obj.N+7;
            for i = 2:(obj.N-1)
-
                rho_i = obj.reactivity(control_rod_array(i), x(cores+i-1),x(Tr), t); 
                dxdt(rho_index + i -1) = rho_i;
                dnidt_term1 = (rho_i - obj.beta - obj.coupling_coeffs_matrix(i,i))*(1/obj.lambda)*x(i);
