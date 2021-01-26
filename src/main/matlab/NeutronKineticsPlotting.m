@@ -62,45 +62,10 @@ for i=1:length(diff_plot_titles)
     legend(legendInfo{starting_index:diff_plots_index_end(i)}) %'Location','southeast'
     starting_index = diff_plots_index_end(i) + 1;
     
-    % set y lim just for the DBM graphs
-    % These are hardcoded just for the purposes of minimizing impacts from
-    % numercal instability
-    if i==2
-        ylim([0.5 1.5])
-    end
-    
-    if i==3
-        ylim([0.4 0.5])
-    end
-    
-    if i==4
-        ylim([0.2 0.3])
-    end
-    
-    if i==5
-        ylim([0.1 0.2])
-    end
-    
-    
-    if and(i>=6,i<=11)
-        ylim([0 0.1])
-    end
-    
-    if or(i==14,i==15)
-        ylim([100 280])
-    end
-            
-    if i==17
-        ylim([600 800])
-    end
-    
-    if i==20
-        ylim([-0.005 0.005])
-    end
-
-    
-    if i == 22 %todo dont hardcode
-        total_at_end = num2str(round(sum(x(length(tout), 117:126))));
+    [num_row_x, num_col_x] = size(x);
+    total_graphs = 22 - (10-N); % 22 is the number of graphs for 10 nodes 
+    if i == total_graphs 
+        total_at_end = num2str(round(sum(x(length(tout), num_col_x - (N-1): num_col_x))));
         annotation('textbox',[.4 .5 .3 .4],'String',strcat('Total Power:  ', total_at_end, 'MW'),'FitBoxToText','on')
     end
 end
