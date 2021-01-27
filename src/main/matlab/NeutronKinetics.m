@@ -152,20 +152,11 @@ classdef NeutronKinetics
            % x = current control rod insertion position
            % Tc = Temperature of the fuel element
            % Tr = Temperature of the reflector
-           
            % Tc0, tr0 = initial temperature of fuel elements and reflector 
            % rho_control_rods = reactivity introduced by the control rods
            
-           % control rod reactivity is defined as a sin wave based o1n the
-           % insertion position Ohki2014_Chapter_FuelBurnupAndReactivityControl
-           
-           % control rod based on insertion position is currently not being used in the overall system
-           % (rho_control_rods being overwritten below)  This is for future
-           % use and reference only
-           control_rod_fraction_inserted = control_rod_x / obj.control_rod_length; 
-           rho_control_rods_H = 5.25E-2; % from "Capstone_Group25_CHEMENGG\Reactor_Modelling\2006-design-aspect-of-the-chinese-modular-high-temperature-gas-cooled-reactor-htr-pm_zhang.pdf" control rod worth
-           rho_control_rods = rho_control_rods_H * (control_rod_fraction_inserted - (1/(2*pi))*sin(2*pi*control_rod_fraction_inserted)); 
-           
+           % insertion position reference for future Ohki2014_Chapter_FuelBurnupAndReactivityControl
+     
            rho_control_rods_natural = 0.03419; % This value will need to be part of the future control scheme
            
            % STEP change in control rod natural reactivity
@@ -205,15 +196,7 @@ classdef NeutronKinetics
            downs = obj.N*7+obj.N+1; % This is the index number for downcomer (helium) temperature
            hmass = obj.N*7+2*obj.N+5; % index number for masses
 
-           % control rod position - intech-the_theoretical_simulation_of_a_model_by_simulink_for_surveying_the_work_and_dynamical_stability_of_nuclear_reactors_cores (1)
-           control_rod_const_coeff = 0.1; % this is the constant coefficient 
-           Ko = 0.5; % testing, this is the initial value of Keff 
-           Ksp = 0.5; % testing, this is supposed to be the secondary value of Keff in the recent position of control rod... Need to figure out how to access previous results in matlab ODE solver to get this
-           velocity_control_rod = 10; % Units of mm/s this is the control rod velocity 
-           F = x(control_rod_position)*obj.control_rod_length*control_rod_const_coeff + Ko;
-           dxdt(control_rod_position) = velocity_control_rod*sign(F - Ksp);
-           
-           control_rod_insertion = 4; %number between 11m and 0m
+           control_rod_insertion = 4; %between 11m and 0m - should be an input variable in the future 
            H_reactor_node = 11/obj.N;
            controller_node_number = control_rod_insertion/H_reactor_node;
            
@@ -374,8 +357,7 @@ classdef NeutronKinetics
             reactivity_final_col_num = num_col_x - 1;
             x(:, reactivity_final_col_num-(obj.N-1):reactivity_final_col_num) = rdivide(x(:, reactivity_final_col_num-(obj.N-1):reactivity_final_col_num), tout);
             
-            % calculate power output
-            % Per node
+            % calculate power output per node
             x(:, num_col_x + 1:num_col_x + obj.N) = x(:, 1:obj.N) * (1/obj.N) * (obj.P0*10^-6);
             
             % normalize the concentrations with the SS of the first node
