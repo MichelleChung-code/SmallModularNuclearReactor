@@ -39,6 +39,7 @@ classdef NeutronKinetics
         
         reactivity_step_size {mustBeNumeric} 
         reactivity_step_time {mustBeNumeric} 
+        natural_reactivity {mustBeNumeric} 
     end
     
     methods(Static)
@@ -73,12 +74,13 @@ classdef NeutronKinetics
     end
     
     methods
-       function obj = NeutronKinetics(coupling_coeffs_matrix, N, reactivity_step_size, reactivity_step_time)
+       function obj = NeutronKinetics(coupling_coeffs_matrix, N, reactivity_step_size, reactivity_step_time, natural_reactivity)
            % Dynamic inputs that can change
            obj.coupling_coeffs_matrix = coupling_coeffs_matrix;
            obj.N = N; % number of nodes
            obj.reactivity_step_size = reactivity_step_size; 
            obj.reactivity_step_time = reactivity_step_time; 
+           obj.natural_reactivity = natural_reactivity;
            
            if obj.reactivity_step_size == 0
                disp("No step response inputted, running in Steady State Operation")
@@ -157,7 +159,7 @@ classdef NeutronKinetics
            
            % insertion position reference for future Ohki2014_Chapter_FuelBurnupAndReactivityControl
      
-           rho_natural = 0.03419; % This value will need to be part of the future control scheme
+           rho_natural = obj.natural_reactivity;
            
            % STEP change in control rod natural reactivity
            if t >= obj.reactivity_step_time
@@ -196,10 +198,13 @@ classdef NeutronKinetics
            downs = obj.N*7+obj.N+1; % This is the index number for downcomer (helium) temperature
            hmass = obj.N*7+2*obj.N+5; % index number for masses
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % control_rod_insertion is the Manipulated variable
 
            control_rod_insertion = 6; %between 11m and 0m - should be an input variable in the future 
+           
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
            H_reactor_node = 11/obj.N;
            controller_node_number = control_rod_insertion/H_reactor_node;
            
@@ -327,6 +332,8 @@ classdef NeutronKinetics
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Toh is the controlled variable 743.8 = set point 
            dxdt(Toh) = (dTohdt_term1 + dTohdt_term2)/Woh;
+           
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
            dxdt = dxdt';
        end
   

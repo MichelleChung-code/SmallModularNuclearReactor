@@ -39,7 +39,7 @@ reactivity_step_time = 2500; % time in seconds
 
 %reactivity_step_size = 0; 
 
-neutron_kinetics = NeutronKinetics(coupling_coeffs_matrix, N, reactivity_step_size, reactivity_step_time);
+neutron_kinetics = NeutronKinetics(coupling_coeffs_matrix, N, reactivity_step_size, reactivity_step_time, natural_reactivity);
 [tout, x] = neutron_kinetics.solve_neutron_kinetics(tspan, x0);
 disp("Solving Completed");
 
