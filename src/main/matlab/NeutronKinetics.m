@@ -37,8 +37,8 @@ classdef NeutronKinetics
         mass_flow_rate_helium {mustBeNumeric}
         Tout {mustBeNumeric}
         
-        control_rod_reactivity_step_size {mustBeNumeric}
-        control_rod_reactivity_step_time {mustBeNumeric} 
+        reactivity_step_size {mustBeNumeric} 
+        reactivity_step_time {mustBeNumeric} 
     end
     
     methods(Static)
@@ -73,14 +73,14 @@ classdef NeutronKinetics
     end
     
     methods
-       function obj = NeutronKinetics(coupling_coeffs_matrix, N, control_rod_reactivity_step_size, control_rod_reactivity_step_time)
+       function obj = NeutronKinetics(coupling_coeffs_matrix, N, reactivity_step_size, reactivity_step_time)
            % Dynamic inputs that can change
            obj.coupling_coeffs_matrix = coupling_coeffs_matrix;
            obj.N = N; % number of nodes
-           obj.control_rod_reactivity_step_size = control_rod_reactivity_step_size;
-           obj.control_rod_reactivity_step_time = control_rod_reactivity_step_time;
+           obj.reactivity_step_size = reactivity_step_size; 
+           obj.reactivity_step_time = reactivity_step_time; 
            
-           if obj.control_rod_reactivity_step_size == 0
+           if obj.reactivity_step_size == 0
                disp("No step response inputted, running in Steady State Operation")
            end
            
@@ -157,15 +157,15 @@ classdef NeutronKinetics
            
            % insertion position reference for future Ohki2014_Chapter_FuelBurnupAndReactivityControl
      
-           rho_control_rods_natural = 0.03419; % This value will need to be part of the future control scheme
+           rho_natural = 0.03419; % This value will need to be part of the future control scheme
            
            % STEP change in control rod natural reactivity
-           if t >= obj.control_rod_reactivity_step_time
-               rho_control_rods_natural = rho_control_rods_natural + obj.control_rod_reactivity_step_size;
+           if t >= obj.reactivity_step_time
+               rho_natural = rho_natural + obj.reactivity_step_size;
            end
            
            rho_control_rods = -control_rod_x*0.03; 
-           rho = rho_control_rods_natural +rho_control_rods + (obj.alpha_fuel + obj.alpha_moderator)*(Tc - obj.Tc0) + obj.alpha_reflector*(Tr - obj.Tr0);
+           rho = rho_natural +rho_control_rods + (obj.alpha_fuel + obj.alpha_moderator)*(Tc - obj.Tc0) + obj.alpha_reflector*(Tr - obj.Tr0);
 
        end
        function dxdt = relative_neutron_flux(obj, t, x) 
@@ -196,17 +196,21 @@ classdef NeutronKinetics
            downs = obj.N*7+obj.N+1; % This is the index number for downcomer (helium) temperature
            hmass = obj.N*7+2*obj.N+5; % index number for masses
 
-           control_rod_insertion = 4; %between 11m and 0m - should be an input variable in the future 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% control_rod_insertion is the Manipulated variable
+
+           control_rod_insertion = 6; %between 11m and 0m - should be an input variable in the future 
            H_reactor_node = 11/obj.N;
            controller_node_number = control_rod_insertion/H_reactor_node;
            
            control_rod_array = [0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0];
            
-           for i = 1: obj.N;
-               if controller_node_number >= 1;
+           %Calculation for percent control rod insertion per node%
+           for i = 1: obj.N
+               if controller_node_number >= 1
                    control_rod_array(i) = 1;
                    controller_node_number = controller_node_number-1;
-               elseif controller_node_number > 0;
+               elseif controller_node_number > 0
                    control_rod_array(i) = controller_node_number;
                    controller_node_number = controller_node_number-1;
                end
@@ -320,8 +324,9 @@ classdef NeutronKinetics
            
            dTohdt_term1 = obj.k*Wlh*(x(Tlh)-x(Toh));
            dTohdt_term2 = x(hmass+obj.N-1)*(x(downs+obj.N-1)-x(Toh));
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Toh is the controlled variable 743.8 = set point 
            dxdt(Toh) = (dTohdt_term1 + dTohdt_term2)/Woh;
-          
            dxdt = dxdt';
        end
   
