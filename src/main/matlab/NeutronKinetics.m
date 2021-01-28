@@ -37,8 +37,9 @@ classdef NeutronKinetics
         mass_flow_rate_helium {mustBeNumeric}
         Tout {mustBeNumeric}
         
-        control_rod_reactivity_step_size {mustBeNumeric}
-        control_rod_reactivity_step_time {mustBeNumeric} 
+        reactivity_step_size {mustBeNumeric} 
+        reactivity_step_time {mustBeNumeric} 
+        natural_reactivity {mustBeNumeric} 
     end
     
     methods(Static)
@@ -73,14 +74,15 @@ classdef NeutronKinetics
     end
     
     methods
-       function obj = NeutronKinetics(coupling_coeffs_matrix, N, control_rod_reactivity_step_size, control_rod_reactivity_step_time)
+       function obj = NeutronKinetics(coupling_coeffs_matrix, N, reactivity_step_size, reactivity_step_time, natural_reactivity)
            % Dynamic inputs that can change
            obj.coupling_coeffs_matrix = coupling_coeffs_matrix;
            obj.N = N; % number of nodes
-           obj.control_rod_reactivity_step_size = control_rod_reactivity_step_size;
-           obj.control_rod_reactivity_step_time = control_rod_reactivity_step_time;
+           obj.reactivity_step_size = reactivity_step_size; 
+           obj.reactivity_step_time = reactivity_step_time; 
+           obj.natural_reactivity = natural_reactivity;
            
-           if obj.control_rod_reactivity_step_size == 0
+           if obj.reactivity_step_size == 0
                disp("No step response inputted, running in Steady State Operation")
            end
            
@@ -140,7 +142,7 @@ classdef NeutronKinetics
            obj.Ar = obj.calc_surface_area('cylinder_no_top', D_reactor_core, H_reactor_core)/obj.N *(1 - obj.porosity); % m^2 heat transfer area between fuel pile and reflector per node
            obj.K = 70; % W/(m^2K)
            obj.A = pi*(D_reactor_core/2)^2*(1- obj.porosity); % m^2 area of circle, cross-sectional area of the reactor core
-           obj.Ku = 26494.5; %3.43E+06; %110.7661157; % W/(m^2K) This number can be figure out by looking at the overall heat transfer between a flate plate and a flowing fluid
+           obj.Ku = 26494.5; % W/(m^2K) This number can be figure out by looking at the overall heat transfer between a flate plate and a flowing fluid
            obj.Au = obj.calc_surface_area('cylinder_no_top', .2,H_reactor_core)*30;%obj.calc_surface_area('cylinder_no_top', D_reactor_core + 2*(reflector_thickness), H_reactor_core); %m^2 heat transfer area between coolant in reflector and riser, SA of reflector using outer diameter
            
            obj.k = 0; %leakage ratio 
@@ -152,29 +154,20 @@ classdef NeutronKinetics
            % x = current control rod insertion position
            % Tc = Temperature of the fuel element
            % Tr = Temperature of the reflector
-           
            % Tc0, tr0 = initial temperature of fuel elements and reflector 
            % rho_control_rods = reactivity introduced by the control rods
            
-           % control rod reactivity is defined as a sin wave based o1n the
-           % insertion position Ohki2014_Chapter_FuelBurnupAndReactivityControl
-           
-           % control rod based on insertion position is currently not being used in the overall system
-           % (rho_control_rods being overwritten below)  This is for future
-           % use and reference only
-           control_rod_fraction_inserted = control_rod_x / obj.control_rod_length; 
-           rho_control_rods_H = 5.25E-2; % from "Capstone_Group25_CHEMENGG\Reactor_Modelling\2006-design-aspect-of-the-chinese-modular-high-temperature-gas-cooled-reactor-htr-pm_zhang.pdf" control rod worth
-           rho_control_rods = rho_control_rods_H * (control_rod_fraction_inserted - (1/(2*pi))*sin(2*pi*control_rod_fraction_inserted)); 
-           
-           rho_control_rods_natural = 0.03419; % This value will need to be part of the future control scheme
+           % insertion position reference for future Ohki2014_Chapter_FuelBurnupAndReactivityControl
+     
+           rho_natural = obj.natural_reactivity;
            
            % STEP change in control rod natural reactivity
-           if t >= obj.control_rod_reactivity_step_time
-               rho_control_rods_natural = rho_control_rods_natural + obj.control_rod_reactivity_step_size;
+           if t >= obj.reactivity_step_time
+               rho_natural = rho_natural + obj.reactivity_step_size;
            end
            
            rho_control_rods = -control_rod_x*0.03; 
-           rho = rho_control_rods_natural +rho_control_rods + (obj.alpha_fuel + obj.alpha_moderator)*(Tc - obj.Tc0) + obj.alpha_reflector*(Tr - obj.Tr0);
+           rho = rho_natural +rho_control_rods + (obj.alpha_fuel + obj.alpha_moderator)*(Tc - obj.Tc0) + obj.alpha_reflector*(Tr - obj.Tr0);
 
        end
        function dxdt = relative_neutron_flux(obj, t, x) 
@@ -205,25 +198,24 @@ classdef NeutronKinetics
            downs = obj.N*7+obj.N+1; % This is the index number for downcomer (helium) temperature
            hmass = obj.N*7+2*obj.N+5; % index number for masses
 
-           % control rod position - intech-the_theoretical_simulation_of_a_model_by_simulink_for_surveying_the_work_and_dynamical_stability_of_nuclear_reactors_cores (1)
-           control_rod_const_coeff = 0.1; % this is the constant coefficient 
-           Ko = 0.5; % testing, this is the initial value of Keff 
-           Ksp = 0.5; % testing, this is supposed to be the secondary value of Keff in the recent position of control rod... Need to figure out how to access previous results in matlab ODE solver to get this
-           velocity_control_rod = 10; % Units of mm/s this is the control rod velocity 
-           F = x(control_rod_position)*obj.control_rod_length*control_rod_const_coeff + Ko;
-           dxdt(control_rod_position) = velocity_control_rod*sign(F - Ksp);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% control_rod_insertion is the Manipulated variable
+
+           control_rod_insertion = 6; %between 11m and 0m - should be an input variable in the future 
            
-           control_rod_insertion = 4; %number between 11m and 0m
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
            H_reactor_node = 11/obj.N;
            controller_node_number = control_rod_insertion/H_reactor_node;
            
            control_rod_array = [0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0];
            
-           for i = 1: obj.N;
-               if controller_node_number >= 1;
+           %Calculation for percent control rod insertion per node%
+           for i = 1: obj.N
+               if controller_node_number >= 1
                    control_rod_array(i) = 1;
                    controller_node_number = controller_node_number-1;
-               elseif controller_node_number > 0;
+               elseif controller_node_number > 0
                    control_rod_array(i) = controller_node_number;
                    controller_node_number = controller_node_number-1;
                end
@@ -337,8 +329,11 @@ classdef NeutronKinetics
            
            dTohdt_term1 = obj.k*Wlh*(x(Tlh)-x(Toh));
            dTohdt_term2 = x(hmass+obj.N-1)*(x(downs+obj.N-1)-x(Toh));
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Toh is the controlled variable 743.8 = set point 
            dxdt(Toh) = (dTohdt_term1 + dTohdt_term2)/Woh;
-          
+           
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
            dxdt = dxdt';
        end
   
@@ -374,8 +369,7 @@ classdef NeutronKinetics
             reactivity_final_col_num = num_col_x - 1;
             x(:, reactivity_final_col_num-(obj.N-1):reactivity_final_col_num) = rdivide(x(:, reactivity_final_col_num-(obj.N-1):reactivity_final_col_num), tout);
             
-            % calculate power output
-            % Per node
+            % calculate power output per node
             x(:, num_col_x + 1:num_col_x + obj.N) = x(:, 1:obj.N) * (1/obj.N) * (obj.P0*10^-6);
             
             % normalize the concentrations with the SS of the first node
