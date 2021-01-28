@@ -70,4 +70,8 @@ for i=1:length(diff_plot_titles)
     end
 end
 
+figure(i+1), plot([1 2 3 4 5 6 7 8 9 10], x(end,117:126));
+title("Nodal Final Power Output");
+ylabel("Power Output (MW)"), xlabel("Node Number");
+
 disp("Plotting Completed");
