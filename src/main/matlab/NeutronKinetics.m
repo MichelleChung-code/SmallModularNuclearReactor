@@ -223,9 +223,7 @@ classdef NeutronKinetics
 % Toh is the controlled variable
 % PI control
            error = obj.T_outlet_header_set_point - x(Toh); 
-     
            control_rod_insertion = obj.control_rod_insertion_ss + obj.KC*(error+1/obj.TI*integ);
-           control_rod_insertion = 6; %between 11m and 0m - should be an input variable in the future 
            dxdt(length(x)) = error; % integ
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
