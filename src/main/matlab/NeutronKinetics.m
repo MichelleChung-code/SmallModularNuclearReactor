@@ -160,8 +160,8 @@ classdef NeutronKinetics
            obj.T_outlet_header_set_point = obj.T_outlet_header_ss; 
            obj.control_rod_insertion_ss = 6;  
            % Tuning parameters for PI control 
-           obj.KC = 0;
-           obj.TI = 0;
+           obj.KC = 0.000005;
+           obj.TI = 10;
            
            % control rod insertion must be between 0 and 11m 
            obj.control_rod_min_insertion = 0;  
@@ -222,9 +222,17 @@ classdef NeutronKinetics
 % control_rod_insertion is the Manipulated variable
 % Toh is the controlled variable
 % PI control
+% TODO: I don't think we need the TSP_STEP1 thing?
+
            error = obj.T_outlet_header_set_point - x(Toh); 
            control_rod_insertion = obj.control_rod_insertion_ss + obj.KC*(error+1/obj.TI*integ);
+
+           % Clamp the manipulated variable
+           control_rod_insertion = min(control_rod_insertion, obj.control_rod_max_insertion);
+           control_rod_insertion = max(control_rod_insertion, obj.control_rod_min_insertion);
+           
            dxdt(length(x)) = error; % integ
+           
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
            H_reactor_node = 11/obj.N;
