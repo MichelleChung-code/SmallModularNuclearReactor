@@ -40,6 +40,8 @@ classdef NeutronKinetics
         reactivity_step_size {mustBeNumeric} 
         reactivity_step_time {mustBeNumeric} 
         natural_reactivity {mustBeNumeric} 
+
+        outlet_header_ss {mustBeNumeric} 
     end
     
     methods(Static)
@@ -74,7 +76,7 @@ classdef NeutronKinetics
     end
     
     methods
-       function obj = NeutronKinetics(coupling_coeffs_matrix, N, reactivity_step_size, reactivity_step_time, natural_reactivity)
+       function obj = NeutronKinetics(coupling_coeffs_matrix, N, reactivity_step_size, reactivity_step_time, natural_reactivity, x0)
            % Dynamic inputs that can change
            obj.coupling_coeffs_matrix = coupling_coeffs_matrix;
            obj.N = N; % number of nodes
@@ -147,6 +149,9 @@ classdef NeutronKinetics
            
            obj.k = 0; %leakage ratio 
            obj.control_rod_length = 4; % Currently not being used.  For future use.  The HTR-10 value was 2.2m.  We need to find the HTR-PM value
+      
+           % For the control rod control system
+           obj.outlet_header_ss = x0(obj.N*7+2*obj.N+4); %Toh 
        end
        
        function rho = reactivity(obj, control_rod_x,Tc, Tr, t)
