@@ -225,7 +225,7 @@ classdef NeutronKinetics
            error = obj.T_outlet_header_set_point - x(Toh); 
      
            control_rod_insertion = obj.control_rod_insertion_ss + obj.KC*(error+1/obj.TI*integ);
-           control_rod_insertion = 6;%between 11m and 0m - should be an input variable in the future 
+           control_rod_insertion = 6; %between 11m and 0m - should be an input variable in the future 
            dxdt(length(x)) = error; % integ
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -389,11 +389,12 @@ classdef NeutronKinetics
             % purposes
             
             [num_row_x, num_col_x] = size(x);
-            reactivity_final_col_num = num_col_x - 1;
+            num_col_x_without_PI = num_col_x -1;
+            reactivity_final_col_num = num_col_x_without_PI - 1;
             x(:, reactivity_final_col_num-(obj.N-1):reactivity_final_col_num) = rdivide(x(:, reactivity_final_col_num-(obj.N-1):reactivity_final_col_num), tout);
             
             % calculate power output per node
-            x(:, num_col_x + 1:num_col_x + obj.N) = x(:, 1:obj.N) * (1/obj.N) * (obj.P0*10^-6);
+            x(:, num_col_x_without_PI + 1:num_col_x_without_PI + obj.N) = x(:, 1:obj.N) * (1/obj.N) * (obj.P0*10^-6);
             
             % normalize the concentrations with the SS of the first node
             [g1_fact,g2_fact,g3_fact,g4_fact,g5_fact,g6_fact] = subsref(num2cell(x(length(tout), obj.N + 1:obj.N + 6)),struct('type',{'{}'},'subs',{{1:6}}));

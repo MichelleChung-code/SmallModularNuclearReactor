@@ -25,8 +25,6 @@ from_csv = readtable(strcat("Initial Values", "_", string(N), "_Nodes.csv"));
 csv_array = table2array(from_csv(:,4));
 x0 = csv_array;
 
-
-
 natural_reactivity = 0.03419; 
 x0 = [x0; 0]; % append the integ val for PI controller
 
