@@ -33,7 +33,6 @@ classdef NeutronKinetics
         Au {mustBeNumeric}
         k {mustBeNumeric}
         Tin {mustBeNumeric}
-        control_rod_length {mustBeNumeric}
         mass_flow_rate_helium {mustBeNumeric}
         Tout {mustBeNumeric}
         
@@ -41,7 +40,14 @@ classdef NeutronKinetics
         reactivity_step_time {mustBeNumeric} 
         natural_reactivity {mustBeNumeric} 
 
-        outlet_header_ss {mustBeNumeric} 
+        T_outlet_header_ss {mustBeNumeric} 
+        T_outlet_header_set_point {mustBeNumeric} 
+        KC {mustBeNumeric} 
+        TI {mustBeNumeric} 
+        control_rod_insertion_ss {mustBeNumeric} 
+        control_rod_min_insertion {mustBeNumeric} 
+        control_rod_max_insertion {mustBeNumeric} 
+        
     end
     
     methods(Static)
@@ -148,10 +154,18 @@ classdef NeutronKinetics
            obj.Au = obj.calc_surface_area('cylinder_no_top', .2,H_reactor_core)*30;%obj.calc_surface_area('cylinder_no_top', D_reactor_core + 2*(reflector_thickness), H_reactor_core); %m^2 heat transfer area between coolant in reflector and riser, SA of reflector using outer diameter
            
            obj.k = 0; %leakage ratio 
-           obj.control_rod_length = 4; % Currently not being used.  For future use.  The HTR-10 value was 2.2m.  We need to find the HTR-PM value
-      
+
            % For the control rod control system
-           obj.outlet_header_ss = x0(obj.N*7+2*obj.N+4); %Toh 
+           obj.T_outlet_header_ss = x0(obj.N*7+2*obj.N+4); %Toh 
+           obj.T_outlet_header_set_point = obj.T_outlet_header_ss; 
+           obj.control_rod_insertion_ss = 6;  
+           % Tuning parameters for PI control 
+           obj.KC = 0;
+           obj.TI = 0;
+           
+           % control rod insertion must be between 0 and 11m 
+           obj.control_rod_min_insertion = 0;  
+           obj.control_rod_max_insertion = 11;
        end
        
        function rho = reactivity(obj, control_rod_x,Tc, Tr, t)
@@ -202,12 +216,17 @@ classdef NeutronKinetics
            cores = obj.N*7+1; % This is the index number for core (fuel element) temperature
            downs = obj.N*7+obj.N+1; % This is the index number for downcomer (helium) temperature
            hmass = obj.N*7+2*obj.N+5; % index number for masses
+           integ = x(length(x)); % for PI controller
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % control_rod_insertion is the Manipulated variable
-
-           control_rod_insertion = 6; %between 11m and 0m - should be an input variable in the future 
-           
+% Toh is the controlled variable
+% PI control
+           error = obj.T_outlet_header_set_point - x(Toh); 
+     
+           control_rod_insertion = obj.control_rod_insertion_ss + obj.KC*(error+1/obj.TI*integ);
+           control_rod_insertion = 6;%between 11m and 0m - should be an input variable in the future 
+           dxdt(length(x)) = error; % integ
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
            H_reactor_node = 11/obj.N;
@@ -337,7 +356,6 @@ classdef NeutronKinetics
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Toh is the controlled variable 743.8 = set point 
            dxdt(Toh) = (dTohdt_term1 + dTohdt_term2)/Woh;
-           
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
            dxdt = dxdt';
        end
