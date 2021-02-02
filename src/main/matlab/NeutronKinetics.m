@@ -33,13 +33,21 @@ classdef NeutronKinetics
         Au {mustBeNumeric}
         k {mustBeNumeric}
         Tin {mustBeNumeric}
-        control_rod_length {mustBeNumeric}
         mass_flow_rate_helium {mustBeNumeric}
         Tout {mustBeNumeric}
         
         reactivity_step_size {mustBeNumeric} 
         reactivity_step_time {mustBeNumeric} 
         natural_reactivity {mustBeNumeric} 
+
+        T_outlet_header_ss {mustBeNumeric} 
+        T_outlet_header_set_point {mustBeNumeric} 
+        KC {mustBeNumeric} 
+        TI {mustBeNumeric} 
+        control_rod_insertion_ss {mustBeNumeric} 
+        control_rod_min_insertion {mustBeNumeric} 
+        control_rod_max_insertion {mustBeNumeric} 
+        
     end
     
     methods(Static)
@@ -74,7 +82,7 @@ classdef NeutronKinetics
     end
     
     methods
-       function obj = NeutronKinetics(coupling_coeffs_matrix, N, reactivity_step_size, reactivity_step_time, natural_reactivity)
+       function obj = NeutronKinetics(coupling_coeffs_matrix, N, reactivity_step_size, reactivity_step_time, natural_reactivity, x0)
            % Dynamic inputs that can change
            obj.coupling_coeffs_matrix = coupling_coeffs_matrix;
            obj.N = N; % number of nodes
@@ -146,7 +154,18 @@ classdef NeutronKinetics
            obj.Au = obj.calc_surface_area('cylinder_no_top', .2,H_reactor_core)*30;%obj.calc_surface_area('cylinder_no_top', D_reactor_core + 2*(reflector_thickness), H_reactor_core); %m^2 heat transfer area between coolant in reflector and riser, SA of reflector using outer diameter
            
            obj.k = 0; %leakage ratio 
-           obj.control_rod_length = 4; % Currently not being used.  For future use.  The HTR-10 value was 2.2m.  We need to find the HTR-PM value
+
+           % For the control rod control system
+           obj.T_outlet_header_ss = x0(obj.N*7+2*obj.N+4); %Toh 
+           obj.T_outlet_header_set_point = obj.T_outlet_header_ss; 
+           obj.control_rod_insertion_ss = 6;  
+           % Tuning parameters for PI control 
+           obj.KC = 0.000005;
+           obj.TI = 10;
+           
+           % control rod insertion must be between 0 and 11m 
+           obj.control_rod_min_insertion = 0;  
+           obj.control_rod_max_insertion = 11;
        end
        
        function rho = reactivity(obj, control_rod_x,Tc, Tr, t)
@@ -197,11 +216,22 @@ classdef NeutronKinetics
            cores = obj.N*7+1; % This is the index number for core (fuel element) temperature
            downs = obj.N*7+obj.N+1; % This is the index number for downcomer (helium) temperature
            hmass = obj.N*7+2*obj.N+5; % index number for masses
+           integ = x(length(x)); % for PI controller
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % control_rod_insertion is the Manipulated variable
+% Toh is the controlled variable
+% PI control
+% TODO: I don't think we need the TSP_STEP1 thing?
 
-           control_rod_insertion = 6; %between 11m and 0m - should be an input variable in the future 
+           error = obj.T_outlet_header_set_point - x(Toh); 
+           control_rod_insertion = obj.control_rod_insertion_ss + obj.KC*(error+1/obj.TI*integ);
+
+           % Clamp the manipulated variable
+           control_rod_insertion = min(control_rod_insertion, obj.control_rod_max_insertion);
+           control_rod_insertion = max(control_rod_insertion, obj.control_rod_min_insertion);
+           
+           dxdt(length(x)) = error; % integ
            
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -332,7 +362,6 @@ classdef NeutronKinetics
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Toh is the controlled variable 743.8 = set point 
            dxdt(Toh) = (dTohdt_term1 + dTohdt_term2)/Woh;
-           
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
            dxdt = dxdt';
        end
@@ -366,11 +395,12 @@ classdef NeutronKinetics
             % purposes
             
             [num_row_x, num_col_x] = size(x);
-            reactivity_final_col_num = num_col_x - 1;
+            num_col_x_without_PI = num_col_x -1;
+            reactivity_final_col_num = num_col_x_without_PI - 1;
             x(:, reactivity_final_col_num-(obj.N-1):reactivity_final_col_num) = rdivide(x(:, reactivity_final_col_num-(obj.N-1):reactivity_final_col_num), tout);
             
             % calculate power output per node
-            x(:, num_col_x + 1:num_col_x + obj.N) = x(:, 1:obj.N) * (1/obj.N) * (obj.P0*10^-6);
+            x(:, num_col_x_without_PI + 1:num_col_x_without_PI + obj.N) = x(:, 1:obj.N) * (1/obj.N) * (obj.P0*10^-6);
             
             % normalize the concentrations with the SS of the first node
             [g1_fact,g2_fact,g3_fact,g4_fact,g5_fact,g6_fact] = subsref(num2cell(x(length(tout), obj.N + 1:obj.N + 6)),struct('type',{'{}'},'subs',{{1:6}}));
