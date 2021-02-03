@@ -43,7 +43,11 @@ classdef NeutronKinetics
         T_outlet_header_ss {mustBeNumeric} 
         T_outlet_header_set_point {mustBeNumeric} 
         KC {mustBeNumeric} 
-        TI {mustBeNumeric} 
+        TI {mustBeNumeric}
+        tau {mustBeNumeric} 
+        Kk {mustBeNumeric}
+        controcost {mustBeNumeric}
+        deadtime {mustBeNumeric}
         control_rod_insertion_ss {mustBeNumeric} 
         control_rod_min_insertion {mustBeNumeric} 
         control_rod_max_insertion {mustBeNumeric} 
@@ -160,8 +164,12 @@ classdef NeutronKinetics
            obj.T_outlet_header_set_point = obj.T_outlet_header_ss; 
            obj.control_rod_insertion_ss = 6;  
            % Tuning parameters for PI control 
-           obj.KC = 0.000005;
-           obj.TI = 10;
+           obj.tau = 12; %time for Toh to reach .653 of the final output from a step change in reactivty
+           obj.Kk = 650; %Change in Toh after a step change in reactivity
+           obj.controcost = 11; % This is a guess
+           obj.deadtime = 1;
+           obj.KC = obj.tau/(obj.Kk*(obj.controcost +obj.deadtime));
+           obj.TI = obj.tau;
            
            % control rod insertion must be between 0 and 11m 
            obj.control_rod_min_insertion = 0;  
@@ -224,7 +232,7 @@ classdef NeutronKinetics
 % PI control
 % TODO: I don't think we need the TSP_STEP1 thing?
 
-           error = obj.T_outlet_header_set_point - x(Toh); 
+           error = x(Toh) - obj.T_outlet_header_set_point; 
            control_rod_insertion = obj.control_rod_insertion_ss + obj.KC*(error+1/obj.TI*integ);
 
            % Clamp the manipulated variable
@@ -232,7 +240,7 @@ classdef NeutronKinetics
            control_rod_insertion = max(control_rod_insertion, obj.control_rod_min_insertion);
            
            dxdt(length(x)) = error; % integ
-           
+           dxdt(control_rod_position) = control_rod_insertion;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
            H_reactor_node = 11/obj.N;
@@ -399,19 +407,20 @@ classdef NeutronKinetics
             reactivity_final_col_num = num_col_x_without_PI - 1;
             x(:, reactivity_final_col_num-(obj.N-1):reactivity_final_col_num) = rdivide(x(:, reactivity_final_col_num-(obj.N-1):reactivity_final_col_num), tout);
             
+            x(:, 116) = rdivide(x(:, 116), tout);
             % calculate power output per node
             x(:, num_col_x_without_PI + 1:num_col_x_without_PI + obj.N) = x(:, 1:obj.N) * (1/obj.N) * (obj.P0*10^-6);
             
             % normalize the concentrations with the SS of the first node
-            [g1_fact,g2_fact,g3_fact,g4_fact,g5_fact,g6_fact] = subsref(num2cell(x(length(tout), obj.N + 1:obj.N + 6)),struct('type',{'{}'},'subs',{{1:6}}));
-            LS_normalize_facts = [g1_fact,g2_fact,g3_fact,g4_fact,g5_fact,g6_fact];
-            counter = obj.N;
-            for j = 1:obj.N
-                for i = 1:6
-                    x(:, i+counter) = x(:, i+counter)/LS_normalize_facts(i);
-                end
-                counter = counter + 6;
-            end
+            %[g1_fact,g2_fact,g3_fact,g4_fact,g5_fact,g6_fact] = subsref(num2cell(x(length(tout), obj.N + 1:obj.N + 6)),struct('type',{'{}'},'subs',{{1:6}}));
+            %LS_normalize_facts = [g1_fact,g2_fact,g3_fact,g4_fact,g5_fact,g6_fact];
+            %counter = obj.N;
+            %for j = 1:obj.N
+            %   for i = 1:6
+            %       x(:, i+counter) = x(:, i+counter)/LS_normalize_facts(i);
+            %   end
+            %   counter = counter + 6;
+            %end
        end
 
     end
