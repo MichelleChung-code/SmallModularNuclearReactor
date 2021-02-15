@@ -2,6 +2,7 @@ from SensitivityAnalysis import SensitivityAnalysis  # in Project settings mark 
 from ProfitabilityAnalysis import ProfitabilityAnalysis
 import os
 from pathlib import Path
+import numpy as np
 
 # inputs
 discount_rate_nominal = 0.15
@@ -13,7 +14,7 @@ print('Real Discount Rate: ', discount_rate)
 # read in the base_case revenue and expenses
 p = str(Path(__file__).parents[3])
 base_case_path = os.path.join(p, r'mfs/base_case.csv')
-results_path = os.path.join(p, r'mfs/processed/sensitivity_cases')
+results_path = os.path.join(p, r'mfs/processed')
 
 #### BASE CASE INPUTS IN MM USD ####
 TAX_RATE = 0.13
@@ -26,7 +27,7 @@ START_UP_EXPENSES = 38.957419
 x = SensitivityAnalysis(base_case_path, results_path, tax_rate=TAX_RATE, FCI=FCI, WC=WC, Land=LAND,
                         i=discount_rate,
                         offsite_capital=OFF_SITE_CAPITAL,
-                        start_up_expenses=START_UP_EXPENSES, case_name='')
+                        start_up_expenses=START_UP_EXPENSES)
 
 # build base case annual cashflows
 base_case_cashflows = x.build_cashflows()
@@ -49,5 +50,9 @@ print('Discounted Payback Period', discounted_payback_period)
 # Run Sensitivity Analysis
 # - H2 price variances
 
-sensitivity_analysis_results = x()
+adjust_R_LS = [*np.arange(0.60, 2.41, 0.1)]  # add the 0.01 to the end bound so that it goals to 2.40
+adjust_E_LS = [*np.arange(0.90, 1.11, 0.1)]  # add the 0.01 to the end bound so that it goals to 1.10
+adjust_FCI_LS = [*np.arange(0.5, 1.71, 0.1)]  # add the 0.01 to the end bound so that it goals to 1.70
+
+sensitivity_analysis_results = x('', adjust_R_LS, adjust_E_LS, adjust_FCI_LS)
 sensitivity_analysis_results.to_csv(os.path.join(p, r'mfs/sensitivity_analysis_results.csv'))

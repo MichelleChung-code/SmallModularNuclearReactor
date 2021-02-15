@@ -35,7 +35,7 @@ dict_individual_plots = {
 
 
 class SensitivityAnalysis:
-    def __init__(self, base_case_path, results_path, tax_rate, FCI, WC, Land, i, offsite_capital, start_up_expenses, case_name):
+    def __init__(self, base_case_path, results_path, tax_rate, FCI, WC, Land, i, offsite_capital, start_up_expenses):
         self.results_path = results_path
         self.tax_rate = tax_rate
         self.FCI = FCI
@@ -46,7 +46,6 @@ class SensitivityAnalysis:
         self.i = i  # interest/discount rate
         self.base_case = pd.read_csv(base_case_path, index_col=0)
         self.base_case_copy = copy.deepcopy(self.base_case)  # self.base_case should not change between scenarios
-        self.case_name = case_name
 
     def build_cashflows(self, adjust_R=1, adjust_E=1, adjust_FCI=1):
         processed_cashflows = copy.deepcopy(self.base_case)
@@ -71,13 +70,10 @@ class SensitivityAnalysis:
 
         return processed_cashflows.fillna(0)
 
-    def __call__(self):
+    def __call__(self, case_name, adjust_R_LS, adjust_E_LS, adjust_FCI_LS):
         # NOTE:
         # A 0.1 adjustment factor means a 90% decrease from the base case
         # A 1.4 adjustment factor means a 40% increase from the base case
-        adjust_R_LS = [*np.arange(0.60, 2.41, 0.1)]  # add the 0.01 to the end bound so that it goals to 2.40
-        adjust_E_LS = [*np.arange(0.90, 1.11, 0.1)]  # add the 0.01 to the end bound so that it goals to 1.10
-        adjust_FCI_LS = [*np.arange(0.5, 1.71, 0.1)]  # add the 0.01 to the end bound so that it goals to 1.70
         LS_ALL = [adjust_R_LS, adjust_E_LS, adjust_FCI_LS]
 
         combinations = list(itertools.product(*LS_ALL))
