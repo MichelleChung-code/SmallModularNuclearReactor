@@ -1,0 +1,15 @@
+CASE_NAME = 'CASE_NAME'
+REVENUE = 'REVENUE'
+EXPENSES = 'EXPENSES'
+FCI = 'FCI'
+
+HYDROGEN = 'hydrogen'
+NATGAS = 'natgas'
+HELIUM = 'helium'
+TRISO = 'triso'
+FCI_DECOMMISSIONING = 'fci_decommissioning'
+COMBINED = 'combined'
+CASES_LS = [HYDROGEN, NATGAS, HELIUM, TRISO, FCI_DECOMMISSIONING, COMBINED]
+
+LOWER = '_lower'
+UPPER = '_upper'

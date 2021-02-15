@@ -35,9 +35,7 @@ dict_individual_plots = {
 
 
 class SensitivityAnalysis:
-    def __init__(self, base_case_path, results_path, tax_rate=0.125, FCI=1052.92, WC=170.99, Land=2.75, i=0.1,
-                 offsite_capital=52.65,
-                 start_up_expenses=31.59):
+    def __init__(self, base_case_path, results_path, tax_rate, FCI, WC, Land, i, offsite_capital, start_up_expenses, case_name):
         self.results_path = results_path
         self.tax_rate = tax_rate
         self.FCI = FCI
@@ -48,6 +46,7 @@ class SensitivityAnalysis:
         self.i = i  # interest/discount rate
         self.base_case = pd.read_csv(base_case_path, index_col=0)
         self.base_case_copy = copy.deepcopy(self.base_case)  # self.base_case should not change between scenarios
+        self.case_name = case_name
 
     def build_cashflows(self, adjust_R=1, adjust_E=1, adjust_FCI=1):
         processed_cashflows = copy.deepcopy(self.base_case)
@@ -235,14 +234,3 @@ class SensitivityAnalysis:
         img = ax.scatter(x, y, z, c=c, cmap='Reds')
         fig.colorbar(img)
         plt.savefig(os.path.join(self.results_path, 'IRR_combined.png'))
-
-
-if __name__ == '__main__':
-    print('WARNING - RUNNING FROM CLASS SCRIPT FILE')
-    p = str(Path(__file__).parents[3])
-    results_path = os.path.join(p, r'mfs/processed')
-    base_case_path = os.path.join(p, r'mfs/base_case.csv')
-    x = SensitivityAnalysis(base_case_path, results_path)
-    results = x()
-
-    results.to_csv(os.path.join(p, r'mfs/sensitivity_analysis_results.csv'))
