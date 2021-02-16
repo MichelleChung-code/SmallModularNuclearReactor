@@ -3,6 +3,10 @@ REVENUE = 'REVENUE'
 EXPENSES = 'EXPENSES'
 FCI = 'FCI'
 
+var_ls = [REVENUE, EXPENSES, FCI]
+
+CHANGE_FROM_BASE = 'CHANGE_FROM_BASE'
+
 HYDROGEN = 'hydrogen'
 NATGAS = 'natgas'
 HELIUM = 'helium'
