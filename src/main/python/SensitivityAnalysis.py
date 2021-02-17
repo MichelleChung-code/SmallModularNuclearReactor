@@ -35,9 +35,7 @@ dict_individual_plots = {
 
 
 class SensitivityAnalysis:
-    def __init__(self, base_case_path, results_path, tax_rate=0.125, FCI=1052.92, WC=170.99, Land=2.75, i=0.1,
-                 offsite_capital=52.65,
-                 start_up_expenses=31.59):
+    def __init__(self, base_case_path, results_path, tax_rate, FCI, WC, Land, i, offsite_capital, start_up_expenses):
         self.results_path = results_path
         self.tax_rate = tax_rate
         self.FCI = FCI
@@ -72,27 +70,26 @@ class SensitivityAnalysis:
 
         return processed_cashflows.fillna(0)
 
-    def __call__(self):
+    def __call__(self, case_name, adjust_R_LS, adjust_E_LS, adjust_FCI_LS):
         # NOTE:
         # A 0.1 adjustment factor means a 90% decrease from the base case
         # A 1.4 adjustment factor means a 40% increase from the base case
-        adjust_R_LS = [*np.arange(0.60, 2.41, 0.1)]  # add the 0.01 to the end bound so that it goals to 2.40
-        adjust_E_LS = [*np.arange(0.90, 1.11, 0.1)]  # add the 0.01 to the end bound so that it goals to 1.10
-        adjust_FCI_LS = [*np.arange(0.5, 1.71, 0.1)]  # add the 0.01 to the end bound so that it goals to 1.70
         LS_ALL = [adjust_R_LS, adjust_E_LS, adjust_FCI_LS]
 
         combinations = list(itertools.product(*LS_ALL))
         combined_results = pd.DataFrame(combinations, columns=['R_AdjustFact', 'E_AdjustFact', 'FCI_AdjustFact'])
         combined_results = self.build_sensitivity_results(combined_results)
-        self.plot_combined_results(combined_results)
+        self.plot_combined_results(combined_results, case_name)
         base_case_row = combined_results[
             (abs(combined_results['R_AdjustFact'] - 1) <= 1E-6) & (
                     abs(combined_results['E_AdjustFact'] - 1) <= 1E-6) & (
                     abs(combined_results['FCI_AdjustFact'] - 1) <= 1E-6)]
 
         self.plot_individual_results(adjust_R_LS=adjust_R_LS, adjust_E_LS=adjust_E_LS, adjust_FCI_LS=adjust_FCI_LS,
-                                     base_case_row=base_case_row)
+                                     base_case_row=base_case_row, case_name=case_name)
 
+        print('==' * 50)
+        print('==' * 15, 'CASE: ', case_name.upper(), '==' * 15)
         print('==' * 10, ' COMBINED RESULTS ', '==' * 10)
         assert (combined_results['NPV'].idxmax() == combined_results['IRR'].idxmax())
         assert (combined_results['NPV'].idxmin() == combined_results['IRR'].idxmin())
@@ -100,6 +97,7 @@ class SensitivityAnalysis:
         print(combined_results.loc[combined_results['NPV'].idxmax()])
         print('>>>', ' MIN')
         print(combined_results.loc[combined_results['NPV'].idxmin()])
+        print('==' * 50)
 
         return combined_results
 
@@ -114,7 +112,7 @@ class SensitivityAnalysis:
         return results_df
 
     @staticmethod
-    def plot_individual_chart(base_case_row, results, output_path, vary_type):
+    def plot_individual_chart(base_case_row, results, output_path, vary_type, case_name):
         """
 
         :param base_case_row:
@@ -157,7 +155,7 @@ class SensitivityAnalysis:
 
         plt.legend([base_case_series], ['Base Case'], loc=dict_individual_plots[vary_type]['legend_loc'])
         plt.tight_layout()
-        plt.savefig(os.path.join(output_path, vary_type + '.png'))
+        plt.savefig(os.path.join(output_path, '{}_'.format(case_name) + vary_type + '.png'))
 
     def helper_populate_remaining_factors_ones(self, results, LS_include):
         LS_fill_ones = [x for x in LS_include if x not in results.columns]
@@ -166,7 +164,7 @@ class SensitivityAnalysis:
 
         return results
 
-    def plot_individual_results(self, adjust_R_LS, adjust_E_LS, adjust_FCI_LS, base_case_row):
+    def plot_individual_results(self, adjust_R_LS, adjust_E_LS, adjust_FCI_LS, base_case_row, case_name):
 
         LS_vary_factors = [R_AdjustFact, E_AdjustFact, FCI_AdjustFact]
         results_vary_R = pd.DataFrame(adjust_R_LS, columns=[R_AdjustFact])
@@ -181,14 +179,19 @@ class SensitivityAnalysis:
         results_vary_E = self.build_sensitivity_results(results_vary_E)
         results_vary_FCI = self.build_sensitivity_results(results_vary_FCI)
 
-        results_vary_R.to_csv(os.path.join(self.results_path, 'sensitivity_analysis_results_vary_R.csv'))
-        results_vary_E.to_csv(os.path.join(self.results_path, 'sensitivity_analysis_results_vary_E.csv'))
-        results_vary_FCI.to_csv(os.path.join(self.results_path, 'sensitivity_analysis_results_vary_FCI.csv'))
+        results_vary_R.to_csv(
+            os.path.join(self.results_path, '{}_sensitivity_analysis_results_vary_R.csv'.format(case_name)))
+        results_vary_E.to_csv(
+            os.path.join(self.results_path, '{}_sensitivity_analysis_results_vary_E.csv'.format(case_name)))
+        results_vary_FCI.to_csv(
+            os.path.join(self.results_path, '{}_sensitivity_analysis_results_vary_FCI.csv'.format(case_name)))
 
-        self.plot_individual_chart(base_case_row, results_vary_R, output_path=self.results_path, vary_type=R_AdjustFact)
-        self.plot_individual_chart(base_case_row, results_vary_E, output_path=self.results_path, vary_type=E_AdjustFact)
+        self.plot_individual_chart(base_case_row, results_vary_R, output_path=self.results_path, vary_type=R_AdjustFact,
+                                   case_name=case_name)
+        self.plot_individual_chart(base_case_row, results_vary_E, output_path=self.results_path, vary_type=E_AdjustFact,
+                                   case_name=case_name)
         self.plot_individual_chart(base_case_row, results_vary_FCI, output_path=self.results_path,
-                                   vary_type=FCI_AdjustFact)
+                                   vary_type=FCI_AdjustFact, case_name=case_name)
 
         # print max and min
         LS_DF = [results_vary_R, results_vary_E, results_vary_FCI]
@@ -202,7 +205,7 @@ class SensitivityAnalysis:
             print('>>>', ' MIN')
             print(LS_DF[i].loc[LS_DF[i]['NPV'].idxmin()])
 
-    def plot_combined_results(self, results):
+    def plot_combined_results(self, results, case_name):
         # NPV plot
         fig = plt.figure(figsize=(13, 10))
         ax = fig.add_subplot(111, projection='3d')
@@ -220,7 +223,7 @@ class SensitivityAnalysis:
 
         img = ax.scatter(x, y, z, c=c, cmap='GnBu')
         fig.colorbar(img)
-        plt.savefig(os.path.join(self.results_path, 'NPV_combined.png'))
+        plt.savefig(os.path.join(self.results_path, '{}_NPV_combined.png'.format(case_name)))
 
         fig = plt.figure(figsize=(13, 10))
         ax = fig.add_subplot(111, projection='3d')
@@ -234,15 +237,4 @@ class SensitivityAnalysis:
 
         img = ax.scatter(x, y, z, c=c, cmap='Reds')
         fig.colorbar(img)
-        plt.savefig(os.path.join(self.results_path, 'IRR_combined.png'))
-
-
-if __name__ == '__main__':
-    print('WARNING - RUNNING FROM CLASS SCRIPT FILE')
-    p = str(Path(__file__).parents[3])
-    results_path = os.path.join(p, r'mfs/processed')
-    base_case_path = os.path.join(p, r'mfs/base_case.csv')
-    x = SensitivityAnalysis(base_case_path, results_path)
-    results = x()
-
-    results.to_csv(os.path.join(p, r'mfs/sensitivity_analysis_results.csv'))
+        plt.savefig(os.path.join(self.results_path, '{}_IRR_combined.png'.format(case_name)))

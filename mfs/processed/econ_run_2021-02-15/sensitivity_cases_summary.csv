@@ -1,0 +1,13 @@
+CASE_NAME,REVENUE,EXPENSES,FCI,CHANGE_FROM_BASE_REVENUE,CHANGE_FROM_BASE_EXPENSES,CHANGE_FROM_BASE_FCI
+hydrogen_lower,197.77,65.32,1298.58,-0.33,0.0,-0.0
+hydrogen_upper,988.85,65.32,1298.58,2.33,0.0,-0.0
+natgas_lower,296.66,61.43,1298.58,0.0,-0.06,-0.0
+natgas_upper,296.66,67.74,1298.58,0.0,0.04,-0.0
+helium_lower,296.66,65.06,1293.79,0.0,-0.0,-0.0
+helium_upper,296.66,67.83,1346.53,0.0,0.04,0.04
+triso_lower,296.66,65.29,1298.5,0.0,-0.0,-0.0
+triso_upper,296.66,65.34,1298.66,0.0,0.0,0.0
+fci_decommissioning_lower,296.66,65.32,1168.72,0.0,0.0,-0.1
+fci_decommissioning_upper,296.66,65.32,1428.44,0.0,0.0,0.1
+combined_lower,197.77,70.28,1481.27,-0.33,0.08,0.14
+combined_upper,988.85,61.16,1164.34,2.33,-0.06,-0.1
