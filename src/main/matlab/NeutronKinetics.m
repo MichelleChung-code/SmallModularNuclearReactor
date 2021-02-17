@@ -164,9 +164,8 @@ classdef NeutronKinetics
 %            https://www-sciencedirect-com.ezproxy.lib.ucalgary.ca/science/article/pii/S0029549312000921
 %            volume specific heat capacity for reflector graphite
            obj.C_reflector = 1.75*(0.645+3.14e-3*Tavg_celsius - 2.809e-6*(Tavg_celsius^2) +0.959e-9*(Tavg_celsius^3))*1000 %j/kgK
-%            obj.C_reflector = 1025.8; % j/kgK  value of specific heat capacity of graphite at 400C   file: Capstone_Group25_CHEMENGG/Reactor_Modelling/Reactor_Core_Modelling/Sources_Used/brochure-properties-and-characteristics-of-graphite-7329.pdf
            obj.Ad = (1- obj.porosity)*(obj.calc_surface_area('sphere', D_fuel_element))*N_fuel_elements_in_core/obj.N; % m^2 SA of one sphere * number of spheres/10 sections
-           obj.Kd = obj.P0/(obj.Ad*(obj.Tout-obj.Tin)); %116.9569; %W/(m^2*K) include porosity
+           obj.Kd = obj.P0/(obj.Ad*(obj.Tout-obj.Tin)); %116.9569; %W/(m^2*K) 
            obj.Kr = 70; % W/(m^2K) 
            obj.Ar = obj.calc_surface_area('cylinder_no_top', D_reactor_core, H_reactor_core)/obj.N *(1 - obj.porosity); % m^2 heat transfer area between fuel pile and reflector per node
            
@@ -183,13 +182,6 @@ classdef NeutronKinetics
            helium_heat_conductivity = 2.682e-3*(1+1.123e-3)*(Tavg_Kelvin^(0.71*(1-2e-4*Pavg)));% W/mK
            Pr = (mu * obj.Cp_helium) / helium_heat_conductivity;
            
-           
-%            DOSIS = 10^21; % EDN fast neutron radiation dose
-%            DOSIS_term_heat_conduct = (-0.3906e-4*Tavg_celsius + 0.06829) / (DOSIS + 0.1931e-4*Tavg_celsius + 0.105);
-%            heat_conductivity_fuel_matrix = 1.2768*DOSIS_term_heat_conduct + 1.228e-4*Tavg_celsius + 0.042;
-%            
-%            Pr_fuel = mu * obj.C_fuel / heat_conductivity_fuel_matrix;
-%            
            % heat transfer coefficient of the surface of spherical fuel elements
            Nu = (1.27*(Pr^(1/3)/obj.porosity^(1.18))*Re^(0.36)) + (0.033*(Pr^(1/2)/ obj.porosity^(1.07))*Re^(0.86));
            obj.K = helium_heat_conductivity * Nu / D_reactor_core; % W/(m^2K) heat transfer coefficient between fuel elements and helium
