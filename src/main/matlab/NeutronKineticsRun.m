@@ -31,13 +31,14 @@ x0 = [x0; 0]; % append the integ val for PI controller
 %For step change in reactivity
 reactivity_step_size = natural_reactivity * .05; % 5% of natural reactivity
 reactivity_step_time = 2500; % time in seconds
+control_rod_sp_step_time = 5000; % time in seconds
 
 % if no step response desired, just overwrite with 0, i.e. uncomment the
 % line below
 
 %reactivity_step_size = 0; 
 
-neutron_kinetics = NeutronKinetics(coupling_coeffs_matrix, N, reactivity_step_size, reactivity_step_time, natural_reactivity, x0);
+neutron_kinetics = NeutronKinetics(coupling_coeffs_matrix, N, reactivity_step_size, reactivity_step_time, natural_reactivity, x0, control_rod_sp_step_time);
 [tout, x] = neutron_kinetics.solve_neutron_kinetics(tspan, x0);
 disp("Solving Completed");
 
