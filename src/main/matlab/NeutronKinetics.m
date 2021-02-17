@@ -141,9 +141,8 @@ classdef NeutronKinetics
            obj.Tout = 750; % Helium 
            Tavg_celsius = (250+750)/2;
            Tavg_Kelvin = Tavg_celsius + 273.15;
-           Pin = 7000 / 1000; % MPa
-           Pout = 6961.37 / 1000; % MPa
-           Pavg = (Pin + Pout)/2;
+
+           Pavg = 7000 / 1000; % MPa
            
            % graphite thermal specific heat capacity using correlation from
            % http://aries.ucsd.edu/LIB/PROPS/PANOS/c.html
