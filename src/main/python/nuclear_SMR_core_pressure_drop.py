@@ -1,16 +1,17 @@
 from math import pi
 
 # Reynolds number
+Tavg = (250 + 750) / 2  # 500
 
-rho = 0.4354  # kg/m3
+rho = 4.1015  # kg/m3
 L = 11  # m
 mu = 3.8280e-5  # Pa s
-D = 3  #m
+D = 3 * .39  # m
 mass_flow_rate = 145  # kg/s
 A = pi * (D / 2) ** 2
 u = mass_flow_rate * A / rho
 
-Re = 1.1090e3
+Re = (rho * u * D) / mu
 e = 0.39  # porosity
 
 print("Reynold's Number", Re)
