@@ -38,6 +38,8 @@ classdef NeutronKinetics
         
         reactivity_step_size {mustBeNumeric} 
         reactivity_step_time {mustBeNumeric} 
+        T_outlet_header_sp_step {mustBeNumeric} 
+        T_outlet_header_sp_step_time {mustBeNumeric} 
         natural_reactivity {mustBeNumeric} 
 
         T_outlet_header_ss {mustBeNumeric} 
@@ -86,7 +88,7 @@ classdef NeutronKinetics
     end
     
     methods
-       function obj = NeutronKinetics(coupling_coeffs_matrix, N, reactivity_step_size, reactivity_step_time, natural_reactivity, x0)
+       function obj = NeutronKinetics(coupling_coeffs_matrix, N, reactivity_step_size, reactivity_step_time, natural_reactivity, x0, control_rod_sp_step_time)
            % Dynamic inputs that can change
            obj.coupling_coeffs_matrix = coupling_coeffs_matrix;
            obj.N = N; % number of nodes
@@ -162,6 +164,8 @@ classdef NeutronKinetics
            % For the control rod control system
            obj.T_outlet_header_ss = x0(obj.N*7+2*obj.N+4); %Toh 
            obj.T_outlet_header_set_point = obj.T_outlet_header_ss; 
+           obj.T_outlet_header_sp_step = 25; % step the set point by 25 degrees
+           obj.T_outlet_header_sp_step_time = control_rod_sp_step_time;
            obj.control_rod_insertion_ss = 6;  
            % Tuning parameters for PI control 
            obj.tau = 12; %time for Toh to reach .653 of the final output from a step change in reactivty
@@ -230,7 +234,11 @@ classdef NeutronKinetics
 % control_rod_insertion is the Manipulated variable
 % Toh is the controlled variable
 % PI control
-% TODO: I don't think we need the TSP_STEP1 thing?
+            
+           % step change in the set point 
+           if t >= obj.T_outlet_header_sp_step_time
+               obj.T_outlet_header_set_point = obj.T_outlet_header_ss + obj.T_outlet_header_sp_step;
+           end
 
            error = x(Toh) - obj.T_outlet_header_set_point; 
            control_rod_insertion = obj.control_rod_insertion_ss + obj.KC*(error+1/obj.TI*integ);

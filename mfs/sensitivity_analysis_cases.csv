@@ -1,0 +1,13 @@
+CASE_NAME,REVENUE,EXPENSES,FCI
+hydrogen_lower,197.77,65.32,1298.58
+hydrogen_upper,988.85,65.32,1298.58
+natgas_lower,296.66,61.43,1298.58
+natgas_upper,296.66,67.74,1298.58
+helium_lower,296.66,65.06,1293.79
+helium_upper,296.66,67.83,1346.53
+triso_lower,296.66,65.29,1298.50
+triso_upper,296.66,65.34,1298.66
+fci_decommissioning_lower,296.66,65.32,1168.72
+fci_decommissioning_upper,296.66,65.32,1428.44
+combined_lower,197.77,70.28,1481.27
+combined_upper,988.85,61.16,1164.34
