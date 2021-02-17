@@ -74,4 +74,11 @@ figure(i+1), plot([1 2 3 4 5 6 7 8 9 10], x(end,117:126));
 title("Nodal Final Power Output");
 ylabel("Power Output (MW)"), xlabel("Node Number");
 
+figure(i+2), plot([1 2 3 4 5 6 7 8 9 10], x(end,106:115));
+title("Nodal Final Reactivity");
+ylabel("Reactivity (MW)"), xlabel("Node Number");
+
+figure(i+3), plot([1 2 3 4 5 6 7 8 9 10], x(end,1:10));
+title("Nodal Final Relative Neutron Flux");
+ylabel("Relative Neutron Flux"), xlabel("Node Number");
 disp("Plotting Completed");

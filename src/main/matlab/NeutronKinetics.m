@@ -41,6 +41,7 @@ classdef NeutronKinetics
         T_outlet_header_sp_step {mustBeNumeric} 
         T_outlet_header_sp_step_time {mustBeNumeric} 
         natural_reactivity {mustBeNumeric} 
+        reactivity_profile {mustBeNumeric}
 
         T_outlet_header_ss {mustBeNumeric} 
         T_outlet_header_set_point {mustBeNumeric} 
@@ -53,6 +54,7 @@ classdef NeutronKinetics
         control_rod_insertion_ss {mustBeNumeric} 
         control_rod_min_insertion {mustBeNumeric} 
         control_rod_max_insertion {mustBeNumeric} 
+        control_rod_reactivity {mustBeNumeric}
         
     end
     
@@ -88,13 +90,15 @@ classdef NeutronKinetics
     end
     
     methods
-       function obj = NeutronKinetics(coupling_coeffs_matrix, N, reactivity_step_size, reactivity_step_time, natural_reactivity, x0, control_rod_sp_step_time)
+       function obj = NeutronKinetics(coupling_coeffs_matrix, N, reactivity_step_size, reactivity_step_time, natural_reactivity,reactivity_profile,control_rod_reactivity, x0, control_rod_sp_step_time)
            % Dynamic inputs that can change
            obj.coupling_coeffs_matrix = coupling_coeffs_matrix;
            obj.N = N; % number of nodes
            obj.reactivity_step_size = reactivity_step_size; 
            obj.reactivity_step_time = reactivity_step_time; 
            obj.natural_reactivity = natural_reactivity;
+           obj.reactivity_profile = reactivity_profile;
+           obj.control_rod_reactivity = control_rod_reactivity;
            
            if obj.reactivity_step_size == 0
                disp("No step response inputted, running in Steady State Operation")
@@ -145,6 +149,7 @@ classdef NeutronKinetics
            obj.Cp_helium = 5246.5; % J/kgK from Symmetry at 500 degrees Celsius
            
            obj.P0 = obj.mass_flow_rate_helium * obj.Cp_helium * (obj.Tout - obj.Tin); %W
+           obj.P0 = 7.602E8;%380371250;
            obj.P0_node = obj.P0/obj.N;  % Watts
            
            obj.density_reflector = 2230; % kg/m^3 (Density of graphite)file:Capstone_Group25_CHEMENGG/Reactor_Modelling/Reactor_Core_Modelling/Sources_Used/brochure-properties-and-characteristics-of-graphite-7329.pdf
@@ -180,7 +185,7 @@ classdef NeutronKinetics
            obj.control_rod_max_insertion = 11;
        end
        
-       function rho = reactivity(obj, control_rod_x,Tc, Tr, t)
+       function rho = reactivity(obj,reactivity_profile, control_rod_x,Tc, Tr, t)
            % Args:
            % x = current control rod insertion position
            % Tc = Temperature of the fuel element
@@ -190,14 +195,14 @@ classdef NeutronKinetics
            
            % insertion position reference for future Ohki2014_Chapter_FuelBurnupAndReactivityControl
      
-           rho_natural = obj.natural_reactivity;
+           rho_natural = obj.natural_reactivity*reactivity_profile;
            
            % STEP change in control rod natural reactivity
            if t >= obj.reactivity_step_time
                rho_natural = rho_natural + obj.reactivity_step_size;
            end
            
-           rho_control_rods = -control_rod_x*0.03; 
+           rho_control_rods = -control_rod_x*obj.control_rod_reactivity; 
            rho = rho_natural +rho_control_rods + (obj.alpha_fuel + obj.alpha_moderator)*(Tc - obj.Tc0) + obj.alpha_reflector*(Tr - obj.Tr0);
 
        end
@@ -269,7 +274,7 @@ classdef NeutronKinetics
 
            
            % Relative neutron flux for node 1
-           rho_1 = obj.reactivity(control_rod_array(1),x(cores),x(Tr), t);
+           rho_1 = obj.reactivity(obj.reactivity_profile(1),control_rod_array(1),x(cores),x(Tr), t);
            dxdt(rho_index) = rho_1;
            dn1dt_term1 = (rho_1 - obj.beta - obj.coupling_coeffs_matrix(1,1))/obj.lambda*x(1);
            dn1dt_term2 = (1/obj.lambda) * obj.coupling_coeffs_matrix(1,2) * x(2);
@@ -279,7 +284,7 @@ classdef NeutronKinetics
            % Relative neutron flux for ith to N-1 nodes
            var = obj.N+7;
            for i = 2:(obj.N-1)
-               rho_i = obj.reactivity(control_rod_array(i), x(cores+i-1),x(Tr), t); 
+               rho_i = obj.reactivity(obj.reactivity_profile(i),control_rod_array(i), x(cores+i-1),x(Tr), t); 
                dxdt(rho_index + i -1) = rho_i;
                dnidt_term1 = (rho_i - obj.beta - obj.coupling_coeffs_matrix(i,i))*(1/obj.lambda)*x(i);
                dnidt_term2 = (1/obj.lambda)*(obj.coupling_coeffs_matrix(i, i-1)*x(i-1) + obj.coupling_coeffs_matrix(i, i+1)*x(i+1));
@@ -289,7 +294,7 @@ classdef NeutronKinetics
            end
            
            % Relative neutron flux for node N
-           rho_N = obj.reactivity(control_rod_array(obj.N), x(cores+obj.N-1),x(Tr), t); 
+           rho_N = obj.reactivity(obj.reactivity_profile(obj.N),control_rod_array(obj.N), x(cores+obj.N-1),x(Tr), t); 
            dxdt(rho_index + obj.N -1) = rho_N; 
            dnNdt_term1 = (rho_N - obj.beta - obj.coupling_coeffs_matrix(obj.N,obj.N))/obj.lambda*x(obj.N);
            dnNdt_term2 = (1/obj.lambda)*obj.coupling_coeffs_matrix(obj.N,obj.N-1)*x(obj.N-1);

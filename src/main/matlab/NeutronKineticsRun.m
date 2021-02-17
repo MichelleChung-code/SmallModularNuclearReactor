@@ -26,6 +26,10 @@ csv_array = table2array(from_csv(:,4));
 x0 = csv_array;
 
 natural_reactivity = 0.03419; 
+reactivity_profile = [0.04	0.397849462	0.655913978	0.774193548	0.860215054	0.924731183	0.967741935	0.989247312	1	0.892473118];
+%reactivity_profile = [0.6	0.6	0.655913978	0.774193548	0.860215054	0.924731183	0.967741935	0.989247312	1	0.892473118];
+control_rod_reactivity = 0.03;
+
 x0 = [x0; 0]; % append the integ val for PI controller
 
 %For step change in reactivity
@@ -38,7 +42,7 @@ control_rod_sp_step_time = 5000; % time in seconds
 
 %reactivity_step_size = 0; 
 
-neutron_kinetics = NeutronKinetics(coupling_coeffs_matrix, N, reactivity_step_size, reactivity_step_time, natural_reactivity, x0, control_rod_sp_step_time);
+neutron_kinetics = NeutronKinetics(coupling_coeffs_matrix, N, reactivity_step_size, reactivity_step_time, natural_reactivity,reactivity_profile,control_rod_reactivity, x0, control_rod_sp_step_time);
 [tout, x] = neutron_kinetics.solve_neutron_kinetics(tspan, x0);
 disp("Solving Completed");
 
