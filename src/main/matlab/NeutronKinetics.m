@@ -141,12 +141,18 @@ classdef NeutronKinetics
            obj.Tout = 750; % Helium 
            Tavg_celsius = (250+750)/2;
            Tavg_Kelvin = Tavg_celsius + 273.15;
+           Pin = 7000 / 1000; % MPa
+           Pout = 6961.37 / 1000; % MPa
+           Pavg = (Pin + Pout) / 2; % MPa
+           
            % graphite thermal specific heat capacity using correlation from
            % http://aries.ucsd.edu/LIB/PROPS/PANOS/c.html
            % for 300 K <= T <= 1500 K
            
            obj.C_fuel = -474.0 + 4.9532*Tavg_Kelvin - 3.6093E-3*(Tavg_Kelvin^2) + 9.3068E-7*(Tavg_Kelvin^3); % j/kgK
-           obj.Cp_helium = 5246.5; % J/kgK from Symmetry at 500 degrees Celsius
+           
+%            Cp_helium from https://www-sciencedirect-com.ezproxy.lib.ucalgary.ca/science/article/pii/S0029549312000921
+           obj.Cp_helium = 5195; % or 5246.5 J/kgK from Symmetry at 500 degrees Celsius 
            
            obj.P0 = obj.mass_flow_rate_helium * obj.Cp_helium * (obj.Tout - obj.Tin); %W
            obj.P0 = 7.602E8;%380371250;
@@ -154,12 +160,33 @@ classdef NeutronKinetics
            
            obj.density_reflector = 2230; % kg/m^3 (Density of graphite)file:Capstone_Group25_CHEMENGG/Reactor_Modelling/Reactor_Core_Modelling/Sources_Used/brochure-properties-and-characteristics-of-graphite-7329.pdf
            obj.volume_reflector = obj.calc_volume('cylinder', D_reactor_core + 2*(reflector_thickness), H_reactor_core); % m^3 
-           obj.C_reflector = 1025.8; % j/kgK  value of specific heat capacity of graphite at 400C   file: Capstone_Group25_CHEMENGG/Reactor_Modelling/Reactor_Core_Modelling/Sources_Used/brochure-properties-and-characteristics-of-graphite-7329.pdf
+           
+%            https://www-sciencedirect-com.ezproxy.lib.ucalgary.ca/science/article/pii/S0029549312000921
+%            volume specific heat capacity for reflector graphite
+           obj.C_reflector = 1.75*(0.645+3.14e-3*Tavg_celsius - 2.809e-6*(Tavg_celsius^2) +0.959e-9*(Tavg_celsius^3))*1000 %j/kgK
            obj.Ad = (1- obj.porosity)*(obj.calc_surface_area('sphere', D_fuel_element))*N_fuel_elements_in_core/obj.N; % m^2 SA of one sphere * number of spheres/10 sections
-           obj.Kd = obj.P0/(obj.Ad*(obj.Tout-obj.Tin)); %116.9569; %W/(m^2*K) include porosity
+           obj.Kd = obj.P0/(obj.Ad*(obj.Tout-obj.Tin)); %116.9569; %W/(m^2*K) 
            obj.Kr = 70; % W/(m^2K) 
            obj.Ar = obj.calc_surface_area('cylinder_no_top', D_reactor_core, H_reactor_core)/obj.N *(1 - obj.porosity); % m^2 heat transfer area between fuel pile and reflector per node
-           obj.K = 70; % W/(m^2K)
+           
+           
+           % Helium Properties 
+           rho = 48.14*(Pavg/Tavg_Kelvin)*(1 + 0.4446*(Pavg/(Tavg_Kelvin^1.2)))^-1; % kg/m3
+           mu = 3.674e-7*(Tavg_Kelvin^0.7);
+           kinetic_visc = mu/rho; 
+           
+           SA_fuel_element = 4*pi*(D_fuel_element/2)^2;
+           Re = ((obj.mass_flow_rate_helium * SA_fuel_element) * D_fuel_element)/ kinetic_visc;
+           helium_heat_conductivity = 2.682e-3*(1+1.123e-3)*(Tavg_Kelvin^(0.71*(1-2e-4*Pavg)));% W/mK
+           Pr = (mu * obj.Cp_helium) / helium_heat_conductivity;
+           
+           % Pebble bed friction resistance loss - NOT USED FOR NOW
+%            fric_coeff = (320/(Re/(1-obj.porosity))) + (6/((Re/(1-obj.porosity))^0.1));
+%            P_loss_friction = H_reactor_core * ((1-obj.porosity)/(obj.porosity^3)) * (1/D_fuel_element) * (1/(2*obj.density_fuel)) * (obj.mass_flow_rate_helium/SA_fuel_element)^2; % MPa
+%            
+           % heat transfer coefficient of the surface of spherical fuel elements
+           Nu = (1.27*(Pr^(1/3)/obj.porosity^(1.18))*Re^(0.36)) + (0.033*(Pr^(1/2)/ obj.porosity^(1.07))*Re^(0.86));
+           obj.K = helium_heat_conductivity * Nu / D_reactor_core; % W/(m^2K) heat transfer coefficient between fuel elements and helium
            obj.A = pi*(D_reactor_core/2)^2*(1- obj.porosity); % m^2 area of circle, cross-sectional area of the reactor core
            obj.Ku = 26494.5; % W/(m^2K) This number can be figure out by looking at the overall heat transfer between a flate plate and a flowing fluid
            obj.Au = obj.calc_surface_area('cylinder_no_top', .2,H_reactor_core)*30;%obj.calc_surface_area('cylinder_no_top', D_reactor_core + 2*(reflector_thickness), H_reactor_core); %m^2 heat transfer area between coolant in reflector and riser, SA of reflector using outer diameter
@@ -416,11 +443,12 @@ classdef NeutronKinetics
             % purposes
             
             [num_row_x, num_col_x] = size(x);
+            global num_col_x_without_PI
             num_col_x_without_PI = num_col_x -1;
             reactivity_final_col_num = num_col_x_without_PI - 1;
             x(:, reactivity_final_col_num-(obj.N-1):reactivity_final_col_num) = rdivide(x(:, reactivity_final_col_num-(obj.N-1):reactivity_final_col_num), tout);
             
-            x(:, 116) = rdivide(x(:, 116), tout);
+            x(:, reactivity_final_col_num + 1) = rdivide(x(:, reactivity_final_col_num + 1), tout);
             % calculate power output per node
             x(:, num_col_x_without_PI + 1:num_col_x_without_PI + obj.N) = x(:, 1:obj.N) * (1/obj.N) * (obj.P0*10^-6);
             
