@@ -171,7 +171,7 @@ classdef NeutronKinetics
            
            
            % Helium Properties 
-           rho = 48.14*(Pavg/Tavg_Kelvin)*(1 + 0.4446*(Pavg/(Tavg_Kelvin^1.2)))^-1; % kg/m3;
+           rho = 48.14*(Pavg/Tavg_Kelvin)*(1 + 0.4446*(Pavg/(Tavg_Kelvin^1.2)))^-1; % kg/m3
            mu = 3.674e-7*(Tavg_Kelvin^0.7);
            kinetic_visc = mu/rho; 
            
@@ -443,11 +443,12 @@ classdef NeutronKinetics
             % purposes
             
             [num_row_x, num_col_x] = size(x);
+            global num_col_x_without_PI
             num_col_x_without_PI = num_col_x -1;
             reactivity_final_col_num = num_col_x_without_PI - 1;
             x(:, reactivity_final_col_num-(obj.N-1):reactivity_final_col_num) = rdivide(x(:, reactivity_final_col_num-(obj.N-1):reactivity_final_col_num), tout);
             
-            x(:, 116) = rdivide(x(:, 116), tout);
+            x(:, reactivity_final_col_num + 1) = rdivide(x(:, reactivity_final_col_num + 1), tout);
             % calculate power output per node
             x(:, num_col_x_without_PI + 1:num_col_x_without_PI + obj.N) = x(:, 1:obj.N) * (1/obj.N) * (obj.P0*10^-6);
             
