@@ -14,7 +14,7 @@ end
 diff_plot_titles2 = ["Temperature of Fuel Elements", "Temperature of Helium in Nodes", "Temperature of Reflector",...
 "Average Temperature in Riser", "Temperature of Lower Helium Header",...
 "Temperature of Outlet Header", "Mass Flow Rates of Helium through Nodes",...
-"Mass Flow Rate to Lower Helium Header", "Nodal Reactivity", "Rod Position - todo for future", "Nodal Power Output"];
+"Mass Flow Rate to Lower Helium Header", "Nodal Reactivity", "Rod Position", "Nodal Power Output"];
 
 diff_plot_titles = [diff_plot_titles, diff_plot_titles2];
 
@@ -69,16 +69,17 @@ for i=1:length(diff_plot_titles)
         annotation('textbox',[.4 .5 .3 .4],'String',strcat('Total Power:  ', total_at_end, 'MW'),'FitBoxToText','on')
     end
 end
+global num_col_x_without_PI
 
-figure(i+1), plot([1 2 3 4 5 6 7 8 9 10], x(end,117:126));
+figure(i+1), plot(1:N, x(end,num_col_x_without_PI + 1:num_col_x_without_PI + N));
 title("Nodal Final Power Output");
 ylabel("Power Output (MW)"), xlabel("Node Number");
 
-figure(i+2), plot([1 2 3 4 5 6 7 8 9 10], x(end,106:115));
+figure(i+2), plot(1:N, x(end,num_col_x_without_PI - N :num_col_x_without_PI - 1));
 title("Nodal Final Reactivity");
 ylabel("Reactivity (MW)"), xlabel("Node Number");
 
-figure(i+3), plot([1 2 3 4 5 6 7 8 9 10], x(end,1:10));
+figure(i+3), plot(1:N, x(end,1:N));
 title("Nodal Final Relative Neutron Flux");
 ylabel("Relative Neutron Flux"), xlabel("Node Number");
 disp("Plotting Completed");
