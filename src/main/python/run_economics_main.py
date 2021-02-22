@@ -104,6 +104,7 @@ if __name__ == '__main__':
             (df[col] - dict_map_changes[col]) / dict_map_changes[col], 2)
 
     df.to_csv(os.path.join(results_path, 'sensitivity_cases_summary.csv'))
+    df_ = pd.DataFrame(columns=['R_AdjustFact', 'E_AdjustFact', 'FCI_AdjustFact', 'NPV', 'IRR'])
 
     for case_name in const.CASES_LS:
 
@@ -140,3 +141,17 @@ if __name__ == '__main__':
         sensitivity_analysis_results = x(case_name, adjust_R_LS, adjust_E_LS, adjust_FCI_LS)
         sensitivity_analysis_results.to_csv(
             os.path.join(results_path, '{}_sensitivity_analysis_results.csv'.format(case_name)))
+
+        min_row = sensitivity_analysis_results[
+            sensitivity_analysis_results['NPV'] == sensitivity_analysis_results['NPV'].min()]
+
+        min_row.index = ['{}_min'.format(case_name)]
+
+        max_row = sensitivity_analysis_results[
+            sensitivity_analysis_results['NPV'] == sensitivity_analysis_results['NPV'].max()]
+
+        max_row.index = ['{}_max'.format(case_name)]
+
+        df_ = df_.append([min_row, max_row])
+
+    df_.to_csv(os.path.join(results_path, 'sensitivity_cases_final_results_summary.csv'))
