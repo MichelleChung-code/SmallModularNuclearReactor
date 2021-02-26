@@ -197,6 +197,10 @@ classdef NeutronKinetics
            obj.T_outlet_header_ss = x0(obj.N*7+2*obj.N+4); %Toh 
            obj.T_outlet_header_set_point = obj.T_outlet_header_ss; 
            obj.T_outlet_header_sp_step = 25; % step the set point by 25 degrees
+           
+           % for no step change in set point, comment out the below line
+%            obj.T_outlet_header_sp_step = 0;
+           
            obj.T_outlet_header_sp_step_time = control_rod_sp_step_time;
            obj.control_rod_insertion_ss = 6;  
            % Tuning parameters for PI control 
