@@ -63,13 +63,13 @@ if __name__ == '__main__':
 
     #### BASE CASE INPUTS IN MM USD ####
     TAX_RATE = 0.13
-    FCI = 1298.580629
-    WC = 210.782767
-    LAND = 2.751365
-    OFF_SITE_CAPITAL = 64.929031
-    START_UP_EXPENSES = 38.957419
-    REV = 296.66
-    EXPENSES = 65.32
+    FCI = 1284.16
+    WC = 208.45
+    LAND = 2.75
+    OFF_SITE_CAPITAL = 64.21
+    START_UP_EXPENSES = 38.52
+    REV = 529.941528
+    EXPENSES = 205.25
 
     x = SensitivityAnalysis(base_case_path, results_path, tax_rate=TAX_RATE, FCI=FCI, WC=WC, Land=LAND,
                             i=discount_rate,
@@ -78,7 +78,7 @@ if __name__ == '__main__':
 
     # build base case annual cashflows
     base_case_cashflows = x.build_cashflows()
-    base_case_cashflows.to_csv(os.path.join(p, r'mfs/processed/base_case_annual_cashflows.csv'))
+    base_case_cashflows.to_csv(os.path.join(results_path, 'base_case_annual_cashflows.csv'))
 
     base_case_cashflows = base_case_cashflows['Cash_Flow'].to_frame()
     base_case_cashflows.rename(columns={'Cash_Flow': 'CASHFLOW'}, inplace=True)
