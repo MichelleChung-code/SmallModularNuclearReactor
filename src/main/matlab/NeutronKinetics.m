@@ -457,15 +457,15 @@ classdef NeutronKinetics
             x(:, num_col_x_without_PI + 1:num_col_x_without_PI + obj.N) = x(:, 1:obj.N) * (1/obj.N) * (obj.P0*10^-6);
             
             % normalize the concentrations with the SS of the first node
-            %[g1_fact,g2_fact,g3_fact,g4_fact,g5_fact,g6_fact] = subsref(num2cell(x(length(tout), obj.N + 1:obj.N + 6)),struct('type',{'{}'},'subs',{{1:6}}));
-            %LS_normalize_facts = [g1_fact,g2_fact,g3_fact,g4_fact,g5_fact,g6_fact];
-            %counter = obj.N;
-            %for j = 1:obj.N
-            %   for i = 1:6
-            %       x(:, i+counter) = x(:, i+counter)/LS_normalize_facts(i);
-            %   end
-            %   counter = counter + 6;
-            %end
+%             [g1_fact,g2_fact,g3_fact,g4_fact,g5_fact,g6_fact] = subsref(num2cell(x(length(tout), obj.N + 1:obj.N + 6)),struct('type',{'{}'},'subs',{{1:6}}));
+%             LS_normalize_facts = [g1_fact,g2_fact,g3_fact,g4_fact,g5_fact,g6_fact];
+%             counter = obj.N;
+%             for j = 1:obj.N
+%               for i = 1:6
+%                   x(:, i+counter) = x(:, i+counter)/LS_normalize_facts(i);
+%               end
+%               counter = counter + 6;
+%             end
        end
 
     end
