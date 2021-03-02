@@ -63,13 +63,13 @@ if __name__ == '__main__':
 
     #### BASE CASE INPUTS IN MM USD ####
     TAX_RATE = 0.13
-    FCI = 1298.580629
-    WC = 210.782767
-    LAND = 2.751365
-    OFF_SITE_CAPITAL = 64.929031
-    START_UP_EXPENSES = 38.957419
-    REV = 296.66
-    EXPENSES = 65.32
+    FCI = 1284.16
+    WC = 208.45
+    LAND = 2.75
+    OFF_SITE_CAPITAL = 64.21
+    START_UP_EXPENSES = 38.52
+    REV = 529.941528
+    EXPENSES = 205.25
 
     x = SensitivityAnalysis(base_case_path, results_path, tax_rate=TAX_RATE, FCI=FCI, WC=WC, Land=LAND,
                             i=discount_rate,
@@ -78,7 +78,7 @@ if __name__ == '__main__':
 
     # build base case annual cashflows
     base_case_cashflows = x.build_cashflows()
-    base_case_cashflows.to_csv(os.path.join(p, r'mfs/processed/base_case_annual_cashflows.csv'))
+    base_case_cashflows.to_csv(os.path.join(results_path, 'base_case_annual_cashflows.csv'))
 
     base_case_cashflows = base_case_cashflows['Cash_Flow'].to_frame()
     base_case_cashflows.rename(columns={'Cash_Flow': 'CASHFLOW'}, inplace=True)
@@ -104,6 +104,7 @@ if __name__ == '__main__':
             (df[col] - dict_map_changes[col]) / dict_map_changes[col], 2)
 
     df.to_csv(os.path.join(results_path, 'sensitivity_cases_summary.csv'))
+    df_ = pd.DataFrame(columns=['R_AdjustFact', 'E_AdjustFact', 'FCI_AdjustFact', 'NPV', 'IRR'])
 
     for case_name in const.CASES_LS:
 
@@ -140,3 +141,17 @@ if __name__ == '__main__':
         sensitivity_analysis_results = x(case_name, adjust_R_LS, adjust_E_LS, adjust_FCI_LS)
         sensitivity_analysis_results.to_csv(
             os.path.join(results_path, '{}_sensitivity_analysis_results.csv'.format(case_name)))
+
+        min_row = sensitivity_analysis_results[
+            sensitivity_analysis_results['NPV'] == sensitivity_analysis_results['NPV'].min()]
+
+        min_row.index = ['{}_min'.format(case_name)]
+
+        max_row = sensitivity_analysis_results[
+            sensitivity_analysis_results['NPV'] == sensitivity_analysis_results['NPV'].max()]
+
+        max_row.index = ['{}_max'.format(case_name)]
+
+        df_ = df_.append([min_row, max_row])
+
+    df_.to_csv(os.path.join(results_path, 'sensitivity_cases_final_results_summary.csv'))

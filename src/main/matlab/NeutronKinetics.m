@@ -197,6 +197,10 @@ classdef NeutronKinetics
            obj.T_outlet_header_ss = x0(obj.N*7+2*obj.N+4); %Toh 
            obj.T_outlet_header_set_point = obj.T_outlet_header_ss; 
            obj.T_outlet_header_sp_step = 25; % step the set point by 25 degrees
+           
+           % for no step change in set point, comment out the below line
+%            obj.T_outlet_header_sp_step = 0;
+           
            obj.T_outlet_header_sp_step_time = control_rod_sp_step_time;
            obj.control_rod_insertion_ss = 6;  
            % Tuning parameters for PI control 
@@ -453,15 +457,15 @@ classdef NeutronKinetics
             x(:, num_col_x_without_PI + 1:num_col_x_without_PI + obj.N) = x(:, 1:obj.N) * (1/obj.N) * (obj.P0*10^-6);
             
             % normalize the concentrations with the SS of the first node
-            %[g1_fact,g2_fact,g3_fact,g4_fact,g5_fact,g6_fact] = subsref(num2cell(x(length(tout), obj.N + 1:obj.N + 6)),struct('type',{'{}'},'subs',{{1:6}}));
-            %LS_normalize_facts = [g1_fact,g2_fact,g3_fact,g4_fact,g5_fact,g6_fact];
-            %counter = obj.N;
-            %for j = 1:obj.N
-            %   for i = 1:6
-            %       x(:, i+counter) = x(:, i+counter)/LS_normalize_facts(i);
-            %   end
-            %   counter = counter + 6;
-            %end
+%             [g1_fact,g2_fact,g3_fact,g4_fact,g5_fact,g6_fact] = subsref(num2cell(x(length(tout), obj.N + 1:obj.N + 6)),struct('type',{'{}'},'subs',{{1:6}}));
+%             LS_normalize_facts = [g1_fact,g2_fact,g3_fact,g4_fact,g5_fact,g6_fact];
+%             counter = obj.N;
+%             for j = 1:obj.N
+%               for i = 1:6
+%                   x(:, i+counter) = x(:, i+counter)/LS_normalize_facts(i);
+%               end
+%               counter = counter + 6;
+%             end
        end
 
     end
