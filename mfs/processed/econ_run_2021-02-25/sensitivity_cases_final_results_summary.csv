@@ -1,0 +1,13 @@
+,R_AdjustFact,E_AdjustFact,FCI_AdjustFact,NPV,IRR
+hydrogen_min,0.6,1.0,1.0,-720.09,0.0581
+hydrogen_max,3.3999999999999995,1.0,1.0,10332.63,0.8718
+natgas_min,1.0,1.4,1.0,247.33,0.1339
+natgas_max,1.0,0.4,1.0,1776.19,0.2464
+helium_min,1.0,1.1,1.1,581.14,0.1555
+helium_max,1.0,1.0,1.0,858.87,0.1792
+triso_min,1.0,1.0,1.0,858.87,0.1792
+triso_max,1.0,1.0,1.0,858.87,0.1792
+fci_decommissioning_min,1.0,1.0,1.1,734.03,0.166
+fci_decommissioning_max,1.0,1.0,0.9,983.72,0.1946
+combined_min,0.6,1.4,1.2,-1581.32,-0.0094
+combined_max,1.6999999999999997,0.6,0.9,4358.44,0.463
