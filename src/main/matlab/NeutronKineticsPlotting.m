@@ -53,10 +53,36 @@ for i = 1:series_num
     if (i == 11*N + 6); legendInfo{i} = ["Rod Position"]; end
     if (11*N + 6 < i) && (12*N + 6); legendInfo{i} = ["Node "+ num2str(i-(11*N + 6))]; end
 end
+global reactivity_control_rod_results
+global time_plot
 
 starting_index = 1;
 for i=1:length(diff_plot_titles)
-    figure(i), plot(tout, x(:, starting_index:diff_plots_index_end(i))), grid on
+    if diff_plot_titles(i) == "Nodal Reactivity"
+        figure(i);
+        hold on;
+        plot(time_plot, reactivity_control_rod_results(:, 1:N)), grid on
+        for j=1:N
+            coefficients = polyfit(time_plot, reactivity_control_rod_results(:, j), 6);
+            xFit = linspace(min(time_plot), max(time_plot), 1000);
+            yFit = polyval(coefficients , xFit);
+            plot(xFit, yFit, 'r-'); % Plot fitted line.
+        end
+        hold off;
+        
+    elseif diff_plot_titles(i) == "Rod Position"
+        figure(i);
+        hold on;
+        plot(time_plot, reactivity_control_rod_results(:, N + 1)), grid on    
+        coefficients = polyfit(time_plot, reactivity_control_rod_results(:, N + 1), 5);
+        xFit = linspace(min(time_plot), max(time_plot), 1000);
+        yFit = polyval(coefficients , xFit);
+        plot(xFit, yFit, 'r-'); % Plot fitted line.
+        hold off;
+    else
+        figure(i), plot(tout, x(:, starting_index:diff_plots_index_end(i))), grid on
+    end
+    
     title(diff_plot_titles(i))
     ylabel(diff_plot_ylabels(i)), xlabel('Time (s)')
     legend(legendInfo{starting_index:diff_plots_index_end(i)}) %'Location','southeast'
@@ -71,11 +97,12 @@ for i=1:length(diff_plot_titles)
 end
 global num_col_x_without_PI
 
+
 figure(i+1), plot(1:N, x(end,num_col_x_without_PI + 1:num_col_x_without_PI + N));
 title("Nodal Final Power Output");
 ylabel("Power Output (MW)"), xlabel("Node Number");
 
-figure(i+2), plot(1:N, x(end,num_col_x_without_PI - N :num_col_x_without_PI - 1));
+figure(i+2), plot(1:N, reactivity_control_rod_results(end,1:N));
 title("Nodal Final Reactivity");
 ylabel("Reactivity (MW)"), xlabel("Node Number");
 
