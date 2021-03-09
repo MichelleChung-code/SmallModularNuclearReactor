@@ -18,6 +18,7 @@ figure(1);
 set(gca,'YTickLabel',[]);
 title('Cash Flow Diagram for Year 0 to 20')
 xlabel('Year')
+ylabel('Cashflow Amounts ($MM)')
 
 
 cashflow_dates2 = table2array(from_csv(22:41,1));
