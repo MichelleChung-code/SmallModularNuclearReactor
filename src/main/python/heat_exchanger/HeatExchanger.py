@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 
 class HeatExchanger:
@@ -73,6 +74,8 @@ class HeatExchanger:
 
         print(res_dict)
 
+        return res_dict
+
 
 # https://www.pdhonline.com/courses/m371/m371content.pdf
 def prelim_area_guess(unit_name):
@@ -84,6 +87,29 @@ def prelim_area_guess(unit_name):
         return 1880  # need to justify assumptions/ limitations around this number
     else:
         raise NotImplemented
+
+
+def log_mean_temperature_difference(flow_type, Tin_hot, Tin_cold, Tout_hot, Tout_cold):
+    """
+    LMTD = (ΔT1 - ΔT2) / ln(ΔT1/ΔT2)
+
+    Args:
+        flow_type: <str> co_current or counter_current
+
+    Returns:
+        LMTD: <float> the log mean temperature difference
+
+    """
+    if flow_type == 'counter_current':
+        delta_T1 = Tin_hot - Tout_cold
+        delta_T2 = Tout_hot - Tin_cold
+    elif flow_type == 'co_current':
+        delta_T1 = Tin_hot - Tin_cold
+        delta_T2 = Tout_hot - Tout_cold
+    else:
+        raise NotImplemented
+
+    return (delta_T1 - delta_T2) / (math.log(delta_T1 / delta_T2))
 
 
 if __name__ == '__main__':
@@ -101,7 +127,11 @@ if __name__ == '__main__':
     flow_arrangement = 'CounterCurrent_Flow'
 
     x = HeatExchanger(mass_flow_hot, mass_flow_cold, Cp_hot, Cp_cold, Tin_hot, Tin_cold, U, A, flow_arrangement)
-    x()
+    output_temp_dict = x()
 
     # todo calculate the heat duty and LMTD for sizing
+    LMTD = log_mean_temperature_difference('counter_current', Tin_hot, Tin_cold, Tout_hot=output_temp_dict['Tout_hot'],
+                                           Tout_cold=output_temp_dict['Tout_cold'])
+    Q_final = U * A * LMTD
 
+    print('Heat Exchanged (kJ/s): {}'.format(Q_final))
