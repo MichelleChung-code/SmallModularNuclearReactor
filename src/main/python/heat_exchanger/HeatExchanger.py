@@ -9,16 +9,19 @@ class HeatExchanger:
     Use NTU method
     """
 
-    def __init__(self, mass_flow_hot, mass_flow_cold, Cp_hot, Cp_cold, Tin_hot, Tin_cold, U, A, flow_arrangement):
+    def __init__(self, mass_flow_hot, mass_flow_cold, Cp_hot, Cp_cold_in, Cp_cold_out, Tin_hot, Tin_cold, U, A, flow_arrangement,
+                 h_vap):
         self.mass_flow_hot = mass_flow_hot
         self.mass_flow_cold = mass_flow_cold
         self.Cp_hot = Cp_hot
-        self.Cp_cold = Cp_cold
+        self.Cp_cold_in = Cp_cold_in
+        self.Cp_cold_out = Cp_cold_out
         self.Tin_hot = Tin_hot
         self.Tin_cold = Tin_cold
         self.U = U
         self.A = A
         self.flow_arr = flow_arrangement
+        self.h_vap = h_vap
 
     @staticmethod
     def size_helical_coil_heat_exhanger(N_tubes, shell_Dout, tube_pitch, tube_bundle_height, A, D_tube):
@@ -39,7 +42,7 @@ class HeatExchanger:
 
     def NTU_method(self):
         C_hot = self.mass_flow_hot * self.Cp_hot
-        C_cold = self.mass_flow_cold * self.Cp_cold
+        C_cold = self.mass_flow_cold * self.Cp_cold_in
 
         min_C, max_C = min([C_hot, C_cold]), max([C_hot, C_cold])
         rel_C = min_C / max_C
@@ -49,11 +52,17 @@ class HeatExchanger:
         # get effectiveness
         epsilon = self.effectiveness_ntu(NTU, rel_C)
 
-        max_heat_flow = min_C * (self.Tin_hot - self.Tin_cold)
+        max_heat_flow = max_C * (self.Tin_hot - self.Tin_cold)
+
+        # all water converted to steam
+        # steam tables https://thermopedia.com/content/1150/
         eff_heat_flow = epsilon * max_heat_flow
 
+        # need to account for latent heat for steam
+        # energy balances
         Tout_hot = self.Tin_hot - eff_heat_flow / C_hot
-        Tout_cold = self.Tin_cold + eff_heat_flow / C_cold
+        Tout_cold = ((eff_heat_flow - (h_vap * self.mass_flow_cold)) / (
+                    self.mass_flow_cold * self.Cp_cold_out)) + self.Tin_cold
 
         return {'Tout_hot': Tout_hot,
                 'Tout_cold': Tout_cold}
@@ -71,9 +80,17 @@ class HeatExchanger:
         """
 
         # https://en.wikipedia.org/wiki/NTU_method
+        # https://hyominsite.files.wordpress.com/2015/03/fundamentals-of-heat-and-mass-transfer-6th-edition.pdf section 11.4
         type_dict = {'Parallel_Flow': lambda NTU, rel_C: (1 - np.exp(-NTU * (1 + rel_C))) / (1 + rel_C),
                      'CounterCurrent_Flow': lambda NTU, rel_C: (1 - np.exp(-NTU * (1 - rel_C))) / (
-                             1 - rel_C * np.exp(-NTU * (1 - rel_C)))}
+                             1 - rel_C * np.exp(-NTU * (1 - rel_C))),
+                     'OneShellPass_Flow': lambda NTU, rel_C: 2 * (1 + rel_C + (1 + (rel_C ** 2) ** 0.5) * (
+                             (1 + np.exp(-NTU * (1 + (rel_C ** 2) ** 0.5))) / (
+                             1 - np.exp(-NTU * (1 + (rel_C ** 2) ** 0.5))))) ** -1,
+                     'CrossSinglePass_Flow': lambda NTU, rel_C: 1 - np.exp(
+                         (1 / rel_C) * (NTU ** 0.22) * np.exp(-rel_C * (NTU ** 0.78)) - 1)}
+
+        # CrossSinglePass_Flow is for both fluids unmixed
 
         epsilon = type_dict.get(self.flow_arr, lambda NTU, rel_C: exec('raise(Exception(x))'))(NTU, rel_C)
 
@@ -82,9 +99,11 @@ class HeatExchanger:
         return epsilon
 
     def __call__(self):
+        print('Hot Stream (Helium), Cold Stream (Water/Steam)')
         res_dict = self.NTU_method()
 
         print(res_dict)
+        print({'{} (deg C)'.format(key): value - 273.15 for key, value in res_dict.items()})
 
         return res_dict
 
@@ -125,26 +144,35 @@ def log_mean_temperature_difference(flow_type, Tin_hot, Tin_cold, Tout_hot, Tout
 
 
 if __name__ == '__main__':
+    Q_final = 3.80e5  # kW
+    LMTD_sym = log_mean_temperature_difference('counter_current', Tin_hot=750 + 273.15, Tin_cold=205.3 + 273.15,
+                                           Tout_hot=250 + 273.15,
+                                           Tout_cold=724.6 + 273.15)
+
+    print('UA (W/K): {}'.format(Q_final / LMTD_sym * 1000))
     A = prelim_area_guess('SMR_Steam_Generator')
 
     # INPUTS - UPDATE THESE
     mass_flow_hot = 522000 / 3600  # kg/s
     mass_flow_cold = 450880 / 3600  # kg/s
     Cp_hot = (21.064 + 20.918) / 2 / 4  # KJ/kg-K
-    Cp_cold = (86.187 + 44.720) / 2 / 18.02  # KJ/kg-K
+    Cp_cold_in\
+        = 86.187 / 18.02  # KJ/kg-K
+    Cp_cold_out = 44.720 / 18.02  # KJ/kg-K
     Tin_hot = 750 + 273.15  # K
     Tin_cold = 205.3 + 273.15  # K
     U = 1.11e7 / 1000 / A  # kW/m2.K
-    flow_arrangement = 'CounterCurrent_Flow'
+    flow_arrangement = 'CrossSinglePass_Flow'
+    h_vap = 1000.2  # kJ/kg from steam tables https://thermopedia.com/content/1150/
 
-    x = HeatExchanger(mass_flow_hot, mass_flow_cold, Cp_hot, Cp_cold, Tin_hot, Tin_cold, U, A, flow_arrangement)
+    x = HeatExchanger(mass_flow_hot, mass_flow_cold, Cp_hot, Cp_cold_in, Cp_cold_out, Tin_hot, Tin_cold, U, A, flow_arrangement, h_vap)
     output_temp_dict = x()
 
     LMTD = log_mean_temperature_difference('counter_current', Tin_hot, Tin_cold, Tout_hot=output_temp_dict['Tout_hot'],
                                            Tout_cold=output_temp_dict['Tout_cold'])
     Q_final = U * A * LMTD
 
-    print('Heat Exchanged (kJ/s): {}'.format(Q_final))
+    print('Heat Exchanged (MW): {}'.format(Q_final / 1000))
 
     # sizing
     # todo maybe use this to get the num tubes?
