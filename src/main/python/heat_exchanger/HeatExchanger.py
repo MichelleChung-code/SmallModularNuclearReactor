@@ -34,7 +34,8 @@ class HeatExchanger:
         L_tube_in = 2 * math.pi * shell_Rin * num_rotations
         L_tube_out = 2 * math.pi * shell_Rout * num_rotations
 
-        print('test')
+        return {'num_rotations': num_rotations,
+                'shell_inner_diameter': shell_Rin * 2}
 
     def NTU_method(self):
         C_hot = self.mass_flow_hot * self.Cp_hot
@@ -127,20 +128,18 @@ if __name__ == '__main__':
     A = prelim_area_guess('SMR_Steam_Generator')
 
     # INPUTS - UPDATE THESE
-    mass_flow_hot = 580  # kg/s
-    mass_flow_cold = 130  # kg/s
-    Cp_hot = 1.005  # KJ/kg-K
-    Cp_cold = 4.18  # KJ/kg-K
-    Tin_hot = 523  # K
-    Tin_cold = 300  # K
-    U = 20  # kW/m2.K
-    A = 10  # m2
+    mass_flow_hot = 522000 / 3600  # kg/s
+    mass_flow_cold = 450880 / 3600  # kg/s
+    Cp_hot = (21.064 + 20.918) / 2 / 4  # KJ/kg-K
+    Cp_cold = (86.187 + 44.720) / 2 / 18.02  # KJ/kg-K
+    Tin_hot = 750 + 273.15  # K
+    Tin_cold = 205.3 + 273.15  # K
+    U = 1.11e7 / 1000 / A  # kW/m2.K
     flow_arrangement = 'CounterCurrent_Flow'
 
     x = HeatExchanger(mass_flow_hot, mass_flow_cold, Cp_hot, Cp_cold, Tin_hot, Tin_cold, U, A, flow_arrangement)
     output_temp_dict = x()
 
-    # todo calculate the heat duty and LMTD for sizing
     LMTD = log_mean_temperature_difference('counter_current', Tin_hot, Tin_cold, Tout_hot=output_temp_dict['Tout_hot'],
                                            Tout_cold=output_temp_dict['Tout_cold'])
     Q_final = U * A * LMTD
@@ -148,5 +147,8 @@ if __name__ == '__main__':
     print('Heat Exchanged (kJ/s): {}'.format(Q_final))
 
     # sizing
-    HeatExchanger.size_helical_coil_heat_exhanger(N_tubes=182, shell_Dout=2.8, tube_pitch=40e-3,
-                                                  tube_bundle_height=10, A=1880, D_tube=25e-3)
+    # todo maybe use this to get the num tubes?
+    size_res = HeatExchanger.size_helical_coil_heat_exhanger(N_tubes=182, shell_Dout=2.8, tube_pitch=40e-3,
+                                                             tube_bundle_height=10, A=1880, D_tube=25e-3)
+
+    print(size_res)
