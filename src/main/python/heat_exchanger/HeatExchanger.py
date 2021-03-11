@@ -9,8 +9,9 @@ class HeatExchanger:
     Use NTU method
     """
 
-    def __init__(self, mass_flow_hot, mass_flow_cold, Cp_hot, Cp_cold_in, Cp_cold_out, Tin_hot, Tin_cold, U, A, flow_arrangement,
-                 h_vap):
+    def __init__(self, mass_flow_hot, mass_flow_cold, Cp_hot, Cp_cold_in, Cp_cold_out, Tin_hot, Tin_cold, U, A,
+                 flow_arrangement,
+                 h_vap, Tsat):
         self.mass_flow_hot = mass_flow_hot
         self.mass_flow_cold = mass_flow_cold
         self.Cp_hot = Cp_hot
@@ -22,6 +23,7 @@ class HeatExchanger:
         self.A = A
         self.flow_arr = flow_arrangement
         self.h_vap = h_vap
+        self.Tsat = Tsat
 
     @staticmethod
     def size_helical_coil_heat_exhanger(N_tubes, shell_Dout, tube_pitch, tube_bundle_height, A, D_tube):
@@ -61,8 +63,9 @@ class HeatExchanger:
         # need to account for latent heat for steam
         # energy balances
         Tout_hot = self.Tin_hot - eff_heat_flow / C_hot
-        Tout_cold = ((eff_heat_flow - (h_vap * self.mass_flow_cold)) / (
-                    self.mass_flow_cold * self.Cp_cold_out)) + self.Tin_cold
+        Tout_cold = ((eff_heat_flow - (h_vap * self.mass_flow_cold) - (
+                self.mass_flow_cold * self.Cp_cold_in * (self.Tsat - self.Tin_cold))) / (
+                             self.mass_flow_cold * self.Cp_cold_out)) + self.Tsat
 
         return {'Tout_hot': Tout_hot,
                 'Tout_cold': Tout_cold}
@@ -146,8 +149,8 @@ def log_mean_temperature_difference(flow_type, Tin_hot, Tin_cold, Tout_hot, Tout
 if __name__ == '__main__':
     Q_final = 3.80e5  # kW
     LMTD_sym = log_mean_temperature_difference('counter_current', Tin_hot=750 + 273.15, Tin_cold=205.3 + 273.15,
-                                           Tout_hot=250 + 273.15,
-                                           Tout_cold=724.6 + 273.15)
+                                               Tout_hot=250 + 273.15,
+                                               Tout_cold=724.6 + 273.15)
 
     print('UA (W/K): {}'.format(Q_final / LMTD_sym * 1000))
     A = prelim_area_guess('SMR_Steam_Generator')
@@ -156,16 +159,18 @@ if __name__ == '__main__':
     mass_flow_hot = 522000 / 3600  # kg/s
     mass_flow_cold = 450880 / 3600  # kg/s
     Cp_hot = (21.064 + 20.918) / 2 / 4  # KJ/kg-K
-    Cp_cold_in\
+    Cp_cold_in \
         = 86.187 / 18.02  # KJ/kg-K
     Cp_cold_out = 44.720 / 18.02  # KJ/kg-K
     Tin_hot = 750 + 273.15  # K
     Tin_cold = 205.3 + 273.15  # K
     U = 1.11e7 / 1000 / A  # kW/m2.K
     flow_arrangement = 'CrossSinglePass_Flow'
-    h_vap = 1000.2  # kJ/kg from steam tables https://thermopedia.com/content/1150/
+    h_vap = 1033.8  # kJ/kg from steam tables https://thermopedia.com/content/1150/
+    Tsat = 339.485 + 273.15  # K from steam tables
 
-    x = HeatExchanger(mass_flow_hot, mass_flow_cold, Cp_hot, Cp_cold_in, Cp_cold_out, Tin_hot, Tin_cold, U, A, flow_arrangement, h_vap)
+    x = HeatExchanger(mass_flow_hot, mass_flow_cold, Cp_hot, Cp_cold_in, Cp_cold_out, Tin_hot, Tin_cold, U, A,
+                      flow_arrangement, h_vap, Tsat)
     output_temp_dict = x()
 
     LMTD = log_mean_temperature_difference('counter_current', Tin_hot, Tin_cold, Tout_hot=output_temp_dict['Tout_hot'],
