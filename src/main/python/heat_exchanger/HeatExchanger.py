@@ -21,9 +21,20 @@ class HeatExchanger:
         self.flow_arr = flow_arrangement
 
     @staticmethod
-    def size_heat_exhanger(heat_duty, heat_transfer_coeff, Tin_hot, Tout_hot, Tin_cold, Tout_cold, tube_OD,
-                           tube_pattern='square'):
-        pass
+    def size_helical_coil_heat_exhanger(N_tubes, shell_Dout, tube_pitch, tube_bundle_height, A, D_tube):
+        # "C:\Users\tkdmc\OneDrive - University of Calgary\Capstone_Group25_CHEMENGG\Equipment Spec Sheets\SMR\Literature Sources\Helical_Coil_Steam_Generator_Sizing.pdf"
+
+        shell_Rout = shell_Dout / 2
+
+        shell_Rin = shell_Rout - (N_tubes * tube_pitch / tube_bundle_height)
+
+        # Lengths of the inner, outer, middle layer of tubes
+        L_tube_mid = A / (math.pi * N_tubes * D_tube)
+        num_rotations = L_tube_mid / (2 * math.pi * (shell_Rin + shell_Rout))
+        L_tube_in = 2 * math.pi * shell_Rin * num_rotations
+        L_tube_out = 2 * math.pi * shell_Rout * num_rotations
+
+        print('test')
 
     def NTU_method(self):
         C_hot = self.mass_flow_hot * self.Cp_hot
@@ -135,3 +146,7 @@ if __name__ == '__main__':
     Q_final = U * A * LMTD
 
     print('Heat Exchanged (kJ/s): {}'.format(Q_final))
+
+    # sizing
+    HeatExchanger.size_helical_coil_heat_exhanger(N_tubes=182, shell_Dout=2.8, tube_pitch=40e-3,
+                                                  tube_bundle_height=10, A=1880, D_tube=25e-3)
