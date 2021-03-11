@@ -90,14 +90,14 @@ if __name__ == '__main__':
     A = prelim_area_guess('SMR_Steam_Generator')
 
     # INPUTS - UPDATE THESE
-    mass_flow_hot = None  # kg/s
-    mass_flow_cold = None  # kg/s
-    Cp_hot = None  # KJ/kg-K
-    Cp_cold = None  # KJ/kg-K
-    Tin_hot = None  # K
-    Tin_cold = None  # K
-    U = None  # kW/m2.K
-    A = None  # m2
+    mass_flow_hot = 580  # kg/s
+    mass_flow_cold = 130  # kg/s
+    Cp_hot = 1.005  # KJ/kg-K
+    Cp_cold = 4.18  # KJ/kg-K
+    Tin_hot = 523  # K
+    Tin_cold = 300  # K
+    U = 20  # kW/m2.K
+    A = 10  # m2
     flow_arrangement = 'CounterCurrent_Flow'
 
     x = HeatExchanger(mass_flow_hot, mass_flow_cold, Cp_hot, Cp_cold, Tin_hot, Tin_cold, U, A, flow_arrangement)
