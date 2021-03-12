@@ -10,8 +10,7 @@ class HeatExchanger:
     """
 
     def __init__(self, mass_flow_hot, mass_flow_cold, Cp_hot, Cp_cold_in, Cp_cold_out, Tin_hot, Tin_cold, U, A,
-                 flow_arrangement,
-                 h_vap, Tsat):
+                 flow_arrangement, h_vap, Tsat, overwrite_heat_bool=False):
         self.mass_flow_hot = mass_flow_hot
         self.mass_flow_cold = mass_flow_cold
         self.Cp_hot = Cp_hot
@@ -24,6 +23,7 @@ class HeatExchanger:
         self.flow_arr = flow_arrangement
         self.h_vap = h_vap
         self.Tsat = Tsat
+        self.overwrite_heat_bool = overwrite_heat_bool
 
     @staticmethod
     def size_helical_coil_heat_exhanger(N_tubes, shell_Dout, tube_pitch, tube_bundle_height, A, D_tube):
@@ -62,6 +62,13 @@ class HeatExchanger:
 
         # need to account for latent heat for steam
         # energy balances
+        # todo check energy loss for pressure change
+        # todo can we apply more effectiveness to the steam part?
+
+        # overwrite if for purely validation purposes
+        if self.overwrite_heat_bool:
+            eff_heat_flow = self.overwrite_heat_bool
+
         Tout_hot = self.Tin_hot - eff_heat_flow / C_hot
         Tout_cold = ((eff_heat_flow - (h_vap * self.mass_flow_cold) - (
                 self.mass_flow_cold * self.Cp_cold_in * (self.Tsat - self.Tin_cold))) / (
@@ -170,14 +177,14 @@ if __name__ == '__main__':
     Tsat = 339.485 + 273.15  # K from steam tables
 
     x = HeatExchanger(mass_flow_hot, mass_flow_cold, Cp_hot, Cp_cold_in, Cp_cold_out, Tin_hot, Tin_cold, U, A,
-                      flow_arrangement, h_vap, Tsat)
+                      flow_arrangement, h_vap, Tsat, overwrite_heat_bool=Q_final)
     output_temp_dict = x()
 
-    LMTD = log_mean_temperature_difference('counter_current', Tin_hot, Tin_cold, Tout_hot=output_temp_dict['Tout_hot'],
-                                           Tout_cold=output_temp_dict['Tout_cold'])
-    Q_final = U * A * LMTD
-
-    print('Heat Exchanged (MW): {}'.format(Q_final / 1000))
+    # LMTD = log_mean_temperature_difference('counter_current', Tin_hot, Tin_cold, Tout_hot=output_temp_dict['Tout_hot'],
+    #                                        Tout_cold=output_temp_dict['Tout_cold'])
+    # Q_final = U * A * LMTD
+    #
+    # print('Heat Exchanged (MW): {}'.format(Q_final / 1000))
 
     # sizing
     # todo maybe use this to get the num tubes?
