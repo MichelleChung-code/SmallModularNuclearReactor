@@ -28,6 +28,34 @@ class HeatExchanger:
     @staticmethod
     def size_helical_coil_heat_exhanger(N_tubes, shell_Dout, tube_pitch, tube_bundle_height, A, D_tube):
         # "C:\Users\tkdmc\OneDrive - University of Calgary\Capstone_Group25_CHEMENGG\Equipment Spec Sheets\SMR\Literature Sources\Helical_Coil_Steam_Generator_Sizing.pdf"
+        # starting page 28
+
+        # INPUTS - Make into function args
+        # tube side is Helium
+        # shell side is water/steam
+        LMTD = 34.14573481314822
+        rho_shell = (858.7707 + 6.6577) / 2  # average density from symmetry in kg/m3
+        mu_shell = (1.31e-4 + 3.6686e-5) / 2  # average dynamic viscosity from symmetry in Pa*s
+        Cp_shell = (88.072 + 41.697) / 2 / 18.02  # heat capacity in kJ/kg*K
+        k_shell = (0.6609 + 0.0952) / 2 / 1000  # thermal conductivity kW/mK
+
+        # Assume we can scale based on flow rate
+        literature_bundle_height = 10  # m
+        literature_outer_bundle_diameter = 2.8  # m
+        flow_rate_scaling_fact = 145 / 96.25
+        V_shell_max = math.pi * (
+                literature_outer_bundle_diameter / 2) ** 2 * literature_bundle_height * flow_rate_scaling_fact
+
+        # shell side bulk fluid reynold's number
+        Re_b = V_shell_max * D_tube * rho_shell / mu_shell
+
+        # Use largest Nusselt number correlation
+        # Assume more than 16 tube rows, such that the correction factor for the number of tube rows approaches 1
+        Pr_b = mu_shell * Cp_shell / k_shell
+        Nu_b = 0.033 * Re_b ** 0.8 * Pr_b ** 0.36
+
+        # calculate convective heat transfer coefficients
+        h_shell = k_shell * Nu_b / D_tube  # todo should this be the outer bundle diameter?
 
         shell_Rout = shell_Dout / 2
 
@@ -120,8 +148,6 @@ class HeatExchanger:
 
 # https://www.pdhonline.com/courses/m371/m371content.pdf
 def prelim_area_guess(unit_name):
-    # todo Joycelyn you need to do something here because we have literature data for our nuclear steam generator
-
     # https://inis.iaea.org/collection/NCLCollectionStore/_Public/31/057/31057135.pdf?r=1&r=1
 
     if unit_name == 'SMR_Steam_Generator':
@@ -160,6 +186,7 @@ if __name__ == '__main__':
                                                Tout_cold=724.6 + 273.15)
 
     print('UA (W/K): {}'.format(Q_final / LMTD_sym * 1000))
+    print('Symmetry LMTD: {}'.format(LMTD_sym))
     A = prelim_area_guess('SMR_Steam_Generator')
 
     # INPUTS - UPDATE THESE
@@ -180,11 +207,14 @@ if __name__ == '__main__':
                       flow_arrangement, h_vap, Tsat, overwrite_heat_bool=Q_final)
     output_temp_dict = x()
 
-    # LMTD = log_mean_temperature_difference('counter_current', Tin_hot, Tin_cold, Tout_hot=output_temp_dict['Tout_hot'],
+    # todo it Tout_cold needs to be less than Tin_hot
+
+    # LMTD = log_mean_temperature_difference('counter_current', Tin_hot=Tin_hot, Tin_cold=Tin_cold,
+    #                                        Tout_hot=output_temp_dict['Tout_hot'],
     #                                        Tout_cold=output_temp_dict['Tout_cold'])
     # Q_final = U * A * LMTD
-    #
-    # print('Heat Exchanged (MW): {}'.format(Q_final / 1000))
+
+    print('Heat Exchanged (MW): {}'.format(Q_final / 1000))
 
     # sizing
     # todo maybe use this to get the num tubes?
