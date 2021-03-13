@@ -27,9 +27,11 @@ class HeatExchanger:
         self.overwrite_heat_bool = overwrite_heat_bool
 
     @staticmethod
-    def size_helical_coil_heat_exhanger(N_tubes, shell_Dout, tube_pitch, tube_bundle_height, A, D_tube):
+    def size_helical_coil_heat_exhanger(N_tubes, tube_pitch, D_tube):
         # "C:\Users\tkdmc\OneDrive - University of Calgary\Capstone_Group25_CHEMENGG\Equipment Spec Sheets\SMR\Literature Sources\Helical_Coil_Steam_Generator_Sizing.pdf"
         # starting page 28
+
+        # todo move inputs to be function arguments
 
         # INPUTS - Make into function args
         # tube side is Helium
