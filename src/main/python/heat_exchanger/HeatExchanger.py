@@ -1,5 +1,6 @@
 import numpy as np
 import math
+import pprint
 
 
 class HeatExchanger:
@@ -38,11 +39,24 @@ class HeatExchanger:
         mu_shell = (1.31e-4 + 3.6686e-5) / 2  # average dynamic viscosity from symmetry in Pa*s
         Cp_shell = (88.072 + 41.697) / 2 / 18.02  # heat capacity in kJ/kg*K
         k_shell = (0.6609 + 0.0952) / 2 / 1000  # thermal conductivity kW/mK
+        mu_tube = (4.7035e-5 + 2.8878e-5) / 2  # average dynamic viscosity from symmetry in Pa*s
+        Cp_tube = (21.064 + 20.918) / 2 / 4  # heat capacity in kJ/kg*K
+        k_tube = (0.3643 + 0.2192) / 2 / 1000  # thermal conductivity kW/mK
+        tube_thickness = 4e-3
+        lambda_type_316 = 13 / 1000  # thermal conductivity kW/mK
+        Q = 380000  # kW
+        inner_R_shell = 2 / 2  # m assume inner diameter of 2
+
+        # radius of curvature from https://www.researchgate.net/publication/230607485_Investigation_of_Dean_number_and_curvature_ratio_in_a_double-pipe_helical_heat_exchanger
+        curve_R = 0.24
+        tube_R = D_tube / 2
+        rel_t_D = tube_R / curve_R
 
         # Assume we can scale based on flow rate
         literature_bundle_height = 10  # m
         literature_outer_bundle_diameter = 2.8  # m
         flow_rate_scaling_fact = 145 / 96.25
+        N_tubes = math.ceil(N_tubes * flow_rate_scaling_fact)
         V_shell_max = math.pi * (
                 literature_outer_bundle_diameter / 2) ** 2 * literature_bundle_height * flow_rate_scaling_fact
 
@@ -52,23 +66,54 @@ class HeatExchanger:
         # Use largest Nusselt number correlation
         # Assume more than 16 tube rows, such that the correction factor for the number of tube rows approaches 1
         Pr_b = mu_shell * Cp_shell / k_shell
-        Nu_b = 0.033 * Re_b ** 0.8 * Pr_b ** 0.36
+        Nu_b = 0.033 * Re_b ** 0.8 * Pr_b ** 0.36  # neglect the Pr_b/ Pr_w term i.e. don't account for any wall effects
 
         # calculate convective heat transfer coefficients
+        # shell side
         h_shell = k_shell * Nu_b / D_tube  # todo should this be the outer bundle diameter?
 
-        shell_Rout = shell_Dout / 2
+        # tube side
+        Pr_t = mu_tube * Cp_tube / k_tube
+        Nu_straight_t = 0.022 * Re_b ** 0.8 * Pr_t ** 0.5
+        # account for helix
+        Nu_t = (1 + 3.6 * (1 - rel_t_D) * rel_t_D ** 0.8) * Nu_straight_t
+        h_tube = k_tube * Nu_b / D_tube
 
-        shell_Rin = shell_Rout - (N_tubes * tube_pitch / tube_bundle_height)
+        # thermal reistance from pipe material: L/lambda
+        # L is the thickness of the wall
+        # lambda is the thermal conductivity
+        # use type-316 stainless steel
+        # https://www.tlv.com/global/ME/steam-theory/overall-heat-transfer-coefficient.html
+        type_316_resistance = tube_thickness / lambda_type_316
 
-        # Lengths of the inner, outer, middle layer of tubes
+        U = (h_tube ** -1 + type_316_resistance + h_shell ** -1) ** -1
+
+        A = Q / (U * LMTD)
+
+        # Middle layer tube length
         L_tube_mid = A / (math.pi * N_tubes * D_tube)
-        num_rotations = L_tube_mid / (2 * math.pi * (shell_Rin + shell_Rout))
-        L_tube_in = 2 * math.pi * shell_Rin * num_rotations
-        L_tube_out = 2 * math.pi * shell_Rout * num_rotations
 
-        return {'num_rotations': num_rotations,
-                'shell_inner_diameter': shell_Rin * 2}
+        # vary the outer shell diameter
+        sizing_res_dict = {}
+
+        outer_shell_D_dict = {}
+        for outer_shell_diameter_delta in [0.5, 1, 1.5]:
+            outer_R_shell = ((inner_R_shell * 2) + outer_shell_diameter_delta) / 2
+            str_D = '{}_diameter'.format(outer_R_shell * 2)
+            shell_length = tube_pitch * N_tubes / (outer_R_shell - inner_R_shell)
+            num_rotations = L_tube_mid / (2 * math.pi * (outer_R_shell + inner_R_shell))
+            tube_bundle_height = shell_length / num_rotations
+            outer_shell_D_dict[str_D] = {'shell_length': shell_length,
+                                         'num_rotations': num_rotations,
+                                         'tube_bundle_height': tube_bundle_height}
+
+        sizing_res_dict['shell_outer_diameter'] = outer_shell_D_dict
+
+        sizing_res_dict['A'] = A
+        sizing_res_dict['U'] = U
+        sizing_res_dict['num_tubes'] = N_tubes
+
+        return sizing_res_dict
 
     def NTU_method(self):
         C_hot = self.mass_flow_hot * self.Cp_hot
@@ -221,4 +266,5 @@ if __name__ == '__main__':
     size_res = HeatExchanger.size_helical_coil_heat_exhanger(N_tubes=182, shell_Dout=2.8, tube_pitch=40e-3,
                                                              tube_bundle_height=10, A=1880, D_tube=25e-3)
 
-    print(size_res)
+    pp = pprint.PrettyPrinter(indent=1)
+    pp.pprint(size_res)
