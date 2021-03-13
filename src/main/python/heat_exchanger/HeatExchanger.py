@@ -8,10 +8,32 @@ class HeatExchanger:
     For validation of Symmetry heat exchanger
     Shell and Tube for helium and steam heat exchanger
     Use NTU method
+
+    Specifically for simplified validation of a Helical Coil Steam Generator
+    Symmetry model simplified to a shell and tube heat exchanger
     """
 
     def __init__(self, mass_flow_hot, mass_flow_cold, Cp_hot, Cp_cold_in, Cp_cold_out, Tin_hot, Tin_cold, U, A,
                  flow_arrangement, h_vap, Tsat, overwrite_heat_bool=False):
+        """
+        Class definition
+
+        Args:
+            mass_flow_hot: <float> mass flow rate of the hot stream
+            mass_flow_cold: <float> mass flow rate of the cold stream
+            Cp_hot: <float> average mass heat capacity of hot steam
+            Cp_cold_in: <float> mass heat capacity of cold stream in
+            Cp_cold_out: <float> mass heat capcity of cold stream out
+            Tin_hot: <float> temperature of input hot stream, in K
+            Tin_cold: <float> temperature of input cold stream, in K
+            U: <float> overall heat transfer coefficient W/(m2*K)
+            A: <float> heat exchange area m2
+            flow_arrangement: <str> flow arrangement type
+            h_vap: <float> mass enthalpy of steam vaporization
+            Tsat: <float> steam saturation temperature, in K
+            overwrite_heat_bool: <float> or <booL> defaults to False, otherwise is a value to use, instead of
+            effectiveness-NTU method
+        """
         self.mass_flow_hot = mass_flow_hot
         self.mass_flow_cold = mass_flow_cold
         self.Cp_hot = Cp_hot
@@ -30,6 +52,29 @@ class HeatExchanger:
     def size_helical_coil_heat_exhanger(rho_shell, mu_shell, Cp_shell, k_shell, mu_tube, Cp_tube, k_tube,
                                         tube_thickness, lambda_type_316, Q, inner_R_shell, LMTD, N_tubes, tube_pitch,
                                         D_tube):
+        """
+        Run sizing calculations for helical coil steam generator
+
+        Args:
+            rho_shell: <float> average mass density of the shell fluid
+            mu_shell: <float> average dynamic viscosity of the shell fluid
+            Cp_shell: <float> average heat capacity of the shell fluid
+            k_shell: <float> average thermal conductivity of the shell fluid
+            mu_tube: <float> average dynamic viscosity of the tube fluid
+            Cp_tube: <float> average heat capacity of the tube fluid
+            k_tube: <float> average thermal conductivity of the tube fluid
+            tube_thickness: <float> tube thickness
+            lambda_type_316: <float> thermal conductivity of Type-316 stainless steel
+            Q: <float> heat transfer flow rate
+            inner_R_shell: <float> inner radius of the shell
+            LMTD: <float> log mean temperature difference
+            N_tubes: <float> number of tubes
+            tube_pitch: <float> tube pitch
+            D_tube: <float> tube outer diameter
+
+        Returns:
+            <dict> containing key sizing results
+        """
         # "C:\Users\tkdmc\OneDrive - University of Calgary\Capstone_Group25_CHEMENGG\Equipment Spec Sheets\SMR\Literature Sources\Helical_Coil_Steam_Generator_Sizing.pdf"
         # starting page 28
 
@@ -102,6 +147,7 @@ class HeatExchanger:
         return sizing_res_dict
 
     def NTU_method(self):
+        """ Runs the effectiveness-NTU calculations """
         C_hot = self.mass_flow_hot * self.Cp_hot
         C_cold = self.mass_flow_cold * self.Cp_cold_in
 
@@ -138,10 +184,11 @@ class HeatExchanger:
 
     def effectiveness_ntu(self, NTU, rel_C, N=1):
         """
+        Calculates the effectiveness factor in the effectiveness-NTU HE methodology
 
         Args:
-            type:
-            rel_C:
+            type: <str> Heat exchanger type
+            rel_C: <float> C_min/C_max ratio
             N: <int> number of passes.  Defaults to 1.
 
         Returns:
