@@ -27,27 +27,11 @@ class HeatExchanger:
         self.overwrite_heat_bool = overwrite_heat_bool
 
     @staticmethod
-    def size_helical_coil_heat_exhanger(N_tubes, tube_pitch, D_tube):
+    def size_helical_coil_heat_exhanger(rho_shell, mu_shell, Cp_shell, k_shell, mu_tube, Cp_tube, k_tube,
+                                        tube_thickness, lambda_type_316, Q, inner_R_shell, LMTD, N_tubes, tube_pitch,
+                                        D_tube):
         # "C:\Users\tkdmc\OneDrive - University of Calgary\Capstone_Group25_CHEMENGG\Equipment Spec Sheets\SMR\Literature Sources\Helical_Coil_Steam_Generator_Sizing.pdf"
         # starting page 28
-
-        # todo move inputs to be function arguments
-
-        # INPUTS - Make into function args
-        # tube side is Helium
-        # shell side is water/steam
-        LMTD = 34.14573481314822
-        rho_shell = (858.7707 + 6.6577) / 2  # average density from symmetry in kg/m3
-        mu_shell = (1.31e-4 + 3.6686e-5) / 2  # average dynamic viscosity from symmetry in Pa*s
-        Cp_shell = (88.072 + 41.697) / 2 / 18.02  # heat capacity in kJ/kg*K
-        k_shell = (0.6609 + 0.0952) / 2 / 1000  # thermal conductivity kW/mK
-        mu_tube = (4.7035e-5 + 2.8878e-5) / 2  # average dynamic viscosity from symmetry in Pa*s
-        Cp_tube = (21.064 + 20.918) / 2 / 4  # heat capacity in kJ/kg*K
-        k_tube = (0.3643 + 0.2192) / 2 / 1000  # thermal conductivity kW/mK
-        tube_thickness = 4e-3
-        lambda_type_316 = 13 / 1000  # thermal conductivity kW/mK
-        Q = 380000  # kW
-        inner_R_shell = 2 / 2  # m assume inner diameter of 2
 
         # radius of curvature from https://www.researchgate.net/publication/230607485_Investigation_of_Dean_number_and_curvature_ratio_in_a_double-pipe_helical_heat_exchanger
         curve_R = 0.24
@@ -72,7 +56,7 @@ class HeatExchanger:
 
         # calculate convective heat transfer coefficients
         # shell side
-        h_shell = k_shell * Nu_b / D_tube  # todo should this be the outer bundle diameter?
+        h_shell = k_shell * Nu_b / D_tube  # Using the tube diameter here
 
         # tube side
         Pr_t = mu_tube * Cp_tube / k_tube
@@ -236,7 +220,8 @@ if __name__ == '__main__':
     print('Symmetry LMTD: {}'.format(LMTD_sym))
     A = prelim_area_guess('SMR_Steam_Generator')
 
-    # INPUTS - UPDATE THESE
+    ########################################################################################
+    # VALIDATION INPUTS
     mass_flow_hot = 522000 / 3600  # kg/s
     mass_flow_cold = 450880 / 3600  # kg/s
     Cp_hot = (21.064 + 20.918) / 2 / 4  # KJ/kg-K
@@ -254,7 +239,7 @@ if __name__ == '__main__':
                       flow_arrangement, h_vap, Tsat, overwrite_heat_bool=Q_final)
     output_temp_dict = x()
 
-    # todo it Tout_cold needs to be less than Tin_hot
+    # todo check validation methodology, Tout_cold needs to be less than Tin_hot
 
     # LMTD = log_mean_temperature_difference('counter_current', Tin_hot=Tin_hot, Tin_cold=Tin_cold,
     #                                        Tout_hot=output_temp_dict['Tout_hot'],
@@ -263,10 +248,28 @@ if __name__ == '__main__':
 
     print('Heat Exchanged (MW): {}'.format(Q_final / 1000))
 
-    # sizing
-    # todo maybe use this to get the num tubes?
-    size_res = HeatExchanger.size_helical_coil_heat_exhanger(N_tubes=182, shell_Dout=2.8, tube_pitch=40e-3,
-                                                             tube_bundle_height=10, A=1880, D_tube=25e-3)
+    ########################################################################################
+    # SIZING INPUTS
+    rho_shell = (858.7707 + 6.6577) / 2  # average density from symmetry in kg/m3
+    mu_shell = (1.31e-4 + 3.6686e-5) / 2  # average dynamic viscosity from symmetry in Pa*s
+    Cp_shell = (88.072 + 41.697) / 2 / 18.02  # heat capacity in kJ/kg*K
+    k_shell = (0.6609 + 0.0952) / 2 / 1000  # thermal conductivity kW/mK
+    mu_tube = (4.7035e-5 + 2.8878e-5) / 2  # average dynamic viscosity from symmetry in Pa*s
+    Cp_tube = (21.064 + 20.918) / 2 / 4  # heat capacity in kJ/kg*K
+    k_tube = (0.3643 + 0.2192) / 2 / 1000  # thermal conductivity kW/mK
+    tube_thickness = 4e-3
+    lambda_type_316 = 13 / 1000  # thermal conductivity kW/mK
+    inner_R_shell = 2 / 2  # m assume inner diameter of 2
+    literature_num_tubes = 182
+    tube_outer_diameter = 25e-3
+    tube_pitch = 40e-3
+
+    size_res = HeatExchanger.size_helical_coil_heat_exhanger(rho_shell, mu_shell, Cp_shell, k_shell, mu_tube, Cp_tube,
+                                                             k_tube,
+                                                             tube_thickness, lambda_type_316, Q_final, inner_R_shell,
+                                                             LMTD_sym,
+                                                             N_tubes=literature_num_tubes, tube_pitch=tube_pitch,
+                                                             D_tube=tube_outer_diameter)
 
     pp = pprint.PrettyPrinter(indent=1)
     pp.pprint(size_res)
