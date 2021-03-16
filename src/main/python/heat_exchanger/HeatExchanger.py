@@ -51,7 +51,7 @@ class HeatExchanger:
     @staticmethod
     def size_helical_coil_heat_exhanger(rho_shell, mu_shell, Cp_shell, k_shell, mu_tube, Cp_tube, k_tube,
                                         tube_thickness, lambda_type_316, Q, inner_R_shell, LMTD, N_tubes, tube_pitch,
-                                        D_tube):
+                                        D_tube, shell_mass_flow_rate):
         """
         Run sizing calculations for helical coil steam generator
 
@@ -71,6 +71,7 @@ class HeatExchanger:
             N_tubes: <float> number of tubes
             tube_pitch: <float> tube pitch
             D_tube: <float> tube outer diameter
+            shell_mass_flow_rate: <float> mass flow rate on the shell side in kg/s
 
         Returns:
             <dict> containing key sizing results
@@ -84,12 +85,14 @@ class HeatExchanger:
         rel_t_D = tube_R / curve_R
 
         # Assume we can scale based on flow rate
-        literature_bundle_height = 10  # m
         literature_outer_bundle_diameter = 2.8  # m
         flow_rate_scaling_fact = 145 / 96.25
         N_tubes = math.ceil(N_tubes * flow_rate_scaling_fact)
-        V_shell_max = math.pi * (
-                literature_outer_bundle_diameter / 2) ** 2 * literature_bundle_height * flow_rate_scaling_fact
+
+        # todo velocity
+        # maximum velocity, shell side
+        # use literature diameter for the flow rate cross sectional area
+        V_shell_max = shell_mass_flow_rate / (rho_shell * math.pi * (literature_outer_bundle_diameter / 2) ** 2)
 
         # shell side bulk fluid reynold's number
         Re_b = V_shell_max * D_tube * rho_shell / mu_shell
@@ -258,7 +261,7 @@ def log_mean_temperature_difference(flow_type, Tin_hot, Tin_cold, Tout_hot, Tout
 
 
 if __name__ == '__main__':
-    Q_final = 3.80e5  # kW
+    Q_final = 3.72e5  # kW
     LMTD_sym = log_mean_temperature_difference('counter_current', Tin_hot=750 + 273.15, Tin_cold=205.3 + 273.15,
                                                Tout_hot=250 + 273.15,
                                                Tout_cold=724.6 + 273.15)
@@ -297,26 +300,30 @@ if __name__ == '__main__':
 
     ########################################################################################
     # SIZING INPUTS
-    rho_shell = (858.7707 + 6.6577) / 2  # average density from symmetry in kg/m3
-    mu_shell = (1.31e-4 + 3.6686e-5) / 2  # average dynamic viscosity from symmetry in Pa*s
-    Cp_shell = (88.072 + 41.697) / 2 / 18.02  # heat capacity in kJ/kg*K
-    k_shell = (0.6609 + 0.0952) / 2 / 1000  # thermal conductivity kW/mK
-    mu_tube = (4.7035e-5 + 2.8878e-5) / 2  # average dynamic viscosity from symmetry in Pa*s
-    Cp_tube = (21.064 + 20.918) / 2 / 4  # heat capacity in kJ/kg*K
-    k_tube = (0.3643 + 0.2192) / 2 / 1000  # thermal conductivity kW/mK
+    # helium is on the shell side
+    # water/steam on the tube side
+    rho_shell = (3.2545 + 6.1916) / 2  # average density from symmetry in kg/m3
+    mu_shell = (4.7035e-5 + 6.1916e-5) / 2  # average dynamic viscosity from symmetry in Pa*s
+    Cp_shell = (21.064 + 20.920) / 2 / 4  # heat capacity in kJ/kg*K
+    k_shell = (0.3643 + 0.2192) / 2 / 1000  # thermal conductivity kW/mK
+    mu_tube = (1.3086e-4 + 3.6716e-5) / 2  # average dynamic viscosity from symmetry in Pa*s
+    Cp_tube = (88.173 + 41.607) / 2 / 18.02  # heat capacity in kJ/kg*K
+    k_tube = (0.6604 + 0.0951) / 2 / 1000  # thermal conductivity kW/mK
     tube_thickness = 4e-3
     lambda_type_316 = 13 / 1000  # thermal conductivity kW/mK
     inner_R_shell = 2 / 2  # m assume inner diameter of 2
     literature_num_tubes = 182
     tube_outer_diameter = 25e-3
     tube_pitch = 40e-3
+    shell_mass_flow_rate = 145  # kg/s
 
     size_res = HeatExchanger.size_helical_coil_heat_exhanger(rho_shell, mu_shell, Cp_shell, k_shell, mu_tube, Cp_tube,
                                                              k_tube,
                                                              tube_thickness, lambda_type_316, Q_final, inner_R_shell,
                                                              LMTD_sym,
                                                              N_tubes=literature_num_tubes, tube_pitch=tube_pitch,
-                                                             D_tube=tube_outer_diameter)
+                                                             D_tube=tube_outer_diameter,
+                                                             shell_mass_flow_rate=shell_mass_flow_rate)
 
     pp = pprint.PrettyPrinter(indent=1)
     pp.pprint(size_res)
