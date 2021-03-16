@@ -170,8 +170,6 @@ class HeatExchanger:
 
         # need to account for latent heat for steam
         # energy balances
-        # todo check energy loss for pressure change
-        # todo can we apply more effectiveness to the steam part?
 
         # overwrite if for purely validation purposes
         if self.overwrite_heat_bool:
@@ -261,10 +259,10 @@ def log_mean_temperature_difference(flow_type, Tin_hot, Tin_cold, Tout_hot, Tout
 
 
 if __name__ == '__main__':
-    Q_final = 3.72e5  # kW
+    Q_final = 3.80e5  # kW
     LMTD_sym = log_mean_temperature_difference('counter_current', Tin_hot=750 + 273.15, Tin_cold=205.3 + 273.15,
                                                Tout_hot=250 + 273.15,
-                                               Tout_cold=724.6 + 273.15)
+                                               Tout_cold=701.5 + 273.15)
 
     print('UA (W/K): {}'.format(Q_final / LMTD_sym * 1000))
     print('Symmetry LMTD: {}'.format(LMTD_sym))
@@ -274,16 +272,18 @@ if __name__ == '__main__':
     # VALIDATION INPUTS
     mass_flow_hot = 522000 / 3600  # kg/s
     mass_flow_cold = 450880 / 3600  # kg/s
-    Cp_hot = (21.064 + 20.918) / 2 / 4  # KJ/kg-K
+    Cp_hot = (21.064 + 20.920) / 2 / 4  # KJ/kg-K
     Cp_cold_in \
-        = 86.187 / 18.02  # KJ/kg-K
-    Cp_cold_out = 44.720 / 18.02  # KJ/kg-K
+        = 88.173 / 18.02  # KJ/kg-K
+    Cp_cold_out = 41.607 / 18.02  # KJ/kg-K
     Tin_hot = 750 + 273.15  # K
     Tin_cold = 205.3 + 273.15  # K
-    U = 1.11e7 / 1000 / A  # kW/m2.K
+    U = Q_final / LMTD_sym / A  # kW/m2.K
     flow_arrangement = 'CrossSinglePass_Flow'
-    h_vap = 1033.8  # kJ/kg from steam tables https://thermopedia.com/content/1150/
-    Tsat = 339.485 + 273.15  # K from steam tables
+
+    # at (2450 + 2550)/2 kPa = 2500 kPa (25 bar)
+    h_vap = 1840.2  # kJ/kg from steam tables https://thermopedia.com/content/1150/
+    Tsat = 223.989 + 273.15  # K from steam tables
 
     x = HeatExchanger(mass_flow_hot, mass_flow_cold, Cp_hot, Cp_cold_in, Cp_cold_out, Tin_hot, Tin_cold, U, A,
                       flow_arrangement, h_vap, Tsat, overwrite_heat_bool=Q_final)
@@ -291,10 +291,12 @@ if __name__ == '__main__':
 
     # todo check validation methodology, Tout_cold needs to be less than Tin_hot
 
-    # LMTD = log_mean_temperature_difference('counter_current', Tin_hot=Tin_hot, Tin_cold=Tin_cold,
-    #                                        Tout_hot=output_temp_dict['Tout_hot'],
-    #                                        Tout_cold=output_temp_dict['Tout_cold'])
-    # Q_final = U * A * LMTD
+    LMTD = log_mean_temperature_difference('counter_current', Tin_hot=Tin_hot, Tin_cold=Tin_cold,
+                                           Tout_hot=output_temp_dict['Tout_hot'],
+                                           Tout_cold=output_temp_dict['Tout_cold'])
+    Q_final = U * A * LMTD
+
+    print('FINAL LMTD, Q:', LMTD, Q_final)
 
     print('Heat Exchanged (MW): {}'.format(Q_final / 1000))
 
