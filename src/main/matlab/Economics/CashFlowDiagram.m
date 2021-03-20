@@ -19,7 +19,7 @@ set(gca,'YTickLabel',[]);
 title('Cash Flow Diagram for Year 0 to 20')
 xlabel('Year')
 ylabel('Cashflow Amounts ($MM)')
-
+savefig('Cashflow_Diagram1.fig')
 
 cashflow_dates2 = table2array(from_csv(22:41,1));
 cashflow_dates2 = datenum(num2str(cashflow_dates2),'yyyymmdd')';
@@ -32,3 +32,4 @@ set(gca,'YTickLabel',[]);
 title('Cash Flow Diagram for Year 21 to 40')
 xlabel('Year')
 ylabel('Cashflow Amounts ($MM)')
+savefig('Cashflow_Diagram2.fig')
