@@ -1,4 +1,4 @@
-# Capstone_2020
+## Small Modular Nuclear Reactor
 
 Submitted to fulfill partial requirements for Chemical Engineering Capstone Project
 
