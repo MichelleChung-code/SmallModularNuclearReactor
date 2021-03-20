@@ -315,7 +315,7 @@ if __name__ == '__main__':
     literature_num_tubes = 182
     tube_outer_diameter = 25e-3
     tube_pitch = 40e-3
-    shell_mass_flow_rate = 175  # kg/s
+    shell_mass_flow_rate = 175  # kg/s about 20% higher than 145 kg/s so that it can handle more flow
 
     size_res = HeatExchanger.size_helical_coil_heat_exhanger(rho_shell, mu_shell, Cp_shell, k_shell, mu_tube, Cp_tube,
                                                              k_tube,
