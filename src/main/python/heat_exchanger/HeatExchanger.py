@@ -303,12 +303,12 @@ if __name__ == '__main__':
     # helium is on the shell side
     # water/steam on the tube side
     rho_shell = (3.2545 + 6.1916) / 2  # average density from symmetry in kg/m3
-    mu_shell = (4.7035e-5 + 6.1916e-5) / 2  # average dynamic viscosity from symmetry in Pa*s
+    mu_shell = (4.7035e-5 + 2.8878e-5) / 2  # average dynamic viscosity from symmetry in Pa*s
     Cp_shell = (21.064 + 20.920) / 2 / 4  # heat capacity in kJ/kg*K
     k_shell = (0.3643 + 0.2192) / 2 / 1000  # thermal conductivity kW/mK
-    mu_tube = (1.3086e-4 + 3.6716e-5) / 2  # average dynamic viscosity from symmetry in Pa*s
-    Cp_tube = (88.173 + 41.607) / 2 / 18.02  # heat capacity in kJ/kg*K
-    k_tube = (0.6604 + 0.0951) / 2 / 1000  # thermal conductivity kW/mK
+    mu_tube = (1.3077e-4 + 3.6669e-5) / 2  # average dynamic viscosity from symmetry in Pa*s
+    Cp_tube = (88.238 + 41.511) / 2 / 18.02  # heat capacity in kJ/kg*K
+    k_tube = (0.6601 + 0.0948) / 2 / 1000  # thermal conductivity kW/mK
     tube_thickness = 4e-3
     lambda_type_316 = 13 / 1000  # thermal conductivity kW/mK
     inner_R_shell = 2 / 2  # m assume inner diameter of 2
