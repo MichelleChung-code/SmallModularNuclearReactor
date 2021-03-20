@@ -289,8 +289,6 @@ if __name__ == '__main__':
                       flow_arrangement, h_vap, Tsat, overwrite_heat_bool=Q_final)
     output_temp_dict = x()
 
-    # todo check validation methodology, Tout_cold needs to be less than Tin_hot
-
     LMTD = log_mean_temperature_difference('counter_current', Tin_hot=Tin_hot, Tin_cold=Tin_cold,
                                            Tout_hot=output_temp_dict['Tout_hot'],
                                            Tout_cold=output_temp_dict['Tout_cold'])
