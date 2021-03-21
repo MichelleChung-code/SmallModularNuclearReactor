@@ -1,0 +1,26 @@
+################### VALIDATION PORTION ###################
+
+UA (W/K): 8159029.632391428
+Symmetry LMTD: 46.57416593897346
+Hot Stream (Helium), Cold Stream (Water/Steam)
+{'Tout_hot': 523.7807821698907, 'Tout_cold': 974.5974322096638}
+{'Tout_hot (deg C)': 250.63078216989072, 'Tout_cold (deg C)': 701.4474322096638}
+FINAL LMTD, Q: 46.92324224007913 382848.1238846868
+Heat Exchanged (MW): 382.8481238846868
+
+
+################### SIZING PORTION ###################
+
+{'A': 19118.565240105385,
+ 'U': 0.42995810454823236,
+ 'num_tubes': 275,
+ 'shell_outer_diameter': {'2.5_diameter': {'num_rotations': 62.61383950450855,
+                                           'shell_length': 44.0,
+                                           'tube_bundle_height': 0.7027200431756266},
+                          '3.0_diameter': {'num_rotations': 56.35245555405769,
+                                           'shell_length': 22.0,
+                                           'tube_bundle_height': 0.39040002398645923},
+                          '3.5_diameter': {'num_rotations': 51.22950504914336,
+                                           'shell_length': 14.666666666666666,
+                                           'tube_bundle_height': 0.28629335092340336}}}
+
