@@ -310,7 +310,7 @@ if __name__ == '__main__':
     Cp_tube = (88.238 + 41.511) / 2 / 18.02  # heat capacity in kJ/kg*K
     k_tube = (0.6601 + 0.0948) / 2 / 1000  # thermal conductivity kW/mK
     tube_thickness = 4e-3
-    lambda_type_316 = 13 / 1000  # thermal conductivity kW/mK
+    lambda_type_316 = 11.5 / 1000  # thermal conductivity of pipe material kW/mK  actually use Incoloy 800
     inner_R_shell = 2 / 2  # m assume inner diameter of 2
     literature_num_tubes = 182
     tube_outer_diameter = 25e-3
