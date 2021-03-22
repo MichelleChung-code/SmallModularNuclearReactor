@@ -51,7 +51,7 @@ class HeatExchanger:
     @staticmethod
     def size_helical_coil_heat_exhanger(rho_shell, mu_shell, Cp_shell, k_shell, mu_tube, Cp_tube, k_tube,
                                         tube_thickness, lambda_type_316, Q, inner_R_shell, LMTD, N_tubes, tube_pitch,
-                                        D_tube, shell_mass_flow_rate):
+                                        D_tube, shell_mass_flow_rate, rho_tube, tube_mass_flow_rate):
         """
         Run sizing calculations for helical coil steam generator
 
@@ -89,29 +89,30 @@ class HeatExchanger:
         flow_rate_scaling_fact = 145 / 96.25
         N_tubes = math.ceil(N_tubes * flow_rate_scaling_fact)
 
-        # todo velocity
         # maximum velocity, shell side
         # use literature diameter for the flow rate cross sectional area
         V_shell_max = shell_mass_flow_rate / (rho_shell * math.pi * (literature_outer_bundle_diameter / 2) ** 2)
 
         # shell side bulk fluid reynold's number
-        Re_b = V_shell_max * D_tube * rho_shell / mu_shell
+        Re_b = V_shell_max * D_tube * rho_shell / mu_shell  # 18719
 
         # Use largest Nusselt number correlation
         # Assume more than 16 tube rows, such that the correction factor for the number of tube rows approaches 1
         Pr_b = mu_shell * Cp_shell / k_shell
-        Nu_b = 0.033 * Re_b ** 0.8 * Pr_b ** 0.36  # neglect the Pr_b/ Pr_w term i.e. don't account for any wall effects
+        Nu_b = 0.27 * Re_b ** 0.62 * Pr_b ** 0.36  # neglect the Pr_b/ Pr_w term i.e. don't account for any wall effects
 
         # calculate convective heat transfer coefficients
         # shell side
         h_shell = k_shell * Nu_b / D_tube  # Using the tube diameter here
 
         # tube side
+        V_tube = tube_mass_flow_rate / (rho_tube * math.pi * (D_tube / 2) ** 2)
+        Re_t = V_tube * D_tube * rho_tube / mu_tube
         Pr_t = mu_tube * Cp_tube / k_tube
-        Nu_straight_t = 0.022 * Re_b ** 0.8 * Pr_t ** 0.5
+        Nu_straight_t = 0.022 * Re_t ** 0.8 * Pr_t ** 0.5
         # account for helix
         Nu_t = (1 + 3.6 * (1 - rel_t_D) * rel_t_D ** 0.8) * Nu_straight_t
-        h_tube = k_tube * Nu_b / D_tube
+        h_tube = k_tube * Nu_t / D_tube
 
         # thermal reistance from pipe material: L/lambda
         # L is the thickness of the wall
@@ -310,12 +311,14 @@ if __name__ == '__main__':
     Cp_tube = (88.238 + 41.511) / 2 / 18.02  # heat capacity in kJ/kg*K
     k_tube = (0.6601 + 0.0948) / 2 / 1000  # thermal conductivity kW/mK
     tube_thickness = 4e-3
-    lambda_type_316 = 13 / 1000  # thermal conductivity kW/mK
+    lambda_type_316 = 11.5 / 1000  # thermal conductivity of pipe material kW/mK  actually use Incoloy 800
     inner_R_shell = 2 / 2  # m assume inner diameter of 2
     literature_num_tubes = 182
     tube_outer_diameter = 25e-3
     tube_pitch = 40e-3
-    shell_mass_flow_rate = 175  # kg/s about 20% higher than 145 kg/s so that it can handle more flow
+    shell_mass_flow_rate = 145 * 1.2  # kg/s about 20% higher than 145 kg/s so that it can handle more flow
+    tube_mass_flow_rate = 125 * 1.2
+    rho_tube = (858.2077 + 4.9204) / 2
 
     size_res = HeatExchanger.size_helical_coil_heat_exhanger(rho_shell, mu_shell, Cp_shell, k_shell, mu_tube, Cp_tube,
                                                              k_tube,
@@ -323,7 +326,8 @@ if __name__ == '__main__':
                                                              LMTD_sym,
                                                              N_tubes=literature_num_tubes, tube_pitch=tube_pitch,
                                                              D_tube=tube_outer_diameter,
-                                                             shell_mass_flow_rate=shell_mass_flow_rate)
+                                                             shell_mass_flow_rate=shell_mass_flow_rate,
+                                                             rho_tube=rho_tube, tube_mass_flow_rate=tube_mass_flow_rate)
 
     pp = pprint.PrettyPrinter(indent=1)
     pp.pprint(size_res)
