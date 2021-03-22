@@ -11,17 +11,17 @@ Heat Exchanged (MW): 382.8481238846868
 
 ################### SIZING PORTION ###################
 
-{'A': 19448.47221290742,
- 'U': 0.4226646690973454,
+{'A': 9610.903624913897,
+ 'U': 0.8552975238466275,
  'num_tubes': 275,
- 'shell_outer_diameter': {'2.5_diameter': {'num_rotations': 63.69429413000068,
+ 'shell_outer_diameter': {'2.5_diameter': {'num_rotations': 31.475979996726004,
                                            'shell_length': 44.0,
-                                           'tube_bundle_height': 0.6907997113555504},
-                          '3.0_diameter': {'num_rotations': 57.324864717000615,
+                                           'tube_bundle_height': 1.3978913445928194},
+                          '3.0_diameter': {'num_rotations': 28.328381997053405,
                                            'shell_length': 22.0,
-                                           'tube_bundle_height': 0.3837776174197502},
-                          '3.5_diameter': {'num_rotations': 52.11351337909147,
+                                           'tube_bundle_height': 0.7766063025515663},
+                          '3.5_diameter': {'num_rotations': 25.753074542775824,
                                            'shell_length': 14.666666666666666,
-                                           'tube_bundle_height': 0.2814369194411501}}}
+                                           'tube_bundle_height': 0.5695112885378152}}}
 
 
