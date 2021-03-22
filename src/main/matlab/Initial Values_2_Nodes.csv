@@ -19,10 +19,10 @@ Temperature - Helium,Node 2,,250.8661921
 Temperature - Reflector,,,250.9775722
 Temperature - Riser,,,250.8596906
 Temperature - Lower Header,,,250.0
-Temperature - Outer Header,,,743.2573632
+Temperature - Outer Header,,,743.2573622
 Mass Flow Rate - Helium,Node 1,,145.0
 Mass Flow Rate - Helium,Node 2,,145.0
 Mass Flow Rate - Riser ,,,145.0
 Reactivity,Node 1,,-0.03819287
 Reactivity,Node 2,,-0.02595729
-Control Rod Position,,,7.611705087000001
+Control Rod Position,,,7.611705119

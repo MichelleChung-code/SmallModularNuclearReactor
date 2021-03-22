@@ -4,8 +4,8 @@ Neutron Flux,Node 3,,0.000321699
 Neutron Flux,Node 4,,0.001953119
 Neutron Flux,Node 5,,0.011604723999999999
 Neutron Flux,Node 6,,0.066594286
-Neutron Flux,Node 7,,0.352672915
-Neutron Flux,Node 8,,2.154367709
+Neutron Flux,Node 7,,0.352672913
+Neutron Flux,Node 8,,2.1543676919999997
 Concentration,Node 1,Group 1,9.06e-06
 Concentration,Node 1,Group 2,9.06e-06
 Concentration,Node 1,Group 3,9.06e-06
@@ -37,43 +37,43 @@ Concentration,Node 5,Group 4,0.011604723999999999
 Concentration,Node 5,Group 5,0.011604723999999999
 Concentration,Node 5,Group 6,0.011604723999999999
 Concentration,Node 6,Group 1,0.066594282
-Concentration,Node 6,Group 2,0.066594285
-Concentration,Node 6,Group 3,0.066594286
-Concentration,Node 6,Group 4,0.066594286
-Concentration,Node 6,Group 5,0.066594286
-Concentration,Node 6,Group 6,0.066594286
-Concentration,Node 7,Group 1,0.352672902
-Concentration,Node 7,Group 2,0.35267291
-Concentration,Node 7,Group 3,0.352672914
-Concentration,Node 7,Group 4,0.352672915
-Concentration,Node 7,Group 5,0.352672915
-Concentration,Node 7,Group 6,0.352672915
-Concentration,Node 8,Group 1,2.154367653
-Concentration,Node 8,Group 2,2.1543676869999997
-Concentration,Node 8,Group 3,2.154367703
-Concentration,Node 8,Group 4,2.154367707
-Concentration,Node 8,Group 5,2.154367708
-Concentration,Node 8,Group 6,2.154367709
+Concentration,Node 6,Group 2,0.066594284
+Concentration,Node 6,Group 3,0.066594285
+Concentration,Node 6,Group 4,0.066594285
+Concentration,Node 6,Group 5,0.066594285
+Concentration,Node 6,Group 6,0.066594285
+Concentration,Node 7,Group 1,0.3526729
+Concentration,Node 7,Group 2,0.35267290799999995
+Concentration,Node 7,Group 3,0.35267291100000003
+Concentration,Node 7,Group 4,0.352672912
+Concentration,Node 7,Group 5,0.352672913
+Concentration,Node 7,Group 6,0.352672913
+Concentration,Node 8,Group 1,2.154367636
+Concentration,Node 8,Group 2,2.15436767
+Concentration,Node 8,Group 3,2.154367686
+Concentration,Node 8,Group 4,2.15436769
+Concentration,Node 8,Group 5,2.1543676919999997
+Concentration,Node 8,Group 6,2.1543676919999997
 Temperature - Fuel Element,Node 1,,250.86116349999998
 Temperature - Fuel Element,Node 2,,250.86892519999998
 Temperature - Fuel Element,Node 3,,250.9148145
 Temperature - Fuel Element,Node 4,,251.1933673
 Temperature - Fuel Element,Node 5,,252.8459683
-Temperature - Fuel Element,Node 6,,262.3090353
-Temperature - Fuel Element,Node 7,,312.1691742
-Temperature - Fuel Element,Node 8,,619.3483709
+Temperature - Fuel Element,Node 6,,262.3090352
+Temperature - Fuel Element,Node 7,,312.1691739
+Temperature - Fuel Element,Node 8,,619.3483681
 Temperature - Helium,Node 1,,250.86067549999999
 Temperature - Helium,Node 2,,250.8661921
 Temperature - Helium,Node 3,,250.89870580000002
 Temperature - Helium,Node 4,,251.0957451
 Temperature - Helium,Node 5,,252.2661144
-Temperature - Helium,Node 6,,258.981787
-Temperature - Helium,Node 7,,294.5480414
-Temperature - Helium,Node 8,,511.7410971
+Temperature - Helium,Node 6,,258.9817869
+Temperature - Helium,Node 7,,294.5480412
+Temperature - Helium,Node 8,,511.74109519999996
 Temperature - Reflector,,,250.9775722
 Temperature - Riser,,,250.8596906
 Temperature - Lower Header,,,250.0
-Temperature - Outer Header,,,743.2573632
+Temperature - Outer Header,,,743.2573622
 Mass Flow Rate - Helium,Node 1,,145.0
 Mass Flow Rate - Helium,Node 2,,145.0
 Mass Flow Rate - Helium,Node 3,,145.0
@@ -89,6 +89,6 @@ Reactivity,Node 3,,-0.017136242
 Reactivity,Node 4,,-0.013110445
 Reactivity,Node 5,,-0.010279434
 Reactivity,Node 6,,-0.008648384
-Reactivity,Node 7,,-0.008055236
+Reactivity,Node 7,,-0.008055237
 Reactivity,Node 8,,0.004325799
-Control Rod Position,,,7.611705087000001
+Control Rod Position,,,7.611705119
