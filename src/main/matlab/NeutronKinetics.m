@@ -137,9 +137,9 @@ classdef NeutronKinetics
            obj.volume_i = obj.volume/obj.N;
            
            obj.mass_flow_rate_helium = 145; % kg/s
-           obj.Tin = 250; % Helium input temperature in Celsius 
+           obj.Tin = 252.9; % Helium input temperature in Celsius 
            obj.Tout = 750; % Helium 
-           Tavg_celsius = (250+750)/2;
+           Tavg_celsius = (obj.Tin+obj.Tout)/2;
            Tavg_Kelvin = Tavg_celsius + 273.15;
            Pin = 7000 / 1000; % MPa
            Pout = 6961.37 / 1000; % MPa
