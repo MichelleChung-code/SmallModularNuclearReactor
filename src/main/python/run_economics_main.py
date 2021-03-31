@@ -63,11 +63,11 @@ if __name__ == '__main__':
 
     #### BASE CASE INPUTS IN MM USD ####
     TAX_RATE = 0.13
-    FCI = 1284.16
-    WC = 208.45
+    FCI = 1632.48
+    WC = 264.87
     LAND = 2.75
-    OFF_SITE_CAPITAL = 64.21
-    START_UP_EXPENSES = 38.52
+    OFF_SITE_CAPITAL = 81.62
+    START_UP_EXPENSES = 48.97
     REV = 529.941528
     EXPENSES = 205.25
 
