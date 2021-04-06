@@ -8,6 +8,8 @@ ENCH 511 and ENCH 531, University of Calgary
 
 <a href="https://engineeringdesignfair.ucalgary.ca/chemical/using-energy-from-a-small-modular-reactor-to-manufacture-hydrogen/" target="_top">Engineering Design Fair Website</a>
 
+The logo below links to our project overview youtube video:
+
 <a href="https://www.youtube.com/watch?v=DrP79NUEitk">
 <img src="images/NuEnergySolutionsLogoClean.JPG" width="500">
 </a>
