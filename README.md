@@ -7,3 +7,7 @@ Only the small modular nuclear reactor part of the "Using Energy from a Small Mo
 ENCH 511 and ENCH 531, University of Calgary  
 
 <a href="https://engineeringdesignfair.ucalgary.ca/chemical/using-energy-from-a-small-modular-reactor-to-manufacture-hydrogen/" target="_top">Engineering Design Fair Website</a>
+
+<a href="https://www.youtube.com/watch?v=DrP79NUEitk" target="_top">Promotional Video</a>
+
+
