@@ -305,6 +305,7 @@ classdef NeutronKinetics
                    controller_node_number = controller_node_number-1;
                end
            end
+           control_rod_array = control_rod_array.*obj.reactivity_profile;
 
            
            % Relative neutron flux for node 1
