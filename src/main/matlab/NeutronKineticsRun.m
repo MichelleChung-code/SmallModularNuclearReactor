@@ -26,7 +26,11 @@ csv_array = table2array(from_csv(:,4));
 x0 = csv_array;
 
 natural_reactivity = 0.03419; 
-reactivity_profile = [0.04	0.397849462	0.655913978	0.774193548	0.860215054	0.924731183	0.967741935	0.989247312	1	0.892473118];
+reactivity_profile = [-0.0545030139935414 0.329809379569424 0.614779449823997 0.76941928451865 0.90915748167749 1.05198549992605 1.20415573523475 1.36765908626817 1.54073311718303 1.56910946268381];
+
+% apply burnup effect
+reactivity_profile = fuel_burnup(80000, N, reactivity_profile);
+% reactivity_profile = [0.04	0.397849462	0.655913978	0.774193548	0.860215054	0.924731183	0.967741935	0.989247312	1	0.892473118];
 %reactivity_profile = [0.6	0.6	0.655913978	0.774193548	0.860215054	0.924731183	0.967741935	0.989247312	1	0.892473118];
 control_rod_reactivity = 0.03;
 
@@ -40,7 +44,7 @@ control_rod_sp_step_time = 5000; % time in seconds
 % if no step response desired, just overwrite with 0, i.e. uncomment the
 % line below
 
-%reactivity_step_size = 0; 
+% reactivity_step_size = 0; 
 
 neutron_kinetics = NeutronKinetics(coupling_coeffs_matrix, N, reactivity_step_size, reactivity_step_time, natural_reactivity,reactivity_profile,control_rod_reactivity, x0, control_rod_sp_step_time);
 [tout, x] = neutron_kinetics.solve_neutron_kinetics(tspan, x0);

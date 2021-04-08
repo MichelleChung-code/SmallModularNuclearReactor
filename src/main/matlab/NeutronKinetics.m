@@ -137,9 +137,9 @@ classdef NeutronKinetics
            obj.volume_i = obj.volume/obj.N;
            
            obj.mass_flow_rate_helium = 145; % kg/s
-           obj.Tin = 250; % Helium input temperature in Celsius 
+           obj.Tin = 252.9; % Helium input temperature in Celsius 
            obj.Tout = 750; % Helium 
-           Tavg_celsius = (250+750)/2;
+           Tavg_celsius = (obj.Tin+obj.Tout)/2;
            Tavg_Kelvin = Tavg_celsius + 273.15;
            Pin = 7000 / 1000; % MPa
            Pout = 6961.37 / 1000; % MPa
@@ -197,8 +197,12 @@ classdef NeutronKinetics
            obj.T_outlet_header_ss = x0(obj.N*7+2*obj.N+4); %Toh 
            obj.T_outlet_header_set_point = obj.T_outlet_header_ss; 
            obj.T_outlet_header_sp_step = 25; % step the set point by 25 degrees
+           
+           % for no step change in set point, comment out the below line
+%            obj.T_outlet_header_sp_step = 0;
+           
            obj.T_outlet_header_sp_step_time = control_rod_sp_step_time;
-           obj.control_rod_insertion_ss = 6;  
+           obj.control_rod_insertion_ss = x0( obj.N*7+3*obj.N+6 + obj.N);  
            % Tuning parameters for PI control 
            obj.tau = 12; %time for Toh to reach .653 of the final output from a step change in reactivty
            obj.Kk = 650; %Change in Toh after a step change in reactivity
@@ -266,6 +270,9 @@ classdef NeutronKinetics
 % control_rod_insertion is the Manipulated variable
 % Toh is the controlled variable
 % PI control
+           
+           global reactivity_control_rod_results
+           global time_plot
             
            % step change in the set point 
            if t >= obj.T_outlet_header_sp_step_time
@@ -308,6 +315,7 @@ classdef NeutronKinetics
            dn1dt_term3 = obj.sum_beta_concentration_over_lambda(x(obj.N+1:obj.N+6), obj.lambda);
            dxdt(1) =  dn1dt_term1 + dn1dt_term2 + dn1dt_term3;
            
+           intermediate_rho_ls = [];
            % Relative neutron flux for ith to N-1 nodes
            var = obj.N+7;
            for i = 2:(obj.N-1)
@@ -318,6 +326,7 @@ classdef NeutronKinetics
                dnidt_term3 = obj.sum_beta_concentration_over_lambda(x(var:var+5), obj.lambda);
                dxdt(i) = dnidt_term1 + dnidt_term2 + dnidt_term3;
                var = var+6; 
+               intermediate_rho_ls = [intermediate_rho_ls, rho_i];
            end
            
            % Relative neutron flux for node N
@@ -328,6 +337,12 @@ classdef NeutronKinetics
            dnNdt_term3 = obj.sum_beta_concentration_over_lambda(x(obj.N*7-5:obj.N*7), obj.lambda);
            dxdt(obj.N) =  dnNdt_term1 + dnNdt_term2 + dnNdt_term3;
           
+           
+           % Output reactivities and control rod insertion into a global
+           % variable
+           reactivity_control_rod_results = [reactivity_control_rod_results; [rho_1 intermediate_rho_ls rho_N control_rod_insertion]];
+           time_plot = [time_plot t];
+           
            % Delayed Neutron Group Concentrations for Nodes
            var = obj.N;
            for i = 1:obj.N
@@ -426,12 +441,22 @@ classdef NeutronKinetics
        end
        
        function [tout, x] = solve_neutron_kinetics(obj, tspan, x0)
+           
+%            Initiate global variable for plotting reactivity and control
+%            rod insertion 
+
+            global reactivity_control_rod_results
+            global time_plot
+
+           
             % Function called to simultaneously solve system of
             % differential equations
             
             tic
             tstep = .1;
             tspan_fix = tspan(1):tstep:tspan(2);
+            reactivity_control_rod_results = [];
+            time_plot = [];
             [tout, x] = ode23s(@obj.relative_neutron_flux, tspan_fix, x0);
             
             toc
@@ -453,15 +478,15 @@ classdef NeutronKinetics
             x(:, num_col_x_without_PI + 1:num_col_x_without_PI + obj.N) = x(:, 1:obj.N) * (1/obj.N) * (obj.P0*10^-6);
             
             % normalize the concentrations with the SS of the first node
-            %[g1_fact,g2_fact,g3_fact,g4_fact,g5_fact,g6_fact] = subsref(num2cell(x(length(tout), obj.N + 1:obj.N + 6)),struct('type',{'{}'},'subs',{{1:6}}));
-            %LS_normalize_facts = [g1_fact,g2_fact,g3_fact,g4_fact,g5_fact,g6_fact];
-            %counter = obj.N;
-            %for j = 1:obj.N
-            %   for i = 1:6
-            %       x(:, i+counter) = x(:, i+counter)/LS_normalize_facts(i);
-            %   end
-            %   counter = counter + 6;
-            %end
+%             [g1_fact,g2_fact,g3_fact,g4_fact,g5_fact,g6_fact] = subsref(num2cell(x(length(tout), obj.N + 1:obj.N + 6)),struct('type',{'{}'},'subs',{{1:6}}));
+%             LS_normalize_facts = [g1_fact,g2_fact,g3_fact,g4_fact,g5_fact,g6_fact];
+%             counter = obj.N;
+%             for j = 1:obj.N
+%               for i = 1:6
+%                   x(:, i+counter) = x(:, i+counter)/LS_normalize_facts(i);
+%               end
+%               counter = counter + 6;
+%             end
        end
 
     end
