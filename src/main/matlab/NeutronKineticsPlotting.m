@@ -59,26 +59,34 @@ global time_plot
 starting_index = 1;
 for i=1:length(diff_plot_titles)
     if diff_plot_titles(i) == "Nodal Reactivity"
-        figure(i);
-        hold on;
-        plot(time_plot, reactivity_control_rod_results(:, 1:N)), grid on
-        for j=1:N
-            coefficients = polyfit(time_plot, reactivity_control_rod_results(:, j), 6);
-            xFit = linspace(min(time_plot), max(time_plot), 1000);
-            yFit = polyval(coefficients , xFit);
-            plot(xFit, yFit, 'r-'); % Plot fitted line.
-        end
-        hold off;
+%         figure(i);
+%         hold on;
+%         plot(time_plot, reactivity_control_rod_results(:, 1:N)), grid on
+%         for j=1:N
+%             coefficients = polyfit(time_plot, reactivity_control_rod_results(:, j), 6);
+%             xFit = linspace(min(time_plot), max(time_plot), 1000);
+%             yFit = polyval(coefficients , xFit);
+%             plot(xFit, yFit, 'r-'); % Plot fitted line.
+%         end
+%         hold off;
+
+% start x axis at 10 seconds for the derivative approx
+        figure(i), plot(tout, x(:, starting_index:diff_plots_index_end(i))), grid on
+        xlim([10 inf])         
         
     elseif diff_plot_titles(i) == "Rod Position"
-        figure(i);
-        hold on;
-        plot(time_plot, reactivity_control_rod_results(:, N + 1)), grid on    
-        coefficients = polyfit(time_plot, reactivity_control_rod_results(:, N + 1), 5);
-        xFit = linspace(min(time_plot), max(time_plot), 1000);
-        yFit = polyval(coefficients , xFit);
-        plot(xFit, yFit, 'r-'); % Plot fitted line.
-        hold off;
+%         figure(i);
+%         hold on;
+%         plot(time_plot, reactivity_control_rod_results(:, N + 1)), grid on    
+%         coefficients = polyfit(time_plot, reactivity_control_rod_results(:, N + 1), 5);
+%         xFit = linspace(min(time_plot), max(time_plot), 1000);
+%         yFit = polyval(coefficients , xFit);
+%         plot(xFit, yFit, 'r-'); % Plot fitted line.
+%         hold off;
+% start x axis at 10 seconds for the derivative approx
+        figure(i), plot(tout, x(:, starting_index:diff_plots_index_end(i))), grid on
+        xlim([10 inf]) 
+%         ylim([-inf 10])
     else
         figure(i), plot(tout, x(:, starting_index:diff_plots_index_end(i))), grid on
     end
