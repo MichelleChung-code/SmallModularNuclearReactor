@@ -1,7 +1,6 @@
 % For plotting the neutron kinetics results 
 
 % Plot neutron relative fluxxes
-% TODO create labels dynamically, allow for different number of nodes
 
 close all;
 deg_sign = char(0176);

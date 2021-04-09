@@ -29,7 +29,7 @@ function a_matrix = compute_coupling_coefficients(num_nodes)
     D = 1/(3*macroscopic_cross_section*(1-mu_avg)); % Diffusion Coefficient [cm]
     transport_mean_free_path = 3*D; 
 
-    % literature sources from the tables were arbitrarily chosen 
+    % chosen literature sources from the tables 
     absorption_cross_section = 695E-24; % cm^2 take value from Table 3, Nikitan et al. (1956)
     fission_cross_section = 605E-24; % cm^2 take value from Table 4, Saplakoglu (1958) 
     fission_number = 2.5; % https://www.world-nuclear.org/information-library/nuclear-fuel-cycle/introduction/physics-of-nuclear-energy.aspx#:~:text=Fission%20of%20U%2D235%20nuclei,absorbed%20in%20non%2Dfission%20reactions. hopefully they are referring to the number of neutrons released per fission...
@@ -79,6 +79,6 @@ function a_matrix = compute_coupling_coefficients(num_nodes)
 
     common_factor = 1E-25;
 
-    a_matrix = a_matrix.*common_factor; % okay because we normalize to node 1 prior to plotting anyways.  This just makes the numbers easier to deal with.
+    a_matrix = a_matrix.*common_factor; % All neutron fluxxes are presented in relative terms, this makes the numbers easier to report
 
 end
