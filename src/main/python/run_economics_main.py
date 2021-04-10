@@ -63,13 +63,13 @@ if __name__ == '__main__':
 
     #### BASE CASE INPUTS IN MM USD ####
     TAX_RATE = 0.13
-    FCI = 1632.48
-    WC = 264.87
+    FCI = 1631.03
+    WC = 264.64
     LAND = 2.75
-    OFF_SITE_CAPITAL = 81.62
-    START_UP_EXPENSES = 48.97
-    REV = 529.941528
-    EXPENSES = 205.25
+    OFF_SITE_CAPITAL = 81.55
+    START_UP_EXPENSES = 48.93
+    REV = 529.94153
+    EXPENSES = 205.33
 
     x = SensitivityAnalysis(base_case_path, results_path, tax_rate=TAX_RATE, FCI=FCI, WC=WC, Land=LAND,
                             i=discount_rate,
