@@ -1,0 +1,387 @@
+C:\Users\tkdmc\AppData\Local\Continuum\anaconda3\envs\py37\python.exe C:/Users/tkdmc/OneDrive/Documents/ENGG_Year_4/Fall_2020/ENCH_511/MATLAB/src/main/python/run_economics_main.py
+Real Discount Rate:  0.11531374260498506
+NPV:  437.8
+IRR:  0.1412
+Discounted Payback Period 15.38
+==================== R_AdjustFact ====================
+>>>  MAX
+R_AdjustFact         3.4000
+E_AdjustFact         1.0000
+FCI_AdjustFact       1.0000
+NPV               9911.5600
+IRR                  0.6872
+Name: 28, dtype: float64
+>>>  MIN
+R_AdjustFact         0.6000
+E_AdjustFact         1.0000
+FCI_AdjustFact       1.0000
+NPV              -1141.1600
+IRR                  0.0422
+Name: 0, dtype: float64
+==================== E_AdjustFact ====================
+>>>  MAX
+E_AdjustFact        1.0000
+R_AdjustFact        1.0000
+FCI_AdjustFact      1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+>>>  MIN
+E_AdjustFact        1.0000
+R_AdjustFact        1.0000
+FCI_AdjustFact      1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+==================== FCI_AdjustFact ====================
+>>>  MAX
+FCI_AdjustFact      1.0000
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+>>>  MIN
+FCI_AdjustFact      1.0000
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+====================================================================================================
+============================== CASE:  HYDROGEN ==============================
+====================  COMBINED RESULTS  ====================
+>>>  MAX
+R_AdjustFact         3.4000
+E_AdjustFact         1.0000
+FCI_AdjustFact       1.0000
+NPV               9911.5600
+IRR                  0.6872
+Name: 28, dtype: float64
+>>>  MIN
+R_AdjustFact         0.6000
+E_AdjustFact         1.0000
+FCI_AdjustFact       1.0000
+NPV              -1141.1600
+IRR                  0.0422
+Name: 0, dtype: float64
+====================================================================================================
+==================== R_AdjustFact ====================
+>>>  MAX
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+FCI_AdjustFact      1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+>>>  MIN
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+FCI_AdjustFact      1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+==================== E_AdjustFact ====================
+>>>  MAX
+E_AdjustFact         0.4000
+R_AdjustFact         1.0000
+FCI_AdjustFact       1.0000
+NPV               1355.4900
+IRR                  0.1945
+Name: 0, dtype: float64
+>>>  MIN
+E_AdjustFact        1.4000
+R_AdjustFact        1.0000
+FCI_AdjustFact      1.0000
+NPV              -173.9900
+IRR                 0.1049
+Name: 10, dtype: float64
+==================== FCI_AdjustFact ====================
+>>>  MAX
+FCI_AdjustFact      1.0000
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+>>>  MIN
+FCI_AdjustFact      1.0000
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+====================================================================================================
+============================== CASE:  NATGAS ==============================
+====================  COMBINED RESULTS  ====================
+>>>  MAX
+R_AdjustFact         1.0000
+E_AdjustFact         0.4000
+FCI_AdjustFact       1.0000
+NPV               1355.4900
+IRR                  0.1945
+Name: 0, dtype: float64
+>>>  MIN
+R_AdjustFact        1.0000
+E_AdjustFact        1.4000
+FCI_AdjustFact      1.0000
+NPV              -173.9900
+IRR                 0.1049
+Name: 10, dtype: float64
+====================================================================================================
+==================== R_AdjustFact ====================
+>>>  MAX
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+FCI_AdjustFact      1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+>>>  MIN
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+FCI_AdjustFact      1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+==================== E_AdjustFact ====================
+>>>  MAX
+E_AdjustFact        1.0000
+R_AdjustFact        1.0000
+FCI_AdjustFact      1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+>>>  MIN
+E_AdjustFact        1.1000
+R_AdjustFact        1.0000
+FCI_AdjustFact      1.0000
+NPV               284.8500
+IRR                 0.1322
+Name: 1, dtype: float64
+==================== FCI_AdjustFact ====================
+>>>  MAX
+FCI_AdjustFact      1.0000
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+>>>  MIN
+FCI_AdjustFact      1.1000
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+NPV               279.2400
+IRR                 0.1306
+Name: 1, dtype: float64
+====================================================================================================
+============================== CASE:  HELIUM ==============================
+====================  COMBINED RESULTS  ====================
+>>>  MAX
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+FCI_AdjustFact      1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+>>>  MIN
+R_AdjustFact        1.0000
+E_AdjustFact        1.1000
+FCI_AdjustFact      1.1000
+NPV               126.2900
+IRR                 0.1223
+Name: 3, dtype: float64
+====================================================================================================
+==================== R_AdjustFact ====================
+>>>  MAX
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+FCI_AdjustFact      1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+>>>  MIN
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+FCI_AdjustFact      1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+==================== E_AdjustFact ====================
+>>>  MAX
+E_AdjustFact        1.0000
+R_AdjustFact        1.0000
+FCI_AdjustFact      1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+>>>  MIN
+E_AdjustFact        1.0000
+R_AdjustFact        1.0000
+FCI_AdjustFact      1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+==================== FCI_AdjustFact ====================
+>>>  MAX
+FCI_AdjustFact      1.0000
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+>>>  MIN
+FCI_AdjustFact      1.0000
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+====================================================================================================
+============================== CASE:  TRISO ==============================
+====================  COMBINED RESULTS  ====================
+>>>  MAX
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+FCI_AdjustFact      1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+>>>  MIN
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+FCI_AdjustFact      1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+====================================================================================================
+C:\Users\tkdmc\OneDrive\Documents\ENGG_Year_4\Fall_2020\ENCH_511\MATLAB\src\main\python\SensitivityAnalysis.py:210: RuntimeWarning: More than 20 figures have been opened. Figures created through the pyplot interface (`matplotlib.pyplot.figure`) are retained until explicitly closed and may consume too much memory. (To control this warning, see the rcParam `figure.max_open_warning`).
+  fig = plt.figure(figsize=(13, 10))
+==================== R_AdjustFact ====================
+>>>  MAX
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+FCI_AdjustFact      1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+>>>  MIN
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+FCI_AdjustFact      1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+==================== E_AdjustFact ====================
+>>>  MAX
+E_AdjustFact        1.0000
+R_AdjustFact        1.0000
+FCI_AdjustFact      1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+>>>  MIN
+E_AdjustFact        1.0000
+R_AdjustFact        1.0000
+FCI_AdjustFact      1.0000
+NPV               437.8000
+IRR                 0.1412
+Name: 0, dtype: float64
+==================== FCI_AdjustFact ====================
+>>>  MAX
+FCI_AdjustFact      0.9000
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+NPV               596.3700
+IRR                 0.1535
+Name: 0, dtype: float64
+>>>  MIN
+FCI_AdjustFact      1.1000
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+NPV               279.2400
+IRR                 0.1306
+Name: 2, dtype: float64
+====================================================================================================
+============================== CASE:  FCI_DECOMMISSIONING ==============================
+====================  COMBINED RESULTS  ====================
+>>>  MAX
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+FCI_AdjustFact      0.9000
+NPV               596.3700
+IRR                 0.1535
+Name: 0, dtype: float64
+>>>  MIN
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+FCI_AdjustFact      1.1000
+NPV               279.2400
+IRR                 0.1306
+Name: 2, dtype: float64
+====================================================================================================
+==================== R_AdjustFact ====================
+>>>  MAX
+R_AdjustFact         3.4000
+E_AdjustFact         1.0000
+FCI_AdjustFact       1.0000
+NPV               9911.5600
+IRR                  0.6872
+Name: 28, dtype: float64
+>>>  MIN
+R_AdjustFact         0.6000
+E_AdjustFact         1.0000
+FCI_AdjustFact       1.0000
+NPV              -1141.1600
+IRR                  0.0422
+Name: 0, dtype: float64
+==================== E_AdjustFact ====================
+>>>  MAX
+E_AdjustFact         0.4000
+R_AdjustFact         1.0000
+FCI_AdjustFact       1.0000
+NPV               1355.4900
+IRR                  0.1945
+Name: 0, dtype: float64
+>>>  MIN
+E_AdjustFact        1.4000
+R_AdjustFact        1.0000
+FCI_AdjustFact      1.0000
+NPV              -173.9900
+IRR                 0.1049
+Name: 10, dtype: float64
+==================== FCI_AdjustFact ====================
+>>>  MAX
+FCI_AdjustFact      0.9000
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+NPV               596.3700
+IRR                 0.1535
+Name: 0, dtype: float64
+>>>  MIN
+FCI_AdjustFact      1.2000
+R_AdjustFact        1.0000
+E_AdjustFact        1.0000
+NPV               120.6700
+IRR                 0.1215
+Name: 3, dtype: float64
+====================================================================================================
+============================== CASE:  COMBINED ==============================
+====================  COMBINED RESULTS  ====================
+>>>  MAX
+R_AdjustFact          3.4000
+E_AdjustFact          0.4000
+FCI_AdjustFact        0.9000
+NPV               10987.8200
+IRR                   0.8044
+Name: 1232, dtype: float64
+>>>  MIN
+R_AdjustFact         0.6000
+E_AdjustFact         1.4000
+FCI_AdjustFact       1.2000
+NPV              -2070.0800
+IRR                 -0.0157
+Name: 43, dtype: float64
+====================================================================================================
+
+Process finished with exit code 0
