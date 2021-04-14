@@ -57,46 +57,46 @@ global time_plot
 
 starting_index = 1;
 for i=1:length(diff_plot_titles)
-    % hard coded y-limits for producing steady state plots
+%     hard coded y-limits for producing steady state plots
 %     if i == 14 + 1
 %         xlim([100 inf]) 
 %         ylim([250 255])
 %     elseif i == 2 + 1
 %         xlim([100 inf]) 
-%         ylim([1.1e-3 1.25e-3])
+%         ylim([6.9e-4 7e-4])
 %     elseif i == 4 + 1
 %         xlim([100 inf]) 
-%         ylim([5.85e-3 6e-3])
+%         ylim([3.3e-3 3.4e-3])
 %     elseif i == 3 + 1
 %         xlim([100 inf]) 
-%         ylim([2.25e-3 3e-3])
+%         ylim([1.2e-3 1.3e-3])
 %     elseif i == 15 + 1 
 %         xlim([100 inf]) 
 %         ylim([250 255])
 %     elseif i == 17 + 1 
 %         xlim([100 inf]) 
-%         ylim([760 770])
+%         ylim([740 770])
 %     elseif i == 5 + 1 
 %         xlim([100 inf]) 
-%         ylim([0.018 0.02])
+%         ylim([0.01 0.02])
 %     elseif i == 6 + 1 
 %         xlim([100 inf]) 
-%         ylim([0.072 0.08])  
+%         ylim([0.04 0.05])  
 %     elseif i == 7 + 1 
 %         xlim([100 inf]) 
-%         ylim([0.3 0.4])
+%         ylim([0.18 0.19])
 %     elseif i == 8 + 1 
 %         xlim([100 inf]) 
-%         ylim([1.8 1.9])
+%         ylim([0.8 0.9])
 %     elseif i == 9 + 1 
 %         xlim([100 inf]) 
-%         ylim([1.5 1.55])
+%         ylim([1.8 1.9])
 %     elseif i == 10 + 1 
 %         xlim([100 inf]) 
-%         ylim([0.85 0.9])
+%         ylim([1.2 1.3])
 %     elseif i == 11 + 1 
 %         xlim([100 inf]) 
-%         ylim([0.4 0.5])
+%         ylim([0.6 0.7])
 %     end
 %     
     

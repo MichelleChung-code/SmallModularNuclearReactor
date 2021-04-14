@@ -190,8 +190,8 @@ classdef NeutronKinetics
            obj.k = 0; %leakage ratio 
 
            % For the control rod control system
-           obj.T_outlet_header_ss = x0(obj.N*7+2*obj.N+4); %Toh 
-           obj.T_outlet_header_set_point = obj.T_outlet_header_ss; 
+           obj.T_outlet_header_ss = obj.Tout; %Toh 
+           obj.T_outlet_header_set_point = obj.Tout; 
            obj.T_outlet_header_sp_step = 25; % step the set point by 25 degrees
            
            % for no step change in set point, comment out the below line
