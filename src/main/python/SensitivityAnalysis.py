@@ -144,8 +144,8 @@ class SensitivityAnalysis:
         ax2.tick_params(axis='y', labelcolor=color)
 
         if vary_type == E_AdjustFact:
-            ax1.set_ylim(90, 200)
-            ax2.set_ylim(0.120, 0.13)
+            ax1.set_ylim(90, 500)
+            ax2.set_ylim(0.120, 0.15)
         elif vary_type == R_AdjustFact:
             ax1.set_ylim(-1000, 3500)
             ax2.set_ylim(0.05, 0.4)

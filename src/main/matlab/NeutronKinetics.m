@@ -180,10 +180,6 @@ classdef NeutronKinetics
            helium_heat_conductivity = 2.682e-3*(1+1.123e-3)*(Tavg_Kelvin^(0.71*(1-2e-4*Pavg)));% W/mK
            Pr = (mu * obj.Cp_helium) / helium_heat_conductivity;
            
-           % Pebble bed friction resistance loss - NOT USED FOR NOW
-%            fric_coeff = (320/(Re/(1-obj.porosity))) + (6/((Re/(1-obj.porosity))^0.1));
-%            P_loss_friction = H_reactor_core * ((1-obj.porosity)/(obj.porosity^3)) * (1/D_fuel_element) * (1/(2*obj.density_fuel)) * (obj.mass_flow_rate_helium/SA_fuel_element)^2; % MPa
-%            
            % heat transfer coefficient of the surface of spherical fuel elements
            Nu = (1.27*(Pr^(1/3)/obj.porosity^(1.18))*Re^(0.36)) + (0.033*(Pr^(1/2)/ obj.porosity^(1.07))*Re^(0.86));
            obj.K = helium_heat_conductivity * Nu / D_reactor_core; % W/(m^2K) heat transfer coefficient between fuel elements and helium

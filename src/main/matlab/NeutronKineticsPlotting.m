@@ -1,7 +1,6 @@
 % For plotting the neutron kinetics results 
 
 % Plot neutron relative fluxxes
-% TODO create labels dynamically, allow for different number of nodes
 
 close all;
 deg_sign = char(0176);
@@ -58,6 +57,52 @@ global time_plot
 
 starting_index = 1;
 for i=1:length(diff_plot_titles)
+    % hard coded y-limits for producing steady state plots
+%     if i == 14 + 1
+%         xlim([100 inf]) 
+%         ylim([250 255])
+%     elseif i == 2 + 1
+%         xlim([100 inf]) 
+%         ylim([1.1e-3 1.25e-3])
+%     elseif i == 4 + 1
+%         xlim([100 inf]) 
+%         ylim([5.85e-3 6e-3])
+%     elseif i == 3 + 1
+%         xlim([100 inf]) 
+%         ylim([2.25e-3 3e-3])
+%     elseif i == 15 + 1 
+%         xlim([100 inf]) 
+%         ylim([250 255])
+%     elseif i == 17 + 1 
+%         xlim([100 inf]) 
+%         ylim([760 770])
+%     elseif i == 5 + 1 
+%         xlim([100 inf]) 
+%         ylim([0.018 0.02])
+%     elseif i == 6 + 1 
+%         xlim([100 inf]) 
+%         ylim([0.072 0.08])  
+%     elseif i == 7 + 1 
+%         xlim([100 inf]) 
+%         ylim([0.3 0.4])
+%     elseif i == 8 + 1 
+%         xlim([100 inf]) 
+%         ylim([1.8 1.9])
+%     elseif i == 9 + 1 
+%         xlim([100 inf]) 
+%         ylim([1.5 1.55])
+%     elseif i == 10 + 1 
+%         xlim([100 inf]) 
+%         ylim([0.85 0.9])
+%     elseif i == 11 + 1 
+%         xlim([100 inf]) 
+%         ylim([0.4 0.5])
+%     end
+%     
+    
+    
+    
+    
     if diff_plot_titles(i) == "Nodal Reactivity"
 %         figure(i);
 %         hold on;
@@ -72,7 +117,7 @@ for i=1:length(diff_plot_titles)
 
 % start x axis at 10 seconds for the derivative approx
         figure(i), plot(tout, x(:, starting_index:diff_plots_index_end(i))), grid on
-        xlim([10 inf])         
+        xlim([100 inf])         
         
     elseif diff_plot_titles(i) == "Rod Position"
 %         figure(i);
@@ -85,8 +130,8 @@ for i=1:length(diff_plot_titles)
 %         hold off;
 % start x axis at 10 seconds for the derivative approx
         figure(i), plot(tout, x(:, starting_index:diff_plots_index_end(i))), grid on
-        xlim([10 inf]) 
-%         ylim([-inf 10])
+        xlim([1000 inf]) 
+        ylim([0 10])
     else
         figure(i), plot(tout, x(:, starting_index:diff_plots_index_end(i))), grid on
     end
